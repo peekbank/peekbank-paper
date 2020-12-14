@@ -16,17 +16,16 @@ library(lme4)
 library(lmerTest)
 library(tictoc)
 library(langcog)
-```
+library(here)
 
-constants
-
-```{r}
 t_range <- c(-1000,3000)
+knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
+
 ```
 
 get data
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 con <- connect_to_peekbank(dbname = "peekbank_dev")
 datasets <- get_datasets(connection = con) %>% collect()
 administrations <- get_administrations(connection = con) %>% collect()
@@ -47,7 +46,7 @@ aoi_data_joined <- aoi_timepoints %>%
   filter(t_norm > t_range[1],
          t_norm < t_range[2])
 
-save(file = "data/aoi_data_joined.Rds", aoi_data_joined)
+# save(file = "data/aoi_data_joined.Rds", aoi_data_joined)
 ```
 
 # Initial analysis
@@ -55,7 +54,7 @@ save(file = "data/aoi_data_joined.Rds", aoi_data_joined)
 load cached data
 
 ```{r}
-load(file = "data/aoi_data_joined.Rds")
+# load(file = "data/aoi_data_joined.Rds")
 ```
 
 ## subjects
@@ -125,11 +124,11 @@ familiar_means <- aoi_data_joined %>%
             n = n(),
             ci = 1.96 * sd_prop / sqrt(n)) %>%
   mutate(significant = (mean_prop - ci > .5 & mean_prop + ci > .5) |
-                                (mean_prop - ci < .5 & mean_prop + ci < .5)) %>%
+           (mean_prop - ci < .5 & mean_prop + ci < .5)) %>%
   ungroup %>%
   mutate(sorted_stimulus_label = fct_reorder(as.factor(english_stimulus_label), 
-                                              mean_prop, mean))
-  
+                                             mean_prop, mean))
+
 ggplot(familiar_means, 
        aes(y = sorted_stimulus_label, x = mean_prop)) + 
   ggstance::geom_linerangeh(aes(xmin = mean_prop - ci, xmax = mean_prop + ci)) + 
@@ -139,7 +138,8 @@ ggplot(familiar_means,
   theme_mikabr()
 ```
 
-## RT analysis. 
+
+# Reaction time analysis. 
 
 ```{r}
 SAMPLING_RATE <- 40
@@ -197,11 +197,11 @@ rt_means <- rts %>%
             ci = 1.96 * sd_rt / sqrt(n)) %>%
   filter(n > 10) %>%
   mutate(significant = (mean_rt - ci > .5 & mean_rt + ci > .5) |
-                                (mean_rt - ci < .5 & mean_rt + ci < .5)) %>%
+           (mean_rt - ci < .5 & mean_rt + ci < .5)) %>%
   # group_by(age_binned) %>%
   mutate(sorted_stimulus_label = fct_reorder(as.factor(english_stimulus_label), 
-                                              mean_rt, mean))
-  
+                                             mean_rt, mean))
+
 ggplot(rt_means, 
        aes(y = sorted_stimulus_label, x = mean_rt)) + 
   ggstance::geom_linerangeh(aes(xmin = mean_rt - ci, xmax = mean_rt + ci)) + 
@@ -215,16 +215,16 @@ Overall RT curve across age.
 
 ```{r}
 rt_subs <- rts %>%
-  filter(stimulus_novelty == "familiar") %>%
+  filter(stimulus_novelty == "familiar", rt_value > 300, rt_value < 3000) %>%
   group_by(administration_id, trial_id, english_stimulus_label, age) %>%
   summarise(sub_mean_rt = mean(rt_value)) 
 
 
 ggplot(rt_subs, 
        aes(x = age, y = sub_mean_rt)) + 
-  geom_point(alpha = .1) +
+  geom_jitter(alpha = .03, width = .3, height = 0) +
   geom_smooth() + 
-  scale_y_log10() + 
+  scale_y_log10() +
   xlim(12,60) + 
   theme_mikabr() 
 ```
@@ -233,14 +233,14 @@ Overall RT curve across trial order
 
 ```{r}
 rt_subs <- rts %>%
-  filter(stimulus_novelty == "familiar") %>%
+  filter(stimulus_novelty == "familiar", rt_value > 300, rt_value < 3000) %>%
   group_by(administration_id, trial_id, english_stimulus_label, dataset_name, 
            trial_order) %>%
   summarise(sub_mean_rt = mean(rt_value)) 
 
 
 ggplot(rt_subs, 
-       aes(x = trial_order, y = sub_mean_rt, col = dataset_name)) + 
+       aes(x = trial_order, y = sub_mean_rt)) + 
   geom_point(alpha = .1) +
   geom_smooth(method = "lm") + 
   scale_y_log10() + 
@@ -251,7 +251,7 @@ ggplot(rt_subs,
 
 ```{r}
 rt_subs <- rts %>%
-  filter(stimulus_novelty == "familiar") %>%
+  filter(stimulus_novelty == "familiar", rt_value > 300, rt_value < 3000) %>%
   group_by(administration_id, trial_id, english_stimulus_label, age, dataset_name) %>%
   summarise(sub_mean_rt = mean(rt_value)) %>%
   group_by(english_stimulus_label) %>%
@@ -266,9 +266,8 @@ ggplot(rt_subs,
   theme_mikabr()
 ```
 
-# Models
 
-## RT
+## Models
 
 Create dataframe. 
 
@@ -294,109 +293,195 @@ rt_mod <- lmer(log_rt ~ age_centered * stimulus_novelty +
                  (1 | english_stimulus_label) + (1 | dataset_name), 
                data = rt_model_data) 
 
-summary(rt_mod)
+summary(rt_mod)$coef %>%
+  knitr::kable(digits = 3)
 ```
 
-Try doing this only to 30 months for data sparsity.
+# Accuracy
 
+## Exploration
+
+Start by summarizing.
+
+```{r}
+t_min <- 300
+t_max <- 2300
+
+by_trial_means <- aoi_data_joined %>%
+  filter(age > 12, age <= 60, stimulus_novelty == "familiar",
+         t_norm > t_min, t_norm < t_max) %>%
+  mutate(age_binned = cut(age, seq(12,60,12))) %>%
+  rename(target_label = english_stimulus_label) %>%
+  group_by(administration_id, trial_id, target_label, distractor_id, 
+           age, age_binned) %>%
+  summarise(prop_looking = sum(aoi == "target", na.rm = TRUE) / 
+              (sum(aoi == "target", na.rm=TRUE) + 
+                 sum(aoi=="distractor", na.rm=TRUE)),
+            prop_missing = mean(aoi == "missing", na.rm = TRUE)) %>%
+  left_join(stimuli, by = c("distractor_id" = "stimulus_id")) %>%
+  rename(distractor_label = english_stimulus_label)
+```
+
+Missingness. 
+
+```{r}
+hist(by_trial_means$prop_missing)
+```
+
+Preliminary item analysis. 
+
+```{r}
+item_means <- by_trial_means %>%
+  group_by(target_label, age_binned) %>%
+  summarise(mean_prop = mean(prop_looking), 
+            sd_prop = sd(prop_looking), 
+            ci = 1.96 * sd_prop / sqrt(n()))
+
+ggplot(item_means, aes(x = mean_prop, y = target_label, col = age_binned)) +
+  ggstance::geom_pointrangeh(aes(xmin = mean_prop - ci, xmax = mean_prop + ci)) +
+  geom_vline(xintercept = .5, lty = 2) +
+  xlim(0,1) +
+  theme_mikabr()
+```
+
+## Models
+
+Make some models!
+
+```{r}
+acc_mod_data <- by_trial_means %>%
+  filter(prop_missing < .3) 
+
+acc_mod_data$age_centered <- acc_mod_data$age - mean(acc_mod_data$age)
+
+
+m1 <- lmer(prop_looking ~ age_centered
+           + (1| administration_id) + (1 | target_label),
+           data = acc_mod_data)
+
+summary(m1)
+```
+
+add age slopes!
+
+```{r}
+m2 <- lmer(prop_looking ~ age_centered 
+           + (1 | administration_id) + (age_centered || target_label),
+           data = acc_mod_data)
+
+summary(m2)
+```
+
+distractors
+
+```{r}
+m3 <- lmer(prop_looking ~ age_centered
+           + (1 | administration_id) + (age_centered || target_label) +
+             + (1 | distractor_label),
+           data = acc_mod_data)
+
+summary(m3)
+```
+
+age for distractors
+
+```{r}
+m4 <- lmer(prop_looking ~ age_centered
+           + (1 | administration_id) + (age_centered || target_label) +
+             + (age_centered || distractor_label),
+           data = acc_mod_data)
+
+summary(m4)
+```
+
+# Accuracy distractor analysis
+
+Question: do distractors matter in word recognition? Here's the idea: test between a no-distractor model and a distractor-informed model. 
+
+Let's assume each target $T$ and distractor $D$ has a recognizability score, with lower being more difficult. 
+
+No-distractor model: target accuracy should be about target difficulty $T$. 
+
+Distractor model: target accuracy should be a luce choice of $T / (T + D)$.
+
+Two plausible models of recognizability would be 1) childes frequency data and 2) wordbank age of acquisition data. 
+
+Let's start with the wordbank data because it's easy. 
+
+We'll use Wordbank AOAs estimated in the wordbank book with a bayesian GLM. 
+
+Larger AOAs are harder, that's the opposite of recognizability. Let's try using inverse AoA. 
+
+```{r}
+aoas <- read_csv(here("data/bglm_aoas_english.csv"))
+
+aoa_data <- left_join(acc_mod_data, 
+                      aoas %>%
+                        transmute(target_label = definition, 
+                                  target_aoa = bglm_aoa, 
+                                  target_category = category)) %>%
+  left_join(aoas %>%
+              transmute(distractor_label = definition, 
+                        distractor_aoa = bglm_aoa)) %>%
+  filter(!is.na(target_aoa), !is.na(distractor_aoa)) %>%
+  ungroup() %>%
+  mutate(target_aoa_centered = target_aoa - mean(target_aoa), 
+         distractor_aoa_centered = distractor_aoa - mean(distractor_aoa))
+```
 
 
 ```{r}
-rt_model_younger <- rts %>%
-  filter(rt_value > 300, age > 12, age < 30) %>%
-  mutate(log_rt = log(rt_value), 
-         age_centered  = age - 12) %>%
-  group_by(english_stimulus_label) 
-
-rt_mod <- lmer(log_rt ~ age_centered * stimulus_novelty + 
-                 age_centered * trial_order + 
-                 (1 | english_stimulus_label) + (1 | dataset_name), 
-               data = rt_model_younger) 
-
-summary(rt_mod)
+aoa_data <- aoa_data %>%
+  mutate(inverse_target = 1/target_aoa,
+         inverse_distractor = 1/distractor_aoa,
+         luce = inverse_target / (inverse_target + inverse_distractor))
 ```
 
-<!-- ## Accuracy -->
+```{r}
+m1 <- lmer(prop_looking ~ luce + (1|administration_id) + (1|dataset_name), 
+           data = aoa_data) 
+  
+summary(m1)$coef %>%
+  knitr::kable(digits = 3)
+```
 
+```{r}
+m2 <- lmer(prop_looking ~ target_aoa + (1|administration_id) + (1|dataset_name), 
+           data = aoa_data)
 
+summary(m2)$coef %>%
+  knitr::kable(digits = 3)
 
-<!-- Start by summarizing. -->
+```
 
-<!-- ```{r} -->
-<!-- t_min <- 500 -->
-<!-- t_max <- 2000 -->
+```{r}
+m3 <- lmer(prop_looking ~ inverse_target + (1|administration_id) + 
+             (1|dataset_name), 
+           data = aoa_data)
 
-<!-- by_trial_means <- aoi_data_joined %>% -->
-<!--   filter(dataset_name %in% usable_datasets) %>% -->
-<!--   filter(age > 12, age <= 60, stimulus_novelty == "familiar", -->
-<!--          aoi %in% c("target","distractor"), -->
-<!--          t_norm > t_min, t_norm < t_max) %>% -->
-<!--   rename(target_label = stimulus_label) %>% -->
-<!--   group_by(administration_id, trial_id, target_label, distractor_id, age) %>% -->
-<!--   summarise(prop_looking = mean(aoi == "target", na.rm = TRUE)) %>% -->
-<!--   left_join(stimuli, by = c("distractor_id" = "stimulus_id")) %>% -->
-<!--   rename(distractor_label = stimulus_label) -->
+summary(m3)$coef %>%
+  knitr::kable(digits = 3)
+```
 
-<!-- ggplot(by_trial_means, aes(x = age, y = prop_looking)) +  -->
-<!--   geom_point(alpha= .2) +  -->
-<!--   facet_wrap(~target_label) +  -->
-<!--   geom_smooth(method = "lm") +  -->
-<!--   geom_hline(yintercept = .5, lty = 2) + -->
-<!--   ylim(0,1) +  -->
-<!--   theme_classic()  -->
-<!-- ``` -->
+Add age.
 
-<!-- Make some model! -->
+```{r}
+m1_age <- lmer(prop_looking ~ luce * age + (1 | administration_id) + 
+                 (1 | dataset_name), 
+           data = aoa_data)
 
-<!-- ```{r} -->
-<!-- m1 <- lmer(prop_looking ~ age  -->
-<!--            + (1| administration_id) + (1 | target_label),  -->
-<!--      data = by_trial_means) -->
+summary(m1_age)$coef %>%
+  knitr::kable(digits = 3)
+```
 
-<!-- summary(m1) -->
-<!-- ``` -->
+And visualize.
 
-
-<!-- ```{r} -->
-<!-- by_trial_means$age_scaled <- scale(by_trial_means$age,  -->
-<!--                                    center = TRUE, scale = TRUE) -->
-
-<!-- m1 <- lmer(prop_looking ~ age_scaled  -->
-<!--            + (1| administration_id) + (1 | target_label),  -->
-<!--      data = by_trial_means) -->
-
-<!-- summary(m1) -->
-<!-- ``` -->
-
-<!-- add age slopes! -->
-
-<!-- ```{r} -->
-<!-- m2 <- lmer(prop_looking ~ age_scaled  -->
-<!--            + (1 | administration_id) + (age_scaled | target_label),  -->
-<!--      data = by_trial_means) -->
-
-<!-- summary(m2) -->
-<!-- ``` -->
-
-<!-- distractors -->
-
-<!-- ```{r} -->
-<!-- m3 <- lmer(prop_looking ~ age_scaled  -->
-<!--            + (1 | administration_id) + (age_scaled | target_label) +  -->
-<!--              + (1 | distractor_label),  -->
-<!--      data = by_trial_means) -->
-
-<!-- summary(m3) -->
-<!-- ``` -->
-
-<!-- age for distractors -->
-
-<!-- ```{r} -->
-<!-- m4 <- lmer(prop_looking ~ age_scaled  -->
-<!--            + (1 | administration_id) + (age_scaled | target_label) +  -->
-<!--              + (age_scaled | distractor_label),  -->
-<!--      data = by_trial_means) -->
-
-<!-- summary(m4) -->
-<!-- ``` -->
+```{r}
+ggplot(aoa_data %>%
+         mutate(luce_binned = cut(luce, quantile(luce, c(0,.25, .5, .75, 1)), 
+                                  include.lowest = TRUE)), 
+       aes(x = age, y = prop_looking, col = luce_binned)) + 
+  geom_jitter(alpha = .1, width = .2) + 
+  geom_smooth(method = "lm")
+```
 
