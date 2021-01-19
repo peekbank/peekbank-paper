@@ -54,7 +54,7 @@ save(file = "data/aoi_data_joined.Rds", aoi_data_joined)
 load cached data
 
 ```{r}
-# load(file = "data/aoi_data_joined.Rds")
+load(file = "data/aoi_data_joined.Rds")
 ```
 
 ## subjects
@@ -110,6 +110,11 @@ ggplot(means,
   scale_color_solarized() +
   scale_fill_solarized() 
 ```
+
+
+
+
+### Windowed
 
 Familiar trials. 
 

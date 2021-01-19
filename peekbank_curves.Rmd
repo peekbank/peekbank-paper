@@ -1,0 +1,126 @@
+---
+title: "Peekbank developmental curves"
+author: "Mike"
+date: "1/19/2021"
+output: html_document
+---
+
+Goal is to make developmental curves by using the growth modeling approach advocated by Mirman (2014).  
+
+```{r}
+library(peekbankr)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(tictoc)
+library(langcog)
+library(here)
+
+t_range <- c(-1000,3000)
+knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
+
+load(file = "data/aoi_data_joined.Rds")
+```
+
+
+```{r}
+fam_data <- aoi_data_joined %>%
+  filter(age > 12, age <= 60, 
+         stimulus_novelty == "familiar") %>%
+  mutate(age_binned = cut(age, seq(0,60,12))) 
+```
+
+```{r}
+means <- fam_data %>%
+  group_by(t_norm, dataset_name, age_binned, stimulus_novelty) %>%
+  summarise(n = sum(aoi %in% c("target","distractor"), na.rm = TRUE), 
+            p = sum(aoi == "target", na.rm = TRUE),
+            prop_looking = p / n, 
+            ci_lower = binom::binom.confint(p, n, method = "bayes")$lower,
+            ci_upper = binom::binom.confint(p, n, method = "bayes")$upper) 
+
+ggplot(means, 
+       aes(x = t_norm, y = prop_looking)) + 
+  geom_line(aes(col = dataset_name)) + 
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, 
+                  fill = dataset_name), alpha = .5) +
+  facet_grid(age_binned~stimulus_novelty) +
+  geom_hline(yintercept = .5, lty = 2) + 
+  geom_vline(xintercept = 0, lty = 2) +
+  ylab("Proportion Target Looking") +
+  xlab("Time (msec)") +
+  theme_classic() +
+  scale_color_solarized() +
+  scale_fill_solarized() 
+```
+
+You need models to deal with this situation. 
+
+Figure out elogit business - Mirman (2014). 
+```{r}
+BIN_INTERVAL <- 250
+
+ms_timecourse <- fam_data %>%
+  filter(dataset_name != "pomper_saffran_2016", 
+         aoi %in% c("target","distractor")) %>%
+  mutate(t_window = as.numeric(cut(t_norm, breaks = seq(-1000,3000,BIN_INTERVAL)), 
+                               labels = seq(-900,2900,BIN_INTERVAL))) %>%
+  group_by(dataset_id, administration_id, trial_id, t_window, 
+           age, age_binned, english_stimulus_label) %>%
+  summarise(prop_target = mean(aoi=="target")) 
+# %>%
+            # prop_distractor = mean(aoi == "distractor"), 
+            # elogit_looking = log(prop_target + 0.5) - log(prop_distractor + 0.5)) 
+# %>%
+# filter(is.na(target) == F)
+
+hist(ms_timecourse$prop_target)
+# hist(ms_timecourse$elogit_looking)
+```
+
+```{r}
+POLY_DEG <- 4
+
+ops <- poly(unique(ms_timecourse$t_window), POLY_DEG)
+ops_tibble <- tibble(ot1 = ops[,1], 
+                     ot2 = ops[,2],
+                     ot3 = ops[,3],
+                     ot4 = ops[,4],
+                     t_window = unique(ms_timecourse$t_window))
+
+
+ms_timecourse <- left_join(ms_timecourse, ops_tibble)
+```
+
+
+```{r}
+mod_prop <- lmer(prop_target ~ (ot1 + ot2 + ot3 + ot4) * age +
+                     (1 | dataset_id) +
+                     (1 | english_stimulus_label),
+                   data = ms_timecourse)
+```
+
+```{r}
+summary(mod_prop)
+```
+
+
+```{r}
+ms_timecourse <- ms_timecourse %>%
+  ungroup() %>%
+  mutate(fit = fitted(mod_elogit), 
+         age_binned = cut(age, seq(12, 60, 12), include.lowest = TRUE), 
+         t_window_ms = seq(-900,2900,BIN_INTERVAL)[t_window])
+
+ggplot(ms_timecourse, 
+       aes(x = t_window_ms, y = prop_target, col = age_binned)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") + 
+  stat_summary(aes(y = fit), fun = mean, geom = "line") +
+  geom_hline(yintercept = .5, col = "black", lty = 2) +
+  ylim(0, 1) +
+  xlab("Time (ms)") +
+  ylab("Proportion Target Looking") + 
+  facet_wrap(~age_binned) 
+
+```
+
