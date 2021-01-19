@@ -1,0 +1,27 @@
+---
+title: "Time Window Analysis"
+author: "windowing team"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Motivation
+
+(Peelle and Van Engen (2020))[https://psyarxiv.com/pc3da/] style multiverse analysis considering possible time windows.
+
+
+```{r load-data}
+# get local copy by running peekbank_explore.Rmd
+load("data/aoi_data_joined.Rds")
+```
+
+## Tidy Data
+
+```{r}
+
+```
+
