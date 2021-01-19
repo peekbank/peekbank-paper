@@ -17,11 +17,86 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r load-data}
 # get local copy by running peekbank_explore.Rmd
 load("data/aoi_data_joined.Rds")
+
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(tictoc)
+library(langcog)
+library(here)
+library(broom)
+library(doParallel)
+library(foreach)
 ```
+
 
 ## Tidy Data
 
-```{r}
+reformat to Peelle and Van Engen df
 
+```{r}
+df <- aoi_data_joined %>%
+  filter(age > 12, age <= 60) %>%
+  mutate(age_binned = cut(age, seq(0,60,12))) %>%
+  group_by(t_norm, dataset_name, age_binned, stimulus_novelty) %>%
+  summarise(n = sum(aoi %in% c("target","distractor"), na.rm = TRUE), 
+            p = sum(aoi == "target", na.rm = TRUE),
+            prop_looking = p / n, 
+            ci_lower = binom::binom.confint(p, n, method = "bayes")$lower,
+            ci_upper = binom::binom.confint(p, n, method = "bayes")$upper) 
+```
+
+
+Plot overall timecourse
+
+```{r}
+#---- plot overall timecourse ----
+# t_norm = TimeMS, prop_looking = PercentTarget, dataset_name = Group, stimulus_novelty = Condition 
+p <- ggplot(df, aes(t_norm, prop_looking, color=dataset_name, linetype=stimulus_novelty)) + 
+  theme_classic(base_size = 10) +
+  ylab("Percent fixations to target") + 
+  xlab("Time (ms)") +
+  annotate("rect", xmin = 1300, xmax = 2300, ymin = 0, ymax = 1, alpha=.2) +
+  geom_point(alpha = .3) +
+  facet_wrap(~ stimulus_novelty)
+  #stat_summary(fun.data=mean_se, geom="ribbon", alpha=.2) +
+  #stat_summary(aes(y=prop_looking, linetype=stimulus_novelty), fun=mean, geom="line") +
+  #scale_fill_manual(values = c("red", "gray50")) +
+  theme(legend.position="bottom")
+  
+show(p)
+```
+
+## Run Window Models
+
+
+```{r}
+window_min <- 300
+window_max <- 2300
+# Time bins are 25 ms long. All times below in milliseconds.
+startTimes <- seq(from = window_min, to = window_max, by = 100/6) # from "orig analyses" 
+# could use min(pb datasets min time) and max(pb datasets max time)
+windowLengths <- seq(from = 300, to = 1800, by = 25)
+
+# For parallel processing
+numCores <- 5
+
+#---- loop through start/length combinations and run model ----
+
+cl <- makeCluster(numCores)
+registerDoParallel(cores=numCores)
+
+# use purrr, not these for loops
+
+foreach(i = 1:length(startTimes)) %dopar% {
+  
+  for(thisLength in windowLengths) {
+    outFile <- file.path(outDir, sprintf("%g_%g.csv", startTimes[i], thisLength))
+    
+
+  } # window lengths
+
+} # %dopar%
+stopCluster(cl)
 ```
 
