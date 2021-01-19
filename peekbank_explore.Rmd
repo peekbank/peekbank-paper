@@ -10,6 +10,11 @@ editor_options:
 # Preliminaries and data loading
 
 ```{r}
+# for now, need to downgrade dbplyr to <2.0:
+# devtools::install_version("dbplyr", version = "1.4.4")
+
+FIRST_TIME = FALSE # set to true first time to download data from DB
+
 library(peekbankr)
 library(tidyverse)
 library(lme4)
@@ -25,7 +30,7 @@ knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
 
 get data
 
-```{r, eval = TRUE}
+```{r, eval = FIRST_TIME}
 con <- connect_to_peekbank(dbname = "peekbank_dev")
 datasets <- get_datasets(connection = con) %>% collect()
 administrations <- get_administrations(connection = con) %>% collect()
