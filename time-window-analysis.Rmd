@@ -98,3 +98,33 @@ mout <- read.table(file="data/time-window-results.csv")
 
 
 Visualize significance and magnitude of age coefficient as function of start time and window length.
+
+
+```{r visualize-p-values}
+mout %>% filter(term=="age_center") %>%
+  ggplot(aes(x = startTime, y = windowLength, fill = p.value)) +
+    geom_raster() +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+    coord_equal() + 
+    scale_fill_gradient(low = "white", high = "gray", limits = c(0, 1)) +
+    xlab("Start Time (ms)") +
+    ylab("Window Length (ms)") +
+    ggtitle("Significance") 
+```
+
+
+```{r visualize-coefs}
+mout %>% filter(term=="age_center") %>%
+  ggplot(aes(startTime, windowLength, fill = estimate)) +
+    geom_raster() + 
+    theme_bw() +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+    coord_equal() + 
+    scale_fill_gradient2(low = "blue", mid = "white", high = "red", 
+                         limits = c(min(estimate), max(estimate))) +
+    xlab("Start Time (ms)") +
+    ylab("Window Length (ms)") +
+    ggtitle("Estimated Age Coefficient") 
+```
+
