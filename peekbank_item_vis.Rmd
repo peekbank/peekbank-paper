@@ -1,0 +1,55 @@
+---
+title: "Peekbank Item Visualization"
+author: "Martin"
+date: "1/19/2021"
+output: html_document
+---
+
+Visualize item-specific trajectories
+
+```{r}
+library(peekbankr)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(tictoc)
+library(langcog)
+library(here)
+
+t_range <- c(-1000,3000)
+knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
+
+load(file = "data/aoi_data_joined.Rds")
+```
+
+
+Time series - Item
+
+```{r}
+means_items <- aoi_data_joined %>%
+  filter(age > 12, age <= 60) %>%
+  #mutate(age_binned = cut(age, seq(0,60,12))) %>%
+  #group_by(t_norm, dataset_name, age_binned, stimulus_novelty) %>%
+  group_by(t_norm, dataset_name, english_stimulus_label) %>%
+  summarise(n = sum(aoi %in% c("target","distractor"), na.rm = TRUE), 
+            p = sum(aoi == "target", na.rm = TRUE),
+            prop_looking = p / n, 
+            ci_lower = binom::binom.confint(p, n, method = "bayes")$lower,
+            ci_upper = binom::binom.confint(p, n, method = "bayes")$upper) 
+means_items %>%
+  filter(n>=12) %>%
+ggplot(aes(x = t_norm, y = prop_looking,color=english_stimulus_label)) + 
+  geom_line() + 
+  # geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, 
+  #                 fill = dataset_name), alpha = .5) +
+  geom_smooth(color="black")+
+  geom_hline(yintercept = .5, lty = 2) + 
+  geom_vline(xintercept = 0, lty = 2) +
+  ylab("Proportion Target Looking") +
+  xlab("Time (msec)") +
+  theme_classic() +
+  #scale_color_solarized() +
+  #scale_fill_solarized() +
+  facet_wrap(~dataset_name,nrow=3)+
+  theme(legend.position="none")
+```
