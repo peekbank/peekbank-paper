@@ -11,8 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Motivation
 
-(Peelle and Van Engen (2020))[https://psyarxiv.com/pc3da/] style multiverse analysis considering possible time windows.
-
+(Peelle and Van Engen (2020))[https://psyarxiv.com/pc3da/] style multiverse analysis considering possible time windows with logistic growth curve models in a dataset with words of varying frequency, stimuli with varying levels of noise, and with young or old adults. 
 
 ```{r load-data}
 # get local copy by running peekbank_explore.Rmd
@@ -24,79 +23,78 @@ library(lmerTest)
 library(tictoc)
 library(langcog)
 library(here)
-library(broom)
+library(broom.mixed) # offers tidy() for lmer
 library(doParallel)
 library(foreach)
+
+RUN_MODELS = FALSE
 ```
 
-
-## Tidy Data
-
-reformat to Peelle and Van Engen df
+For our analysis, we will restrict ourselves to familiar words, and will model age effects.
 
 ```{r}
 df <- aoi_data_joined %>%
-  filter(age > 12, age <= 60) %>%
-  mutate(age_binned = cut(age, seq(0,60,12))) %>%
-  group_by(t_norm, dataset_name, age_binned, stimulus_novelty) %>%
-  summarise(n = sum(aoi %in% c("target","distractor"), na.rm = TRUE), 
-            p = sum(aoi == "target", na.rm = TRUE),
-            prop_looking = p / n, 
-            ci_lower = binom::binom.confint(p, n, method = "bayes")$lower,
-            ci_upper = binom::binom.confint(p, n, method = "bayes")$upper) 
+  filter(stimulus_novelty=="familiar", # just familiar, or is the goal to distinguish novel vs. familiar?
+         !is.na(age)) 
+
+rm(aoi_data_joined)
 ```
 
-
-Plot overall timecourse
-
-```{r}
-#---- plot overall timecourse ----
-# t_norm = TimeMS, prop_looking = PercentTarget, dataset_name = Group, stimulus_novelty = Condition 
-p <- ggplot(df, aes(t_norm, prop_looking, color=dataset_name, linetype=stimulus_novelty)) + 
-  theme_classic(base_size = 10) +
-  ylab("Percent fixations to target") + 
-  xlab("Time (ms)") +
-  annotate("rect", xmin = 1300, xmax = 2300, ymin = 0, ymax = 1, alpha=.2) +
-  geom_point(alpha = .3) +
-  facet_wrap(~ stimulus_novelty)
-  #stat_summary(fun.data=mean_se, geom="ribbon", alpha=.2) +
-  #stat_summary(aes(y=prop_looking, linetype=stimulus_novelty), fun=mean, geom="line") +
-  #scale_fill_manual(values = c("red", "gray50")) +
-  theme(legend.position="bottom")
-  
-show(p)
-```
 
 ## Run Window Models
 
 
-```{r}
-window_min <- 300
-window_max <- 2300
-# Time bins are 25 ms long. All times below in milliseconds.
-startTimes <- seq(from = window_min, to = window_max, by = 100/6) # from "orig analyses" 
+```{r, eval=RUN_MODELS}
+# t_norm = [-1000,3000]
+window_min <- -300 # 300 ms before disambiguation
+window_max <- 2300 #
+
+# Time bins are 25 ms 
+startTimes <- seq(from = window_min, to = window_max, by = 25) 
 # could use min(pb datasets min time) and max(pb datasets max time)
 windowLengths <- seq(from = 300, to = 1800, by = 25)
 
-# For parallel processing
+param.grid <- expand.grid(startTimes, windowLengths)
+names(param.grid) = c("startTimes", "windowLengths")
+
 numCores <- 5
-
-#---- loop through start/length combinations and run model ----
-
 cl <- makeCluster(numCores)
 registerDoParallel(cores=numCores)
 
-# use purrr, not these for loops
-
-foreach(i = 1:length(startTimes)) %dopar% {
-  
-  for(thisLength in windowLengths) {
-    outFile <- file.path(outDir, sprintf("%g_%g.csv", startTimes[i], thisLength))
+# for testing
+#mout <- foreach(i = 1:20, .combine='bind_rows') %dopar% { 
+# for reals
+mout <- foreach(i = 1:nrow(param.grid), .combine='bind_rows') %dopar% {
+    # by-trial means
+    dft <- df %>% filter(t_norm > param.grid$startTimes[i], 
+                         t_norm < (param.grid$startTimes[i] + param.grid$windowLengths[i])) %>%
+      rename(target_label = english_stimulus_label) %>%
+      group_by(administration_id, trial_id, target_label, distractor_id, age) %>%
+      summarise(prop_looking = sum(aoi == "target", na.rm = TRUE) / 
+                  (sum(aoi=="target", na.rm=TRUE) + sum(aoi=="distractor", na.rm=TRUE)),
+                prop_missing = mean(aoi == "missing", na.rm = TRUE)) %>%
+      filter(prop_missing < .3) %>%
+      ungroup() %>%
+      mutate(age_center = scale(age, scale = FALSE))
     
-
-  } # window lengths
-
-} # %dopar%
+    # what basic model do we want to run? or do we need to go logistic growth curve?
+    mod <- lmer(prop_looking ~ age_center + (1| administration_id) + (1 | target_label),
+           data = dft)
+    # save coefficients per model
+    tidy(mod, effects="fixed") %>% 
+      mutate(startTime = param.grid$startTimes[i], 
+             windowLength = param.grid$windowLengths[i])
+} 
 stopCluster(cl)
+
+write.table(mout, file="data/time-window-results.csv")
 ```
 
+## Visualization 
+
+```{r load-model-results}
+mout <- read.table(file="data/time-window-results.csv")
+```
+
+
+Visualize significance and magnitude of age coefficient as function of start time and window length.
