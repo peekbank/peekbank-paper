@@ -36,6 +36,8 @@ For our analysis, we will restrict ourselves to familiar words, and will model a
 df <- aoi_data_joined %>%
   filter(stimulus_novelty=="familiar", # just familiar, or is the goal to distinguish novel vs. familiar?
          !is.na(age)) 
+
+rm(aoi_data_joined)
 ```
 
 
@@ -57,7 +59,7 @@ cl <- makeCluster(numCores)
 registerDoParallel(cores=numCores)
 
 #mout <- foreach(i = 1:5, j = 1:5, .combine='bind_rows') %dopar% { # for testing
-mout <- foreach(i = 1:length(startTimes), j = 1:length(windowLengths, .combine='bind_rows')) %dopar% {
+mout <- foreach(i = 1:length(startTimes), j = 1:length(windowLengths), .combine='bind_rows') %dopar% {
     # by-trial means
     dft <- df %>% filter(t_norm > startTimes[i], t_norm < (startTimes[i]+windowLengths[j])) %>%
       rename(target_label = english_stimulus_label) %>%
