@@ -54,21 +54,25 @@ startTimes <- seq(from = window_min, to = window_max, by = 25)
 # could use min(pb datasets min time) and max(pb datasets max time)
 windowLengths <- seq(from = 300, to = 1800, by = 25)
 
+param.grid <- expand.grid(startTimes, windowLengths)
+names(param.grid) = c("startTimes", "windowLengths")
+
 numCores <- 5
 cl <- makeCluster(numCores)
 registerDoParallel(cores=numCores)
 
-#mout <- foreach(i = 1:5, j = 1:5, .combine='bind_rows') %dopar% { # for testing
-mout <- foreach(i = 1:length(startTimes), j = 1:length(windowLengths), .combine='bind_rows') %dopar% {
+# for testing
+#mout <- foreach(i = 1:20, .combine='bind_rows') %dopar% { 
+# for reals
+mout <- foreach(i = 1:nrow(param.grid), .combine='bind_rows') %dopar% {
     # by-trial means
-    dft <- df %>% filter(t_norm > startTimes[i], t_norm < (startTimes[i]+windowLengths[j])) %>%
+    dft <- df %>% filter(t_norm > param.grid$startTimes[i], 
+                         t_norm < (param.grid$startTimes[i] + param.grid$windowLengths[i])) %>%
       rename(target_label = english_stimulus_label) %>%
       group_by(administration_id, trial_id, target_label, distractor_id, age) %>%
       summarise(prop_looking = sum(aoi == "target", na.rm = TRUE) / 
                   (sum(aoi=="target", na.rm=TRUE) + sum(aoi=="distractor", na.rm=TRUE)),
                 prop_missing = mean(aoi == "missing", na.rm = TRUE)) %>%
-      left_join(stimuli, by = c("distractor_id" = "stimulus_id")) %>%
-      rename(distractor_label = english_stimulus_label) %>%
       filter(prop_missing < .3) %>%
       ungroup() %>%
       mutate(age_center = scale(age, scale = FALSE))
@@ -78,8 +82,8 @@ mout <- foreach(i = 1:length(startTimes), j = 1:length(windowLengths), .combine=
            data = dft)
     # save coefficients per model
     tidy(mod, effects="fixed") %>% 
-      mutate(startTime=startTimes[i], 
-             windowLength=windowLengths[j])
+      mutate(startTime = param.grid$startTimes[i], 
+             windowLength = param.grid$windowLengths[i])
 } 
 stopCluster(cl)
 
