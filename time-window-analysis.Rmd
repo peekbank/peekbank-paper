@@ -15,7 +15,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r load-data}
 # get local copy by running peekbank_explore.Rmd
-load("data/aoi_data_joined.Rds")
+load("data/aoi_data_joined.Rds") 
+# change t_range upper limit to 4000 for full window analysis
 
 library(tidyverse)
 library(lme4)
@@ -45,26 +46,27 @@ rm(aoi_data_joined)
 
 
 ```{r, eval=RUN_MODELS}
-# t_norm = [-1000,3000]
+# t_norm = [-1000,4000] 
 window_min <- -300 # 300 ms before disambiguation
-window_max <- 2300 #
+window_max <- 2000 #
 
 # Time bins are 25 ms 
 startTimes <- seq(from = window_min, to = window_max, by = 25) 
 # could use min(pb datasets min time) and max(pb datasets max time)
-windowLengths <- seq(from = 300, to = 1800, by = 25)
+windowLengths <- seq(from = 300, to = 2000, by = 25)
 
 param.grid <- expand.grid(startTimes, windowLengths)
 names(param.grid) = c("startTimes", "windowLengths")
 
-numCores <- 5
+numCores <- detectCores() - 1
 cl <- makeCluster(numCores)
 registerDoParallel(cores=numCores)
 
 # for testing
 #mout <- foreach(i = 1:20, .combine='bind_rows') %dopar% { 
 # for reals
-mout <- foreach(i = 1:nrow(param.grid), .combine='bind_rows') %dopar% {
+mout <- foreach(i = 1:nrow(param.grid), .combine='bind_rows',
+                .packages = c("lme4","lmerTest","broom.mixed","tidyverse")) %dopar% {
     # by-trial means
     dft <- df %>% filter(t_norm > param.grid$startTimes[i], 
                          t_norm < (param.grid$startTimes[i] + param.grid$windowLengths[i])) %>%
@@ -121,10 +123,13 @@ mout %>% filter(term=="age_center") %>%
     theme_bw() +
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
     coord_equal() + 
-    scale_fill_gradient2(low = "blue", mid = "white", high = "red", 
-                         limits = c(min(estimate), max(estimate))) +
+    scale_fill_gradient2(low = "blue", mid = "white", high = "red", limits = c(0, .01)) +
     xlab("Start Time (ms)") +
     ylab("Window Length (ms)") +
     ggtitle("Estimated Age Coefficient") 
 ```
 
+## Future Directions
+
+Do the window analyses for different age groups: it may be that a longer time window / later start time is needed for younger children (compared to older children). 
+But having very different amounts of data in each age bin may be a problem for power -- perhaps we could subsample or resample to balance the amount of data in each considered subset.
