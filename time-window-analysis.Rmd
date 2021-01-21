@@ -120,17 +120,13 @@ stopCluster(cl)
 ## Visualization 
 
 ```{r load-model-results, echo=F}
-#mout <- read.table(file="data/time-window-results.csv")
+# all data
+mout <- read.table(file="data/time-window-results.csv")
+# age groups
 mout1 <- read.table(file="data/time-window-12-24mos.csv")
 mout2 <- read.table(file="data/time-window-24-36mos.csv")
 mout3 <- read.table(file="data/time-window-36-48mos.csv")
-```
 
-
-Visualize significance and magnitude of age coefficient as function of start time and window length.
-
-
-```{r visualize-p-values, fig.width=13, fig.height=5, echo=F}
 plot_pvals <- function(dat, title) {
   dat %>% filter(term=="age_center") %>%
     ggplot(aes(x = startTime, y = windowLength, fill = p.value)) +
@@ -144,14 +140,6 @@ plot_pvals <- function(dat, title) {
       ggtitle(title) 
 }
 
-p1 <- plot_pvals(mout1, "12-24 mos")
-p2 <- plot_pvals(mout2, "24-36 mos")
-p3 <- plot_pvals(mout3, "36-48 mos")
-ggarrange(p1, p2, p3, nrow=1, common.legend = T)
-```
-
-
-```{r visualize-coefs, fig.width=13, fig.height=5, echo=F}
 plot_coefs <- function(dat, title) {
   dat %>% filter(term=="age_center") %>%
     ggplot(aes(startTime, windowLength, fill = estimate)) +
@@ -164,7 +152,40 @@ plot_coefs <- function(dat, title) {
       ylab("Window Length (ms)") +
       ggtitle(title) 
 }
+```
 
+
+Visualize significance and magnitude of age coefficient as function of start time and window length.
+First we'll look at the entire dataset, and then we'll break it down by age (1-, 2-, and 3-year-olds).
+
+For the entire dataset, it's clear that window start time and length don't matter -- the age coefficient is always significant (oddly, even if the start time is -500 ms and window length is <500 ms...).
+The coefficient estimates do get larger for start times >500 and increasing window lengths.
+
+```{r visualize-all-dat, fig.width=13, fig.height=5, echo=F}
+ap <- plot_pvals(mout, "Significance - all data")
+ac <- plot_coefs(mout, "Coefficients - all data")
+ggarrange(ap, ac, nrow=1)
+```
+
+### p-values by age group
+
+When the multiverse analysis is run for participants of different ages, the p-values can vary widely.
+For all ages, the shaded lower-left triangle indicates that if the start time is <300 ms post-stimulus onset (perhaps <800 ms for 3-year-olds) and the window length is <1300 (up to 2000 for 3-year-olds), then a significant age effect is unlikely to be found in participants within these age ranges.
+
+```{r visualize-p-values, fig.width=13, fig.height=5, echo=F}
+p1 <- plot_pvals(mout1, "12-24 mos")
+p2 <- plot_pvals(mout2, "24-36 mos")
+p3 <- plot_pvals(mout3, "36-48 mos")
+ggarrange(p1, p2, p3, nrow=1, common.legend = T)
+```
+### Age coefficient estimates by age group
+
+Coefficient estimate plots largely corroborate the p-value plots.
+Note that with small start times and window lengths (<1000), the estimated age coefficients for 12-24 mos may even be negative (although not significantly so: see above).
+Intriguingly, each age range shows it's own "hot spot" in terms of the largest effects: upper right for 12-24 mos, bottom middle for 24-36 mos, and bottom right for 36-48 mos. 
+This suggests that researchers may be justified in using different start times and window sizes for different age ranges, likely due to the varying pull of familiarity and novelty as learners age.
+
+```{r visualize-coefs, fig.width=13, fig.height=5, echo=F}
 c1 <- plot_coefs(mout1, "12-24 mos")
 c2 <- plot_coefs(mout2, "24-36 mos")
 c3 <- plot_coefs(mout3, "36-48 mos")
