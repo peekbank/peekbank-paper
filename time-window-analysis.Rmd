@@ -11,9 +11,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Motivation
 
-(Peelle and Van Engen (2020))[https://psyarxiv.com/pc3da/] style multiverse analysis considering possible time windows with logistic growth curve models in a dataset with words of varying frequency, stimuli with varying levels of noise, and with young or old adults. 
+[Peelle and Van Engen (2020)](https://psyarxiv.com/pc3da/) style multiverse analysis considering possible time windows with logistic growth curve models in a dataset with words of varying frequency, stimuli with varying levels of noise, and with young or old adults. 
 
-```{r load-data}
+```{r load-data, echo=F, message=F, warning=F}
 # get local copy by running peekbank_explore.Rmd
 load("data/aoi_data_joined.Rds") 
 # change t_range upper limit to 4000 for full window analysis
@@ -27,6 +27,7 @@ library(here)
 library(broom.mixed) # offers tidy() for lmer
 library(doParallel)
 library(foreach)
+library(ggpubr)
 
 RUN_MODELS = FALSE
 ```
@@ -35,10 +36,8 @@ For our analysis, we will restrict ourselves to familiar words, and will model a
 
 ```{r}
 df <- aoi_data_joined %>%
-  filter(stimulus_novelty=="familiar", # just familiar, or is the goal to distinguish novel vs. familiar?
+  filter(stimulus_novelty=="familiar", 
          !is.na(age), age > 12, age <= 60) 
-
-rm(aoi_data_joined)
 ```
 
 First run showed that we have a lot of power -- age effect always p<.001 for any start time x window size.
@@ -59,7 +58,6 @@ df_3s <- aoi_data_joined %>%
          age >= 36, age < 48) # 266
 
 rm(aoi_data_joined)
-rm(df)
 ```
 
 
@@ -69,7 +67,7 @@ rm(df)
 ```{r, eval=RUN_MODELS}
 # t_norm = [-1000,4000] 
 
-run_grid <- function(df, outfile) {
+run_grid <- function(dat, outfile) {
   window_min <- -500 # X ms before disambiguation
   window_max <- 2000 #
 
@@ -81,10 +79,10 @@ run_grid <- function(df, outfile) {
 param.grid <- expand.grid(startTimes, windowLengths)
 names(param.grid) = c("startTimes", "windowLengths")
   
-  m1out <- foreach(i = 1:nrow(param.grid), .combine='bind_rows',
+  mout <- foreach(i = 1:nrow(param.grid), .combine='bind_rows',
                 .packages = c("lme4","lmerTest","broom.mixed","tidyverse")) %dopar% {
     # by-trial means
-    dft <- df %>% filter(t_norm > param.grid$startTimes[i], 
+    dft <- dat %>% filter(t_norm > param.grid$startTimes[i], 
                          t_norm < (param.grid$startTimes[i] + param.grid$windowLengths[i])) %>%
       rename(target_label = english_stimulus_label) %>%
       group_by(administration_id, trial_id, target_label, distractor_id, age) %>%
@@ -111,52 +109,69 @@ numCores <- detectCores() - 1
 cl <- makeCluster(numCores)
 registerDoParallel(cores=numCores)
 
-#run_grid(df, "time-window-results")
+mout <- run_grid(df, "time-window-results")
 mout1 <- run_grid(df_ones, "time-window-12-24mos")
 mout2 <- run_grid(df_twos, "time-window-24-36mos")
-mout3 <- run_grid(df_twos, "time-window-36-48mos")
+mout3 <- run_grid(df_3s, "time-window-36-48mos")
 
 stopCluster(cl)
 ```
 
 ## Visualization 
 
-```{r load-model-results}
-mout <- read.table(file="data/time-window-results.csv")
+```{r load-model-results, echo=F}
+#mout <- read.table(file="data/time-window-results.csv")
+mout1 <- read.table(file="data/time-window-12-24mos.csv")
+mout2 <- read.table(file="data/time-window-24-36mos.csv")
+mout3 <- read.table(file="data/time-window-36-48mos.csv")
 ```
 
 
 Visualize significance and magnitude of age coefficient as function of start time and window length.
 
 
-```{r visualize-p-values}
-mout %>% filter(term=="age_center") %>%
-  ggplot(aes(x = startTime, y = windowLength, fill = p.value)) +
-    geom_raster() +
-    theme_bw() +
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-    coord_equal() + 
-    scale_fill_gradient(low = "white", high = "gray", limits = c(0, 1)) +
-    xlab("Start Time (ms)") +
-    ylab("Window Length (ms)") +
-    ggtitle("Significance") 
+```{r visualize-p-values, fig.width=13, fig.height=5, echo=F}
+plot_pvals <- function(dat, title) {
+  dat %>% filter(term=="age_center") %>%
+    ggplot(aes(x = startTime, y = windowLength, fill = p.value)) +
+      geom_raster() +
+      theme_bw() +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+      coord_equal() + 
+      scale_fill_gradient(low = "white", high = "gray", limits = c(0, 1)) +
+      xlab("Start Time (ms)") +
+      ylab("Window Length (ms)") +
+      ggtitle(title) 
+}
+
+p1 <- plot_pvals(mout1, "12-24 mos")
+p2 <- plot_pvals(mout2, "24-36 mos")
+p3 <- plot_pvals(mout3, "36-48 mos")
+ggarrange(p1, p2, p3, nrow=1, common.legend = T)
 ```
 
 
-```{r visualize-coefs}
-mout %>% filter(term=="age_center") %>%
-  ggplot(aes(startTime, windowLength, fill = estimate)) +
-    geom_raster() + 
-    theme_bw() +
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-    coord_equal() + 
-    scale_fill_gradient2(low = "blue", mid = "white", high = "red", limits = c(0, .01)) +
-    xlab("Start Time (ms)") +
-    ylab("Window Length (ms)") +
-    ggtitle("Estimated Age Coefficient") 
+```{r visualize-coefs, fig.width=13, fig.height=5, echo=F}
+plot_coefs <- function(dat, title) {
+  dat %>% filter(term=="age_center") %>%
+    ggplot(aes(startTime, windowLength, fill = estimate)) +
+      geom_raster() + 
+      theme_bw() +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+      coord_equal() + 
+      scale_fill_gradient2(low = "blue", mid = "white", high = "red") + # , limits = c(0, .01)
+      xlab("Start Time (ms)") +
+      ylab("Window Length (ms)") +
+      ggtitle(title) 
+}
+
+c1 <- plot_coefs(mout1, "12-24 mos")
+c2 <- plot_coefs(mout2, "24-36 mos")
+c3 <- plot_coefs(mout3, "36-48 mos")
+ggarrange(c1, c2, c3, nrow=1, common.legend = T)
 ```
 
 ## Future Directions
 
-Do the window analyses for different age groups: it may be that a longer time window / later start time is needed for younger children (compared to older children). 
-But having very different amounts of data in each age bin may be a problem for power -- perhaps we could subsample or resample to balance the amount of data in each considered subset.
+These age groups have different numbers of participants (and trials), e.g. 590 1-year-olds vs. 224 2-year-olds probably contributes to many more significant p-values in the 1-year-old multiverse analysis.
+Should we subsample (N=100?) to balance the amount of data in each considered subset?
