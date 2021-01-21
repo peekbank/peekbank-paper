@@ -36,9 +36,30 @@ For our analysis, we will restrict ourselves to familiar words, and will model a
 ```{r}
 df <- aoi_data_joined %>%
   filter(stimulus_novelty=="familiar", # just familiar, or is the goal to distinguish novel vs. familiar?
-         !is.na(age)) 
+         !is.na(age), age > 12, age <= 60) 
 
 rm(aoi_data_joined)
+```
+
+First run showed that we have a lot of power -- age effect always p<.001 for any start time x window size.
+Do we want to do this analysis by age groups? Maybe if we can find age bins with similarly-sized groups, roughly on the scale of a single typical experiment.
+
+```{r}
+df_ones <- aoi_data_joined %>%
+  filter(stimulus_novelty=="familiar", 
+         age >= 12, age < 24) # 590 subjects..sample 100? 
+# or split in half to make comparable to twos and threes?
+
+df_twos <- aoi_data_joined %>%
+  filter(stimulus_novelty=="familiar", 
+         age >= 24, age < 36) # 224 subjects
+
+df_3s <- aoi_data_joined %>%
+  filter(stimulus_novelty=="familiar", 
+         age >= 36, age < 48) # 266
+
+rm(aoi_data_joined)
+rm(df)
 ```
 
 
@@ -47,25 +68,20 @@ rm(aoi_data_joined)
 
 ```{r, eval=RUN_MODELS}
 # t_norm = [-1000,4000] 
-window_min <- -300 # 300 ms before disambiguation
-window_max <- 2000 #
 
-# Time bins are 25 ms 
-startTimes <- seq(from = window_min, to = window_max, by = 25) 
-# could use min(pb datasets min time) and max(pb datasets max time)
-windowLengths <- seq(from = 300, to = 2000, by = 25)
+run_grid <- function(df, outfile) {
+  window_min <- -500 # X ms before disambiguation
+  window_max <- 2000 #
+
+  # Time bins are 25 ms 
+  startTimes <- seq(from = window_min, to = window_max, by = 25) 
+  # could use min(pb datasets min time) and max(pb datasets max time)
+  windowLengths <- seq(from = 300, to = 2000, by = 25)
 
 param.grid <- expand.grid(startTimes, windowLengths)
 names(param.grid) = c("startTimes", "windowLengths")
-
-numCores <- detectCores() - 1
-cl <- makeCluster(numCores)
-registerDoParallel(cores=numCores)
-
-# for testing
-#mout <- foreach(i = 1:20, .combine='bind_rows') %dopar% { 
-# for reals
-mout <- foreach(i = 1:nrow(param.grid), .combine='bind_rows',
+  
+  m1out <- foreach(i = 1:nrow(param.grid), .combine='bind_rows',
                 .packages = c("lme4","lmerTest","broom.mixed","tidyverse")) %dopar% {
     # by-trial means
     dft <- df %>% filter(t_norm > param.grid$startTimes[i], 
@@ -86,10 +102,21 @@ mout <- foreach(i = 1:nrow(param.grid), .combine='bind_rows',
     tidy(mod, effects="fixed") %>% 
       mutate(startTime = param.grid$startTimes[i], 
              windowLength = param.grid$windowLengths[i])
-} 
-stopCluster(cl)
+  } 
+  write.table(mout, file=paste0("data/",outfile,".csv"))
+  return(mout)
+}
 
-write.table(mout, file="data/time-window-results.csv")
+numCores <- detectCores() - 1
+cl <- makeCluster(numCores)
+registerDoParallel(cores=numCores)
+
+#run_grid(df, "time-window-results")
+mout1 <- run_grid(df_ones, "time-window-12-24mos")
+mout2 <- run_grid(df_twos, "time-window-24-36mos")
+mout3 <- run_grid(df_twos, "time-window-36-48mos")
+
+stopCluster(cl)
 ```
 
 ## Visualization 
