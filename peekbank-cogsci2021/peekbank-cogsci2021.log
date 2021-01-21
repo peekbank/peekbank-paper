@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  21 JAN 2021 14:41
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  21 JAN 2021 14:52
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -427,65 +427,59 @@ Overfull \hbox (16.37933pt too wide) in paragraph at lines 205--222
  [][] 
  []
 
-<figs/peekbank_item_vis-1.pdf, id=75, 469.755pt x 313.17pt>
+<figs/peekbank_item_vis-1.pdf, id=79, 469.755pt x 313.17pt>
 File: figs/peekbank_item_vis-1.pdf Graphic file (type pdf)
 <use figs/peekbank_item_vis-1.pdf>
-Package pdftex.def Info: figs/peekbank_item_vis-1.pdf  used on input line 235.
+Package pdftex.def Info: figs/peekbank_item_vis-1.pdf  used on input line 244.
 (pdftex.def)             Requested size: 469.75386pt x 313.16922pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-
-Underfull \vbox (badness 3657) has occurred while \output is active []
-
-<figs/age_gca-1.pdf, id=76, 289.08pt x 164.615pt>
+<figs/age_gca-1.pdf, id=80, 289.08pt x 164.615pt>
 File: figs/age_gca-1.pdf Graphic file (type pdf)
 <use figs/age_gca-1.pdf>
-Package pdftex.def Info: figs/age_gca-1.pdf  used on input line 262.
+Package pdftex.def Info: figs/age_gca-1.pdf  used on input line 271.
 (pdftex.def)             Requested size: 289.07928pt x 164.6146pt.
 
-Overfull \hbox (45.16803pt too wide) in paragraph at lines 262--263
+Overfull \hbox (45.16803pt too wide) in paragraph at lines 271--272
  [][] 
  []
 
 [2 <./figs/age_gca-1.pdf>]
-<figs/time_window-1.pdf, id=97, 417.56pt x 313.17pt>
+<figs/time_window-1.pdf, id=102, 417.56pt x 313.17pt>
 File: figs/time_window-1.pdf Graphic file (type pdf)
 <use figs/time_window-1.pdf>
-Package pdftex.def Info: figs/time_window-1.pdf  used on input line 314.
+Package pdftex.def Info: figs/time_window-1.pdf  used on input line 323.
 (pdftex.def)             Requested size: 417.55896pt x 313.16922pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-Underfull \hbox (badness 1983) in paragraph at lines 347--349
+Underfull \hbox (badness 1983) in paragraph at lines 356--358
 []\OT1/ptm/m/n/10 limitations in par-tic-i-pant back-ground (al-most en-tirely
  []
 
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
 [3 <./figs/peekbank_item_vis-1.pdf>]
-Underfull \hbox (badness 1867) in paragraph at lines 391--396
+Underfull \hbox (badness 1867) in paragraph at lines 400--405
  \OT1/ptm/m/it/10 ence\OT1/ptm/m/n/10 , \OT1/ptm/m/it/10 18\OT1/ptm/m/n/10 (3),
  193--198. []$\OT1/pcr/m/n/10 http :// doi [] .org / 10 [] .1111 / j []
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 427.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 436.
 [4 <./figs/time_window-1.pdf>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 427.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 436.
 (./peekbank-cogsci2021.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 427.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 427.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 436.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 436.
 Package rerunfilecheck Info: File `peekbank-cogsci2021.out' has not changed.
-(rerunfilecheck)             Checksum: FB3CCA236379D576AB41CC6E7025DEBE;1041.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 427.
+(rerunfilecheck)             Checksum: 69C26DFF90D9CCBBF42F862A9843523F;1108.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 436.
  ) 
 Here is how much of TeX's memory you used:
- 8160 strings out of 492649
- 121749 string characters out of 6129622
+ 8164 strings out of 492649
+ 121805 string characters out of 6129622
  220967 words of memory out of 5000000
- 11894 multiletter control sequences out of 15000+600000
+ 11896 multiletter control sequences out of 15000+600000
  35947 words of font info for 81 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  36i,11n,39p,865b,325s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -494,10 +488,10 @@ exlive/2018/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2
 018/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2018/texmf-
 dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fonts
 /type1/urw/times/utmri8a.pfb>
-Output written on peekbank-cogsci2021.pdf (4 pages, 1533343 bytes).
+Output written on peekbank-cogsci2021.pdf (4 pages, 1533631 bytes).
 PDF statistics:
- 179 PDF objects out of 1000 (max. 8388607)
- 155 compressed objects within 2 object streams
- 49 named destinations out of 1000 (max. 500000)
- 136 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 184 PDF objects out of 1000 (max. 8388607)
+ 160 compressed objects within 2 object streams
+ 51 named destinations out of 1000 (max. 500000)
+ 144 words of extra memory for PDF output out of 10000 (max. 10000000)
 

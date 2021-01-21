@@ -100,6 +100,12 @@ tab1 <- xtable::xtable(summarize_datasets, digits=c(1),
 print(tab1, type="latex", comment = F, table.placement = "H",include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont")
 ```
 
+## Data Processing
+
+Resample to 40 ms
+
+Process raw eyetracking datasets into unified "AOA" format focused on looks at target or distracter (unified format for analysis across manually coded and automated eyetracking data)
+
 # Results
 
 ## Describing Variability across Items
