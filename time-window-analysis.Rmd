@@ -64,52 +64,48 @@ get_interitem <- function (df) {
      select(-administration_id)
    corrs <- corrr::correlate(dfw)
    mean_corr <- mean(rowMeans(select(corrs, -term), na.rm=TRUE), na.rm=TRUE)
-   #rm(corrs)
-   #gc()
+   rm(corrs)
+   gc()
    return(mean_corr)
 }
 
 
-run_grid <- function(fam_dat, outfile) {
-  window_min <- -500 # X ms before disambiguation
-  window_max <- 2000 #
+window_min <- -500 # X ms before disambiguation
+window_max <- 2000 #
 
-  # Time bins are 25 ms 
-  startTimes <- seq(from = window_min, to = window_max, by = 25) 
-  # could use min(pb datasets min time) and max(pb datasets max time)
-  windowLengths <- seq(from = 300, to = 2000, by = 25)
+# Time bins are 25 ms 
+startTimes <- seq(from = window_min, to = window_max, by = 25) 
+# could use min(pb datasets min time) and max(pb datasets max time)
+windowLengths <- seq(from = 300, to = 2000, by = 25)
 
-  param.grid <- expand.grid(startTimes, windowLengths)
-  names(param.grid) = c("startTimes", "windowLengths")
-  
-  mout <- foreach(i = 1:nrow(param.grid), .combine='bind_rows',
-                .packages = c("corrr","tidyverse")) %dopar% {
-    
-    fam_dat %>% filter(t_norm > param.grid$startTimes[i], 
-                         t_norm < (param.grid$startTimes[i] + param.grid$windowLengths[i])) %>%
-      group_by(dataset_name, age_binned, administration_id, english_stimulus_label) %>%
-      summarise(prop_corr = sum(aoi == "target") /
-                  sum(aoi %in% c("target", "distractor"))) %>%
-      group_by(dataset_name, age_binned) %>%
-      nest() %>%
-      mutate(interitem =  lapply(data, quietly(get_interitem)),
-             interitem = interitem[[1]]$result) %>%
-      select(-data) %>%
-      unnest(cols = "interitem") %>%
-      group_by(age_binned) %>%
-      summarise(mean = mean(interitem, na.rm=TRUE)) %>%
-      mutate(startTime = param.grid$startTimes[i],
-             windowLength = param.grid$windowLengths[i])
-  } 
-  write.table(mout, file=paste0("data/",outfile,".csv"))
-  return(mout)
-}
+param.grid <- expand.grid(startTimes, windowLengths)
+names(param.grid) = c("startTimes", "windowLengths")
 
 numCores <- detectCores() - 1
 cl <- makeCluster(numCores)
 registerDoParallel(cores=numCores)
 
-mout <- run_grid(fam_data, "time-window-results")
+mout <- foreach(i = 1:nrow(param.grid), .combine='bind_rows',
+                .packages = c("corrr","tidyverse")) %dopar% {
+                  
+                  fam_data %>% filter(t_norm > param.grid$startTimes[i], 
+                                      t_norm < (param.grid$startTimes[i] + param.grid$windowLengths[i])) %>%
+                    group_by(dataset_name, age_binned, administration_id, english_stimulus_label) %>%
+                    summarise(prop_corr = sum(aoi == "target") /
+                                sum(aoi %in% c("target", "distractor"))) %>%
+                    group_by(dataset_name, age_binned) %>%
+                    nest() %>%
+                    mutate(interitem =  lapply(data, quietly(get_interitem)),
+                           interitem = interitem[[1]]$result) %>%
+                    select(-data) %>%
+                    unnest(cols = "interitem") %>%
+                    group_by(age_binned) %>%
+                    summarise(mean = mean(interitem, na.rm=TRUE)) %>%
+                    mutate(startTime = param.grid$startTimes[i],
+                           windowLength = param.grid$windowLengths[i])
+} 
+  
+write.table(mout, file="data/time-window-results.csv")
 
 stopCluster(cl)
 ```
@@ -123,7 +119,7 @@ mout <- read.table(file="data/time-window-results.csv")
 
 plot_interitem <- function(dat, title) {
   dat %>% 
-    ggplot(aes(x = startTime, y = windowLength, fill = interitem)) +
+    ggplot(aes(x = startTime, y = windowLength, fill = mean)) +
       geom_raster() +
       theme_bw() +
       theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
@@ -131,7 +127,7 @@ plot_interitem <- function(dat, title) {
       scale_fill_gradient2(low = "blue", mid = "white", high = "red") +
       xlab("Start Time (ms)") +
       ylab("Window Length (ms)") +
-      facet_wrap( ~ age_binned)
+      facet_wrap( ~ age_binned) +
       ggtitle(title) 
 }
 
@@ -141,6 +137,6 @@ plot_interitem <- function(dat, title) {
 Visualize inter-item correlation (per-subject, dataset, and age-bin) as a function of start time and window length.
 
 
-```{r visualize-all-dat, fig.width=13, fig.height=5, echo=F}
+```{r visualize-all-dat, fig.width=9, fig.height=8, echo=F}
 plot_interitem(mout, "Inter-item Correlations")
 ```
