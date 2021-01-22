@@ -5,23 +5,30 @@ date: "1/19/2021"
 output: html_document
 ---
 
-Goal is to make developmental curves by using the growth modeling approach advocated by Mirman (2014).  
-
 ```{r}
 library(peekbankr)
-library(tidyverse)
 library(lme4)
-library(lmerTest)
 library(tictoc)
 library(langcog)
 library(here)
+library(tictoc)
+library(broom)
+library(tidyverse)
 
-t_range <- c(-1000,3000)
+
 knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
+```
 
+
+Goal is to make developmental curves by using the growth modeling approach advocated by Mirman (2014).  
+
+```{r}
 load(file = "data/aoi_data_joined.Rds")
 ```
 
+# Data
+
+First take only familiar word data. 
 
 ```{r}
 fam_data <- aoi_data_joined %>%
@@ -29,6 +36,8 @@ fam_data <- aoi_data_joined %>%
          stimulus_novelty == "familiar") %>%
   mutate(age_binned = cut(age, seq(0,60,12))) 
 ```
+
+Check that the general curves look good. 
 
 ```{r}
 means <- fam_data %>%
@@ -54,73 +63,318 @@ ggplot(means,
   scale_fill_solarized() 
 ```
 
-You need models to deal with this situation. 
+While the curves look good, the words are very different across datasets and so the curves don't line up perfectly. You need models to deal with this situation. 
 
-Figure out elogit business - Mirman (2014). 
+# Orthogonal polynomials, first pass
+
+We're going to use the empirical logit modeling approach from Mirman (2014), where we analyze 
+
+$$elogit(y,N) = \log(\frac{y + .5}{N - y + .5})$$
+as a linear variable binned by time. In practice the histogram doesn't look remotely linear but it allows us to use linear mixed models rather than logistic models and the logistics right now don't fit with this much data... 
+
 ```{r}
-BIN_INTERVAL <- 250
+BIN_INTERVAL <- 100
+T_RANGE <- c(0,1500)
 
 ms_timecourse <- fam_data %>%
-  filter(dataset_name != "pomper_saffran_2016", 
-         aoi %in% c("target","distractor")) %>%
-  mutate(t_window = as.numeric(cut(t_norm, breaks = seq(-1000,3000,BIN_INTERVAL)), 
-                               labels = seq(-900,2900,BIN_INTERVAL))) %>%
+  filter(aoi %in% c("target","distractor"), 
+         # dataset_name %in% c("perry_cowpig","mahr_coartic"), 
+         t_norm >= T_RANGE[1],
+         t_norm <= T_RANGE[2]) %>%
+  mutate(t_window = 
+           as.numeric(as.character(
+             cut(t_norm, 
+                          breaks = seq(T_RANGE[1],T_RANGE[2],BIN_INTERVAL), 
+                          labels = seq(T_RANGE[1] + BIN_INTERVAL / 2, 
+                                       T_RANGE[2] - BIN_INTERVAL / 2, 
+                                       BIN_INTERVAL)))),
+         age_centered = age - 36) %>%
   group_by(dataset_id, administration_id, trial_id, t_window, 
-           age, age_binned, english_stimulus_label) %>%
-  summarise(prop_target = mean(aoi=="target")) 
-# %>%
-            # prop_distractor = mean(aoi == "distractor"), 
-            # elogit_looking = log(prop_target + 0.5) - log(prop_distractor + 0.5)) 
-# %>%
-# filter(is.na(target) == F)
+           age, age_centered, age_binned, english_stimulus_label) %>%
+  summarise(prop_target = round(mean(aoi=="target")), 
+            num_target = sum(aoi == "target"), 
+            N = length(aoi), 
+            elogit = log( (num_target + .5) / (N - num_target + .5)), 
+            wts = 1/(num_target + .5) + 1/(N - num_target + .5)) %>%
+  filter(!is.na(t_window))
 
 hist(ms_timecourse$prop_target)
-# hist(ms_timecourse$elogit_looking)
+hist(ms_timecourse$elogit)
 ```
 
+Let's visualize the data going into our model, just for kicks. We can see why this is tricky. 
+
 ```{r}
-POLY_DEG <- 4
+ggplot(ms_timecourse, 
+       aes(x = t_window, y = elogit, col = age_binned)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(geom = "line") +
+  xlab("Time (ms)") +
+  ylab("Proportion Target Looking") 
+```
+
+Now we make our orthogonal polynomials with code straight from Mirman (2014). Make more than we need so we can try out different degrees. 
+
+```{r}
+POLY_DEG <- 5
 
 ops <- poly(unique(ms_timecourse$t_window), POLY_DEG)
 ops_tibble <- tibble(ot1 = ops[,1], 
                      ot2 = ops[,2],
                      ot3 = ops[,3],
                      ot4 = ops[,4],
+                     ot5 = ops[,5],
                      t_window = unique(ms_timecourse$t_window))
-
 
 ms_timecourse <- left_join(ms_timecourse, ops_tibble)
 ```
 
+We explore a glmer over the discretized proportions. This fits slowly and has some convergence issues even when we prune to the most minimal random effect structure. I wasn't able to get any random slopes in there in particular, which seems like a deal-breaker. So let's skip this. 
 
-```{r}
-mod_prop <- lmer(prop_target ~ (ot1 + ot2 + ot3 + ot4) * age +
+```{r, eval = FALSE}
+
+mod_prop <- glmer(prop_target ~ (ot1 + ot2 + ot3) * age_centered +
                      (1 | dataset_id) +
                      (1 | english_stimulus_label),
-                   data = ms_timecourse)
+                  family = "binomial", 
+                  data = ms_timecourse)
+
 ```
 
+The elogit is quite similar in distribution... not sure we can legitimately use a linear link, but we adopt it for now.
+
 ```{r}
-summary(mod_prop)
+tic()
+elogit <- lmer(elogit ~ (ot1 + ot2 + ot3) * age_centered +
+                  (1 | administration_id) +
+                  (1 | dataset_id) +
+                  (1 | english_stimulus_label),
+                weights = 1/wts, 
+                data = ms_timecourse)
+toc()
 ```
 
+Let's look at the model. 
 
 ```{r}
-ms_timecourse <- ms_timecourse %>%
-  ungroup() %>%
-  mutate(fit = fitted(mod_elogit), 
-         age_binned = cut(age, seq(12, 60, 12), include.lowest = TRUE), 
-         t_window_ms = seq(-900,2900,BIN_INTERVAL)[t_window])
+summary(elogit)
+```
 
-ggplot(ms_timecourse, 
-       aes(x = t_window_ms, y = prop_target, col = age_binned)) + 
-  stat_summary(fun.data = mean_se, geom = "pointrange") + 
+Now, let's look at model fits. I want to get this back into proportion space but I confess that I haven't managed it. 
+
+```{r}
+elogit_data = ms_timecourse
+elogit_data$fit <- fitted(elogit)
+
+ggplot(elogit_data, 
+       aes(x = t_window, y = elogit, col = age_binned)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
   stat_summary(aes(y = fit), fun = mean, geom = "line") +
   geom_hline(yintercept = .5, col = "black", lty = 2) +
-  ylim(0, 1) +
+  # ylim(0, 1) +
   xlab("Time (ms)") +
-  ylab("Proportion Target Looking") + 
-  facet_wrap(~age_binned) 
+  ylab("Proportion Target Looking") 
+```
 
+Plot model predictions from fixed effects. 
+
+```{r}
+newdata <- left_join(expand_grid(t_window = seq(50, 1450, 100), 
+                            age_centered = c(18,30, 42, 54) - 36), 
+                            ops_tibble) 
+
+newdata$pred <- predict(elogit, newdata = newdata, re.form = NA)
+
+ggplot(newdata, 
+       aes(x = t_window, y = pred, col = factor(age_centered+36))) + 
+  geom_line()
+```
+
+
+# Julia version
+
+Performance is slow here so we can't really add too much more in the way of bells and whistles, but I think we need them! So let's try Julia.
+
+## Getting Julia up and running
+
+```{r}
+library(jglmm)
+options(JULIA_HOME = "/Applications/Julia-1.5.app/Contents/Resources/julia/bin")
+jglmm_setup()
+```
+
+
+```{r}
+ms_timecourse$administration_id <- as.character(ms_timecourse$administration_id)
+ms_timecourse$dataset_id <- as.character(ms_timecourse$dataset_id)
+tic()
+elogit_jl <- jglmm(elogit ~ (ot1 + ot2 + ot3) * age_centered +
+                  (1 | administration_id) +
+                  (1 | dataset_id) +
+                  (1 | english_stimulus_label),
+                family = "normal",
+                weights = 1/ms_timecourse$wts, 
+                data = ms_timecourse)
+toc()
+```
+
+Surprisingly, dataset ID has very low variance. That suggests that maybe we don't want to model that as carefully? Or perhaps it's because a simple intercept of dataset doesn't really tell you much and some random effects would be good? 
+
+```{r}
+elogit_jl$model
+```
+
+The coefficients on this one match the one above almost exactly. 
+
+```{r}
+elogit_jl_data <- augment(elogit_jl)
+
+ggplot(elogit_jl_data, 
+       aes(x = t_window, y = elogit, col = age_binned)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(aes(y = .fitted), fun = mean, geom = "line") +
+  geom_hline(yintercept = .5, col = "black", lty = 2) +
+  # ylim(0, 1) +
+  xlab("Time (ms)") +
+  ylab("Proportion Target Looking") 
+```
+
+Now we have a workflow that lets us fit a bigger class of models faster!
+
+## Exploration
+
+```{r}
+tic()
+elogit_jl_4 <- jglmm(elogit ~ (ot1 + ot2 + ot3 + ot4) * age_centered +
+                  (1 | administration_id) +
+                  (1 | dataset_id) +
+                  (1 | english_stimulus_label),
+                family = "normal",
+                weights = 1/ms_timecourse$wts, 
+                data = ms_timecourse)
+toc()
+
+elogit_jl_4_data <- augment(elogit_jl_4)
+
+ggplot(elogit_jl_4_data, 
+       aes(x = t_window, y = elogit, col = age_binned)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(aes(y = .fitted), fun = mean, geom = "line") +
+  geom_hline(yintercept = .5, col = "black", lty = 2) +
+  # ylim(0, 1) +
+  xlab("Time (ms)") +
+  ylab("Proportion Target Looking") 
+```
+
+
+```{r}
+tic()
+elogit_jl_5 <- jglmm(elogit ~ (ot1 + ot2 + ot3 + ot4 + ot5) * age_centered +
+                  (1 | administration_id) +
+                  (1 | dataset_id) +
+                  (1 | english_stimulus_label),
+                family = "normal",
+                weights = 1/ms_timecourse$wts, 
+                data = ms_timecourse)
+toc()
+
+elogit_jl_5_data <- augment(elogit_jl_5)
+
+ggplot(elogit_jl_5_data, 
+       aes(x = t_window, y = elogit, col = age_binned)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(aes(y = .fitted), fun = mean, geom = "line") +
+  geom_hline(yintercept = .5, col = "black", lty = 2) +
+  # ylim(0, 1) +
+  xlab("Time (ms)") +
+  ylab("Proportion Target Looking") 
+```
+
+```{r}
+elogit_jl$model
+elogit_jl_4$model
+elogit_jl_5$model
+```
+
+Conclusion, even 5th order polynomials don't completely capture all the weird stuff going on here? BIC actually increases though, so let's not retain these. Interestingly, we only see interactions of age and ot1 and ot3. 
+
+Now let's try adding some more random effects. Dataset age x time slopes feel important here. Tried adding random effects under dataset but totally struck out. 
+
+Following  https://github.com/JuliaStats/MixedModels.jl/issues/127 I tried adding dataset_id as a fixed effect instead and that works but is gross. We would have to do some kind of coding so that the other effects are at the average rather than dummy coding...
+
+After discussion, seems like we can have random slopes but only if we want one factor. 
+
+```{r}
+tic()
+elogit_jl_re_stim <- jglmm(elogit ~ (ot1 + ot2 + ot3) * age_centered  + 
+                  # (1 | administration_id) +
+                  # (1 | dataset_id) + 
+                  (age_centered | english_stimulus_label),
+                family = "normal",
+                weights = 1/ms_timecourse$wts, 
+                data = ms_timecourse)
+toc()
+```
+
+```{r}
+tic()
+elogit_jl_re_dataset <- jglmm(elogit ~ (ot1 + ot2 + ot3) * age_centered  + 
+                  # (1 | administration_id) +
+                  (age_centered | dataset_id),
+                  # (age_centered | english_stimulus_label),
+                family = "normal",
+                weights = 1/ms_timecourse$wts, 
+                data = ms_timecourse)
+toc()
+
+
+```
+```{r}
+elogit_jl_re_stim$model
+elogit_jl_re_dataset$model
+```
+
+Comparing BICs, we see that the item random effect is important. So let's try and add more random slopes. These in the end aren't nearly as important as the extra random intercepts, though. 
+
+```{r}
+tic()
+elogit_explore <- jglmm(elogit ~ (ot1 + ot2 + ot3) * age_centered  + 
+                  # (1 | administration_id) +
+                  # (1 | dataset_id) + 
+                  (age_centered  * ot1| english_stimulus_label),
+                family = "normal",
+                weights = 1/ms_timecourse$wts, 
+                data = ms_timecourse)
+toc()
+```
+```{r}
+elogit_explore$model
+```
+# Final model
+
+In the end, more simple random intercepts win over the others. 
+
+```{r}
+elogit_jl_data <- augment(elogit_jl)
+
+ggplot(elogit_jl_data, 
+       aes(x = t_window, y = elogit, col = age_binned)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(aes(y = .fitted), fun = mean, geom = "line") +
+  geom_hline(yintercept = .5, col = "black", lty = 2) +
+  xlab("Time (ms)") +
+  ylab("Target Looking (Empirical Logit)") + 
+  scale_color_solarized(name = "Age Group") + 
+  theme_mikabr()
+```
+
+```{r}
+source(here("misc/jglmm_helper.R"))
+
+newdata$pred <- jglmm_predict(elogit_jl, newdata = newdata)
+
+ggplot(newdata, 
+       aes(x = t_window, y = pred, col = factor(age_centered+36))) + 
+  geom_line()
 ```
 

@@ -31,7 +31,7 @@ knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
 get data
 
 ```{r, eval = FIRST_TIME}
-con <- connect_to_peekbank(dbname = "peekbank_dev")
+con <- connect_to_peekbank()
 datasets <- get_datasets(connection = con) %>% collect()
 administrations <- get_administrations(connection = con) %>% collect()
 tic()
