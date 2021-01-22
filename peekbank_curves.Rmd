@@ -16,7 +16,7 @@ library(broom)
 library(tidyverse)
 
 
-knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
+knitr::opts_chunk$set(cache = FALSE, warn = FALSE, message = FALSE)
 ```
 
 
@@ -170,11 +170,42 @@ ggplot(elogit_data,
        aes(x = t_window, y = elogit, col = age_binned)) + 
   stat_summary(fun.data = mean_se, geom = "pointrange") +
   stat_summary(aes(y = fit), fun = mean, geom = "line") +
+  geom_hline(yintercept = 0, col = "black", lty = 2) +
+  # ylim(0, 1) +
+  xlab("Time (ms)") +
+  ylab("Proportion Target Looking") 
+```
+So x is the elogit value. 
+
+$$x = \log(\frac{y + .5}{N - y + .5})$$
+
+So solve for y
+
+$$\frac{e^x(2N + 1) - 1}{2(e^x + 1)} = y  $$
+
+
+```{r}
+elogit_to_prop <- function(x, N) {
+  y = ((exp(x) * (2 * N + 1) - 1) / (2 * (exp(x) + 1))) / N
+  
+  return(y)
+}
+```
+
+Plot in proportion space. 
+
+```{r}
+elogit_data$fitted_prop <- elogit_to_prop(elogit_data$fit, elogit_data$N)
+ggplot(elogit_data, 
+       aes(x = t_window, y = prop_target, col = age_binned)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(aes(y = fitted_prop2), fun = mean, geom = "line") +
   geom_hline(yintercept = .5, col = "black", lty = 2) +
   # ylim(0, 1) +
   xlab("Time (ms)") +
   ylab("Proportion Target Looking") 
 ```
+
 
 Plot model predictions from fixed effects. 
 
@@ -233,7 +264,7 @@ ggplot(elogit_jl_data,
        aes(x = t_window, y = elogit, col = age_binned)) + 
   stat_summary(fun.data = mean_se, geom = "pointrange") +
   stat_summary(aes(y = .fitted), fun = mean, geom = "line") +
-  geom_hline(yintercept = .5, col = "black", lty = 2) +
+  geom_hline(yintercept = 0, col = "black", lty = 2) +
   # ylim(0, 1) +
   xlab("Time (ms)") +
   ylab("Proportion Target Looking") 
@@ -260,7 +291,7 @@ ggplot(elogit_jl_4_data,
        aes(x = t_window, y = elogit, col = age_binned)) + 
   stat_summary(fun.data = mean_se, geom = "pointrange") +
   stat_summary(aes(y = .fitted), fun = mean, geom = "line") +
-  geom_hline(yintercept = .5, col = "black", lty = 2) +
+  geom_hline(yintercept = 0, col = "black", lty = 2) +
   # ylim(0, 1) +
   xlab("Time (ms)") +
   ylab("Proportion Target Looking") 
@@ -284,7 +315,7 @@ ggplot(elogit_jl_5_data,
        aes(x = t_window, y = elogit, col = age_binned)) + 
   stat_summary(fun.data = mean_se, geom = "pointrange") +
   stat_summary(aes(y = .fitted), fun = mean, geom = "line") +
-  geom_hline(yintercept = .5, col = "black", lty = 2) +
+  geom_hline(yintercept = 0, col = "black", lty = 2) +
   # ylim(0, 1) +
   xlab("Time (ms)") +
   ylab("Proportion Target Looking") 
@@ -334,22 +365,32 @@ elogit_jl_re_stim$model
 elogit_jl_re_dataset$model
 ```
 
-Comparing BICs, we see that the item random effect is important. So let's try and add more random slopes. These in the end aren't nearly as important as the extra random intercepts, though. 
+Comparing BICs, we see that the item random effect is more important. That said, there feel like there are big dataset differences here, can we soak these up? 
 
 ```{r}
 tic()
-elogit_explore <- jglmm(elogit ~ (ot1 + ot2 + ot3) * age_centered  + 
-                  # (1 | administration_id) +
-                  # (1 | dataset_id) + 
-                  (age_centered  * ot1| english_stimulus_label),
+elogit_jl_re_dataset_more <- 
+  jglmm(elogit ~ 
+          (ot1 + ot2 + ot3 + ot4) * age_centered +     
+          ((ot1 + ot2 + ot3 + ot4) * age_centered  | dataset_id),
                 family = "normal",
                 weights = 1/ms_timecourse$wts, 
                 data = ms_timecourse)
 toc()
+
+elogit_jl_re_dataset_more_data <- augment(elogit_jl_re_dataset_more)
+
+ggplot(elogit_jl_re_dataset_more_data, 
+       aes(x = t_window, y = elogit, col = age_binned)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(aes(y = .fitted), fun = mean, geom = "line") +
+  geom_hline(yintercept = 0, col = "black", lty = 2) +
+  # ylim(0, 1) +
+  xlab("Time (ms)") +
+  ylab("Proportion Target Looking") 
 ```
-```{r}
-elogit_explore$model
-```
+This model manages to get the (perhaps nonsensical, dataset-driven) difference between younger and older kids, but it loses badly in BIC compared with the more parsimonious model with a bunch of random intercepts. 
+
 # Final model
 
 In the end, more simple random intercepts win over the others. 
@@ -361,16 +402,21 @@ ggplot(elogit_jl_data,
        aes(x = t_window, y = elogit, col = age_binned)) + 
   stat_summary(fun.data = mean_se, geom = "pointrange") +
   stat_summary(aes(y = .fitted), fun = mean, geom = "line") +
-  geom_hline(yintercept = .5, col = "black", lty = 2) +
+  geom_hline(yintercept = 0, col = "black", lty = 2) +
   xlab("Time (ms)") +
   ylab("Target Looking (Empirical Logit)") + 
   scale_color_solarized(name = "Age Group") + 
   theme_mikabr()
 ```
 
-```{r}
+```{r, eval = FALSE}
+library(JuliaCall)
+library(glue)
 source(here("misc/jglmm_helper.R"))
 
+train_ranefs <- jglmm_ranef(elogit_jl, "dataset_id")
+train_coefs <- tidy(elogit_jl)
+test_predictions <- jglmm_predict(train_coefs, train_ranefs, formula, testing_data, group)
 newdata$pred <- jglmm_predict(elogit_jl, newdata = newdata)
 
 ggplot(newdata, 
