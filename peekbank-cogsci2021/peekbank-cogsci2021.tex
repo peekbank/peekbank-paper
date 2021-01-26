@@ -218,10 +218,10 @@ Processing}\label{data-format-and-processing}}
 
 One of the main challenges in compiling a large-scale eyetracking
 dataset is the lack of a shared re-usable data format among labs
-conducting individual experiments. Different eyetracking methods have
-different conventions for exporting and structuring data, rendering
-integrating datasets originating from different labs and data sources
-difficult to integrate. We developed a a common, tidy format for the
+conducting individual experiments. Eyetracking methods and researcher
+teams vary in their conventions for exporting and structuring data,
+rendering the task of integrating datasets from different labs and data
+sources difficult. We developed a common, tidy format for the
 eyetracking data in peekbank to ease the process of conducting
 cross-dataset analyses. The schema of the database (Fig.
 \ref{fig:fig_schema}) is sufficiently general to handle heterogeneous
@@ -232,11 +232,14 @@ During data import, raw eyetracking datasets are processed to conform to
 the peekbank data schema. The centerpiece of the schema is the
 aoi\_timepoints table (Fig. \ref{fig:fig_schema}), which records whether
 participants looked to the target or distracter stimulus at each
-timepoint of a given trial. In addition to unifying the data format, we
-conduct several additional pre-processing steps to facilitate analyses
-across datasets, including resampling observations to a common sampling
-rate (40 Hz) and normalizing time relative to the onset of the target
-label.
+timepoint of a given trial. Additional tables track information about
+data sources (datasets), participant characteristics (subjects,
+administrations), trial characteristics (trials, trial\_types), stimuli
+(stimuli), and raw eyetracking data information (xy\_timepoints,
+aoi\_region\_sets). In addition to unifying the data format, we conduct
+several additional pre-processing steps to facilitate analyses across
+datasets, including resampling observations to a common sampling rate
+(40 Hz) and normalizing time relative to the onset of the target label.
 
 \hypertarget{current-data-sources}{%
 \subsection{Current Data Sources}\label{current-data-sources}}
