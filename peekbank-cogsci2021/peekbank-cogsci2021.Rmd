@@ -70,9 +70,23 @@ What these questions and challenges share is that they are difficult to answer a
 
 ## Database Framework
 
-The Peekbank data framework consists of a relational database and two R libraries: one to extract and rigorously validate data in preparation for ingestion (peekds), and one that serves as an API that provides high-level abstractions to run common analysis tasks on the database (peekbankr).  
+The Peekbank data framework consists of three libraries that help to populate and query a relational database (Fig. \ref{fig.framework_overview}).
+The \texttt{peekds} library (for the R language) helps researchers convert and validate existing datasets to use the relational format used by the database.
+The schema of the database (Fig. \ref{fig.schema}) is sufficiently general to handle heterogeneous datasets from many studies from many labs, including both manually coded and automated eyetracking data.
+The \texttt{peekbank} library (Python) creates a database with the relational schema and populates it with the standardized datasets produced by \texttt{peekds}.
+The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet.
+The \texttt{peekbankr} library (R) provides an application programming interface, or API, that provides high-level abstractions to help researchers run common analysis tasks on the database. 
 
-The schema of the database (Fig. #) is sufficiently general to handle the dataset-specific parameters of datasets from many labs. Entities in the schema include: subjects (an individual participant, who may contribute to multiple datasets), administrations (a subject completing a specific experiment), datasets (a data collection effort by a lab), stimuli (a visual stimuli representing a common word, the label can be in various languages), trials (a subject completing a specific trial), trial_types (metadata about a trial, which may be shared across subjects), aoi_region_sets (areas of interest, linked to a specific trial), aoi_timepoints (coded looking behavior), xy_timepoints (raw looking behavior).
+```{r fig.schema, fig.env = "figure", fig.align = "center", fig.width=3.5, set.cap.width=T, num.cols.cap=1, fig.cap = "Data schema for the peekbank database."}
+img <- png::readPNG(here("figures","schema.png"))
+#https://docs.google.com/presentation/d/1jZfGuTZFo5k4rcObYWJhdu94H7BnPvKYoGKJzQBBsUs/edit#slide=id.g7961a2384e_0_3
+grid::grid.raster(img)
+```
+
+```{r fig.framework_overview, fig.env = "figure", fig.align = "center", fig.width=3.5, set.cap.width=T, num.cols.cap=1, fig.cap = "Overview of the peekbank data ecosystem."}
+img <- png::readPNG(here("figures","framework_overview.png"))
+grid::grid.raster(img)
+```
 
 ## Current Data Sources
 

@@ -52,12 +52,17 @@
 % \textwidth 16cm
 % \textheight 21cm
 
-\title{Peekbank: Exploring child lexical processing through a large-scale
-open-source database of developmental eyetracking datasets}
+\title{Peekbank: Exploring child lexical processing through a
+large-scale open-source database of developmental eyetracking datasets}
 
 
 \author{{\large \bf Martin Zettersten (martincz@princeton.edu)} \\ Department of Psychology, South Dr \\ Princeton, NJ 08540 USA \AND {\large \bf CLinger Xu (txu@iu.edu)}  \AND {\large \bf Claire Bergey (cbergey@uchicago.edu)}  \AND {\large \bf Naiti S. Bhatt (nbhatt@hmc.edu)}  \AND {\large \bf Veronica Boyce (vboyce@stanford.edu)}  \AND {\large \bf Mika Braginsky (mikabr@mit.edu)}  \AND {\large \bf George Kachergis (kachergis@stanford.edu)}  \AND {\large \bf Molly Lewis (mollyllewis@gmail.com)}  \AND {\large \bf Jessica Mankewitz (jmankewitz@stanford.edu)} \AND {\large \bf Stephan Meylan (smeylan@mit.edu)}  \AND {\large \bf Annissa Saleh (ans638@nyu.edu)}  \AND {\large \bf Rose Schneider (roschnei@ucsd.edu)}   \AND {\large \bf Daniel Yurovsky (yurovsky@stanford.edu)}  \AND {\large \bf CMichael C. Frank (mcfrank@stanford.edu)}}
 
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newenvironment{CSLReferences}%
+  {}%
+  {\par}
 
 \begin{document}
 
@@ -178,23 +183,44 @@ for quickly accessing and analyzing the database.
 \hypertarget{database-framework}{%
 \subsection{Database Framework}\label{database-framework}}
 
-The Peekbank data framework consists of a relational database and two R
-libraries: one to extract and rigorously validate data in preparation
-for ingestion (peekds), and one that serves as an API that provides
-high-level abstractions to run common analysis tasks on the database
-(peekbankr).
+The Peekbank data framework consists of three libraries that help to
+populate and query a relational database (Fig.
+\ref{fig.framework_overview}). The \texttt{peekds} library (for the R
+language) helps researchers convert and validate existing datasets to
+use the relational format used by the database. The schema of the
+database (Fig. \ref{fig.schema}) is sufficiently general to handle
+heterogeneous datasets from many studies from many labs, including both
+manually coded and automated eyetracking data. The \texttt{peekbank}
+library (Python) creates a database with the relational schema and
+populates it with the standardized datasets produced by \texttt{peekds}.
+The database is implemented in MySQL, an industry standard relational
+database, which may be accessed by a variety of programming languages
+over the internet. The \texttt{peekbankr} library (R) provides an
+application programming interface, or API, that provides high-level
+abstractions to help researchers run common analysis tasks on the
+database.
 
-The schema of the database (Fig. \#) is sufficiently general to handle
-the dataset-specific parameters of datasets from many labs. Entities in
-the schema include: subjects (an individual participant, who may
-contribute to multiple datasets), administrations (a subject completing
-a specific experiment), datasets (a data collection effort by a lab),
-stimuli (a visual stimuli representing a common word, the label can be
-in various languages), trials (a subject completing a specific trial),
-trial\_types (metadata about a trial, which may be shared across
-subjects), aoi\_region\_sets (areas of interest, linked to a specific
-trial), aoi\_timepoints (coded looking behavior), xy\_timepoints (raw
-looking behavior).
+\begin{CodeChunk}
+\begin{figure}[tb]
+
+{\centering \includegraphics{figs/fig.schema-1} 
+
+}
+
+\caption[Data schema for the peekbank database]{Data schema for the peekbank database.}\label{fig:fig.schema}
+\end{figure}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{figure}[tb]
+
+{\centering \includegraphics{figs/fig.framework_overview-1} 
+
+}
+
+\caption[Overview of the peekbank data ecosystem]{Overview of the peekbank data ecosystem.}\label{fig:fig.framework_overview}
+\end{figure}
+\end{CodeChunk}
 
 \hypertarget{current-data-sources}{%
 \subsection{Current Data Sources}\label{current-data-sources}}
@@ -389,57 +415,62 @@ data publicly available in the database.
 \noindent
 
 \hypertarget{refs}{}
+\begin{CSLReferences}{1}{0}
 \leavevmode\hypertarget{ref-Bergelson2012a}{}%
-Bergelson, E., \& Swingley, D. (2012). At 6-9 months, human infants know
-the meanings of many common nouns. \emph{Proceedings of the National
-Academy of Sciences of the United States of America}, \emph{109}(9),
-3253--8. \url{http://doi.org/10.1073/pnas.1113380109}
+Bergelson, E., \& Swingley, D. (2012). {At 6-9 months, human infants
+know the meanings of many common nouns.} \emph{Proceedings of the
+National Academy of Sciences of the United States of America},
+\emph{109}(9), 3253--8.
+http://doi.org/\href{https://doi.org/10.1073/pnas.1113380109}{10.1073/pnas.1113380109}
 
 \leavevmode\hypertarget{ref-Bergmann2018}{}%
 Bergmann, C., Tsuji, S., Piccinini, P. E., Lewis, M. L., Braginsky, M.,
-Frank, M. C., \& Cristia, A. (2018). Promoting replicability in
+Frank, M. C., \& Cristia, A. (2018). {Promoting replicability in
 developmental research through meta-analyses: Insights from language
-acquisition research. \emph{Child Development}, \emph{89}(6),
-1996--2009. \url{http://doi.org/10.1111/cdev.13079}
+acquisition research}. \emph{Child Development}, \emph{89}(6),
+1996--2009.
+http://doi.org/\href{https://doi.org/10.1111/cdev.13079}{10.1111/cdev.13079}
 
 \leavevmode\hypertarget{ref-Frank2016}{}%
 Frank, M. C., Braginsky, M., Yurovsky, D., \& Marchman, V. A. (2017).
-Wordbank: An open repository for developmental vocabulary data.
+{Wordbank: An open repository for developmental vocabulary data}.
 \emph{Journal of Child Language}, \emph{44}(3), 677--694.
-\url{http://doi.org/10.1017/S0305000916000209}
+http://doi.org/\href{https://doi.org/10.1017/S0305000916000209}{10.1017/S0305000916000209}
 
 \leavevmode\hypertarget{ref-Lew-Williams2007}{}%
-Lew-Williams, C., \& Fernald, A. (2007). Young children learning Spanish
-make rapid use of grammatical gender in spoken word recognition.
-\emph{Psychological Science}, \emph{18}(3), 193--198.
-\url{http://doi.org/10.1111/j.1467-9280.2007.01871.x}
+Lew-Williams, C., \& Fernald, A. (2007). {Young children learning
+Spanish make rapid use of grammatical gender in spoken word
+recognition}. \emph{Psychological Science}, \emph{18}(3), 193--198.
+http://doi.org/\href{https://doi.org/10.1111/j.1467-9280.2007.01871.x}{10.1111/j.1467-9280.2007.01871.x}
 
 \leavevmode\hypertarget{ref-Marchman2018}{}%
 Marchman, V. A., Loi, E. C., Adams, K. A., Ashland, M., Fernald, A., \&
-Feldman, H. M. (2018). Speed of language comprehension at 18 months old
+Feldman, H. M. (2018). {Speed of language comprehension at 18 months old
 predicts school-relevant outcomes at 54 months old in children born
-preterm. \emph{Journal of Developmental \& Behavioral Pediatrics}, 1.
-\url{http://doi.org/10.1097/DBP.0000000000000541}
+preterm}. \emph{Journal of Developmental {\&} Behavioral Pediatrics}, 1.
+http://doi.org/\href{https://doi.org/10.1097/DBP.0000000000000541}{10.1097/DBP.0000000000000541}
 
 \leavevmode\hypertarget{ref-Mirman2014}{}%
-Mirman, D. (2014). \emph{Growth curve analysis and visualization using
-R}. CRC Press.
+Mirman, D. (2014). \emph{{Growth curve analysis and visualization using
+R}}. CRC Press.
 
 \leavevmode\hypertarget{ref-Peelle2020}{}%
-Peelle, J. E., Engen, K. J. V., \& Sciences, B. (2020). Time stand
-still: Effects of temporal window selection on eye tracking analysis.
-\url{http://doi.org/https://doi.org/10.31234/osf.io/pc3da}
+Peelle, J. E., Engen, K. J. V., \& Sciences, B. (2020). {Time stand
+still: Effects of temporal window selection on eye tracking analysis}.
+http://doi.org/\url{https://doi.org/10.31234/osf.io/pc3da}
 
 \leavevmode\hypertarget{ref-Swingley2000}{}%
-Swingley, D., \& Aslin, R. N. (2000). Spoken word recognition and
-lexical representation in very young children. \emph{Cognition},
+Swingley, D., \& Aslin, R. N. (2000). {Spoken word recognition and
+lexical representation in very young children.} \emph{Cognition},
 \emph{76}(2), 147--66.
 
 \leavevmode\hypertarget{ref-TheManyBabiesConsortium2020}{}%
-The ManyBabies Consortium. (2020). Quantifying sources of variability in
-infancy research using the infant-directed speech preference.
+The ManyBabies Consortium. (2020). {Quantifying sources of variability
+in infancy research using the infant-directed speech preference}.
 \emph{Advances in Methods and Practices in Psychological Science}.
-\url{http://doi.org/10.1177/2515245919900809}
+http://doi.org/\href{https://doi.org/10.1177/2515245919900809}{10.1177/2515245919900809}
+
+\end{CSLReferences}
 
 \bibliographystyle{apacite}
 
