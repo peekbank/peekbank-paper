@@ -25,6 +25,7 @@ library(here)
 library(doParallel)
 library(foreach)
 library(ggpubr)
+library(purrr)
 
 RUN_MODELS = FALSE
 ```
@@ -34,7 +35,8 @@ For our analysis, we will restrict ourselves to familiar words, and will model a
 ```{r}
 fam_data <- aoi_data_joined %>%
   filter(age > 12, age <= 60, 
-         stimulus_novelty == "familiar") %>%
+         stimulus_novelty == "familiar",
+         dataset_name!="mahr_coartic") %>% # (only has endTimes up to 1800ms)
   mutate(age_binned = cut(age, seq(0,60,12))) 
 
 rm(aoi_data_joined)
@@ -68,51 +70,22 @@ get_interitem <- function (df) {
    return(mean_corr)
 }
 
-
-
-
-numCores <- detectCores() - 1
-cl <- makeCluster(numCores)
-registerDoParallel(cores=numCores)
-
-mout <- foreach(i = 1:nrow(param.grid), .combine='bind_rows',
-                .packages = c("corrr","tidyverse")) %dopar% {
-                  if(i%%800==0) gc() # clean up memory a bit
-                  fam_data %>% filter(t_norm > param.grid$startTimes[i], 
-                                      t_norm < param.grid$endTimes[i]) %>%
-                    group_by(dataset_name, age_binned, administration_id, english_stimulus_label) %>%
-                    summarise(prop_corr = sum(aoi == "target") /
-                                sum(aoi %in% c("target", "distractor"))) %>%
-                    group_by(dataset_name, age_binned) %>%
-                    nest() %>%
-                    mutate(interitem =  lapply(data, quietly(get_interitem)),
-                           interitem = interitem[[1]]$result) %>%
-                    select(-data) %>%
-                    unnest(cols = "interitem") %>%
-                    group_by(age_binned) %>%
-                    summarise(mean = mean(interitem, na.rm=TRUE)) %>%
-                    mutate(startTime = param.grid$startTimes[i],
-                           endTime = param.grid$endTimes[i])
-} 
-  
-write.table(mout, file="data/time-window-results.csv")
-
-stopCluster(cl)
 ```
 
 ```{r tidy-version}
-require(purrr)
 
 # Time bins are 25 ms 
-startTs <- seq(from = -300, to = 1500, by = 50) 
+startTs <- seq(from = -300, to = 1500, by = 25) 
 # could use min(pb datasets min time) and max(pb datasets max time)
 #windowLengths <- seq(from = 300, to = 2500, by = 25)
-endTs <- seq(from = 0, to = 4000, by = 50)
+endTs <- seq(from = 0, to = 4000, by = 25)
 
-param.grid <- crossing(startTs, endTs)
-names(param.grid) = c("startTimes", "endTimes")
+param.grid <- expand_grid(startTs, endTs) %>%
+   rename(startTimes = startTs, endTimes = endTs) %>%
+   filter(startTimes != endTimes)
 
 do_interitem_analysis <- function(startTime, endTime) {
+   #print(paste(startTime, endTime))
       fam_data %>% filter(t_norm > startTime, 
                           t_norm < endTime) %>%
          group_by(dataset_name, age_binned, administration_id, english_stimulus_label) %>%
@@ -130,20 +103,18 @@ do_interitem_analysis <- function(startTime, endTime) {
                 endTime = endTime)
 }
 
-# this works
-do_interitem_analysis(-300, 0)
+# test
+#do_interitem_analysis(-300, 0)
 
-# this should work
-mout <- map2_df(param.grid$startTimes, param.grid$endTimes, 
-             do_interitem_analysis)
-# Unknown or uninitialised column: `startTimes`.Unknown or uninitialised column: `endTimes`.
 
-mout <- param.grid %>% map2_df(startTimes, endTimes, 
+mout <- map2_dfr(param.grid$startTimes, param.grid$endTimes, 
              do_interitem_analysis)
+
+# this should also work, but does not
+#mout <- param.grid %>% map2_dfr(startTimes, endTimes, 
+#             do_interitem_analysis)
 # Error in as_mapper(.f, ...) : object 'endTimes' not found
 
-mout <- param.grid %>% walk2(startTimes, endTimes, 
-             do_interitem_analysis)
 
 write.table(mout, file="data/time-window-results.csv")             
 
