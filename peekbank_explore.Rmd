@@ -34,6 +34,7 @@ get data
 con <- connect_to_peekbank()
 datasets <- get_datasets(connection = con) %>% collect()
 administrations <- get_administrations(connection = con) %>% collect()
+subjects <- get_subjects(connection = con) %>% collect()
 tic()
 aoi_timepoints <- get_aoi_timepoints(connection = con) %>% collect()
 toc()
@@ -42,7 +43,8 @@ trial_types <- get_trial_types(connection = con) %>% collect()
 trials <- get_trials(connection = con)  %>% collect()
 
 dataset_info <- administrations %>%
-  right_join(datasets)
+  right_join(datasets) %>%
+  right_join(subjects)
 
 aoi_data_joined <- aoi_timepoints %>%
   right_join(administrations) %>%
