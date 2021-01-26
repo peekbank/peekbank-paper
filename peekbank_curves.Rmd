@@ -14,7 +14,11 @@ library(here)
 library(tictoc)
 library(broom)
 library(tidyverse)
+library(cowplot)
 
+theme_set(theme_bw() + 
+            theme(strip.background = element_blank(), 
+                  panel.grid = element_blank()))
 
 knitr::opts_chunk$set(cache = FALSE, warn = FALSE, message = FALSE)
 ```
@@ -183,6 +187,7 @@ So solve for y
 
 $$\frac{e^x(2N + 1) - 1}{2(e^x + 1)} = y  $$
 
+The `VWpre` package has a function, but it assumes constant N. 
 
 ```{r}
 elogit_to_prop <- function(x, N) {
@@ -199,7 +204,7 @@ elogit_data$fitted_prop <- elogit_to_prop(elogit_data$fit, elogit_data$N)
 ggplot(elogit_data, 
        aes(x = t_window, y = prop_target, col = age_binned)) + 
   stat_summary(fun.data = mean_se, geom = "pointrange") +
-  stat_summary(aes(y = fitted_prop2), fun = mean, geom = "line") +
+  stat_summary(aes(y = fitted_prop), fun = mean, geom = "line") +
   geom_hline(yintercept = .5, col = "black", lty = 2) +
   # ylim(0, 1) +
   xlab("Time (ms)") +
@@ -215,6 +220,7 @@ newdata <- left_join(expand_grid(t_window = seq(50, 1450, 100),
                             ops_tibble) 
 
 newdata$pred <- predict(elogit, newdata = newdata, re.form = NA)
+newdata$fitted_prop <- elogit_to_prop(newdata$pred, 4)
 
 ggplot(newdata, 
        aes(x = t_window, y = pred, col = factor(age_centered+36))) + 
@@ -397,17 +403,20 @@ In the end, more simple random intercepts win over the others.
 
 ```{r}
 elogit_jl_data <- augment(elogit_jl)
+elogit_jl_data$fitted_prop <- elogit_to_prop(elogit_jl_data$.fitted, 
+                                             elogit_jl_data$N)
 
 ggplot(elogit_jl_data, 
-       aes(x = t_window, y = elogit, col = age_binned)) + 
+       aes(x = t_window, y = prop_target, col = age_binned)) + 
   stat_summary(fun.data = mean_se, geom = "pointrange") +
-  stat_summary(aes(y = .fitted), fun = mean, geom = "line") +
-  geom_hline(yintercept = 0, col = "black", lty = 2) +
+  stat_summary(aes(y = fitted_prop), fun = mean, geom = "line") +
+  geom_hline(yintercept = 0.5, col = "black", lty = 2) +
   xlab("Time (ms)") +
   ylab("Target Looking (Empirical Logit)") + 
   scale_color_solarized(name = "Age Group") + 
   theme_mikabr()
 ```
+Last piece is to look at how this looks in predictions ... showing that we can factor out some of the nutso stuff between the datasets.
 
 ```{r, eval = FALSE}
 library(JuliaCall)
@@ -423,4 +432,54 @@ ggplot(newdata,
        aes(x = t_window, y = pred, col = factor(age_centered+36))) + 
   geom_line()
 ```
+# Composite Figure for Paper
 
+```{r fig.width=5, fig.height=3}
+a <- ggplot(means, 
+       aes(x = t_norm, y = prop_looking)) + 
+  geom_line(aes(col = dataset_name)) + 
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, 
+                  fill = dataset_name), alpha = .5) +
+  facet_grid(age_binned~stimulus_novelty) +
+  geom_hline(yintercept = .5, lty = 2) + 
+  # geom_vline(xintercept = 0, lty = 2) +
+  ylab("Proportion Target Looking") +
+  xlab("Time (msec)") +
+  xlim(c(0,2500)) + 
+  theme_classic() +
+  scale_color_solarized() +
+  scale_fill_solarized() + 
+  theme(legend.position = "bottom") + 
+  guides(fill = guide_legend(nrow=5,byrow=TRUE),
+         col = guide_legend(nrow=5,byrow=TRUE))
+
+
+b <- ggplot(elogit_jl_data, 
+       aes(x = t_window, y = prop_target, col = age_binned)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(aes(y = fitted_prop), fun = mean, geom = "line") +
+  geom_hline(yintercept = .5, col = "black", lty = 2) +
+  xlab("Time (ms)") +
+  ylab("Prop. Target Looking") + 
+  scale_color_viridis(name = "Age Group (mo)") + 
+  theme(legend.position = "bottom")
+
+c <- ggplot(newdata, 
+       aes(x = t_window, y = fitted_prop, col = age_centered+36, group = age_centered+36)) + 
+  geom_line() + 
+  geom_hline(yintercept = .5, lty = 2) + 
+  xlab("Time (ms)") + 
+  ylab("Predicted looking") + 
+  scale_color_viridis("Age (mo)") + 
+  theme(legend.position = "bottom")
+
+p <-
+  plot_grid(a,
+          plot_grid(b, c, 
+                    nrow = 2,
+                    labels = c("B","C")), 
+          ncol = 2,
+          labels = c("A",""))
+
+ggsave("~/Desktop/sample.pdf", plot = p, width = 10, height = 8)
+```

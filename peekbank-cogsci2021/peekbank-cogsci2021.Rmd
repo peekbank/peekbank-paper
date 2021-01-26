@@ -120,6 +120,8 @@ grid::grid.raster(img)
 
 ## Predicting Age-Related Changes While Generalizing Across Items
 
+Developmental changes in word recognition have been a central issue since early investigations of eye-tracking techniques. For example, @fernald1998 famously showed 
+
 Following the approach of Mirman [-@Mirman2014], we used growth curve modeling to assess the timecourse of children's fixations to the target object at different ages, generalizing across items. Specifically, we predicted children's proportion of target looking during the critical window from the interaction between age and four orthogonal polynomial time terms (linear, quadratic, cubic, and quartic). We included by-item and by-dataset random effects. Figure XX depicts the model fit at four different age bins (though not that age was analyzed continuously in the model).
 
 We found that XXXXX.
