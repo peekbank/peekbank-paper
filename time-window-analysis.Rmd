@@ -75,17 +75,17 @@ get_interitem <- function (df) {
 ```{r tidy-version}
 
 # Time bins are 25 ms 
-startTs <- seq(from = -300, to = 1500, by = 25) 
+startTs <- seq(from = -300, to = 1500, by = 50) 
 # could use min(pb datasets min time) and max(pb datasets max time)
 #windowLengths <- seq(from = 300, to = 2500, by = 25)
-endTs <- seq(from = 0, to = 4000, by = 25)
+endTs <- seq(from = 0, to = 4000, by = 50)
 
 param.grid <- expand_grid(startTs, endTs) %>%
    rename(startTimes = startTs, endTimes = endTs) %>%
-   filter(startTimes != endTimes)
+   filter((endTimes - startTimes) > 50)
 
 do_interitem_analysis <- function(startTime, endTime) {
-   #print(paste(startTime, endTime))
+   print(paste(startTime, endTime))
       fam_data %>% filter(t_norm > startTime, 
                           t_norm < endTime) %>%
          group_by(dataset_name, age_binned, administration_id, english_stimulus_label) %>%
@@ -130,16 +130,17 @@ mout <- read.table(file="data/time-window-results.csv")
 
 plot_interitem <- function(dat, title) {
   dat %>% 
-    ggplot(aes(x = startTime, y = windowLength, fill = mean)) +
+    ggplot(aes(x = startTime, y = endTime, fill = mean)) +
       geom_raster() +
       theme_bw() +
       theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-      coord_equal() + 
+      #coord_equal() + 
       scale_fill_gradient2(low = "blue", mid = "white", high = "red") +
       xlab("Start Time (ms)") +
       ylab("End Time (ms)") +
       facet_wrap( ~ age_binned) +
       ggtitle(title) 
+   ggsave("figures/interitem_cors_window_analysis.pdf", width=5,height=4)
 }
 
 ```
@@ -148,10 +149,6 @@ plot_interitem <- function(dat, title) {
 Visualize inter-item correlation (per-subject, dataset, and age-bin) as a function of start time and window length.
 
 
-```{r visualize-start-window-length, fig.width=9, fig.height=8, echo=F}
+```{r visualize-start-window-length, fig.width=8, fig.height=5, echo=F}
 plot_interitem(mout, "Inter-item Correlations")
-```
-
-```{r visualize-start-stop, fig.width=9, fig.height=8, echo=F}
-plot_interitem_start_stop_time(mout, "Inter-item Correlations")
 ```
