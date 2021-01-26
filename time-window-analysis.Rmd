@@ -65,21 +65,11 @@ get_interitem <- function (df) {
    corrs <- corrr::correlate(dfw)
    mean_corr <- mean(rowMeans(select(corrs, -term), na.rm=TRUE), na.rm=TRUE)
    rm(corrs)
-   gc()
    return(mean_corr)
 }
 
 
-window_min <- -500 # X ms before disambiguation
-window_max <- 2000 #
 
-# Time bins are 25 ms 
-startTimes <- seq(from = window_min, to = window_max, by = 25) 
-# could use min(pb datasets min time) and max(pb datasets max time)
-windowLengths <- seq(from = 300, to = 2000, by = 25)
-
-param.grid <- expand.grid(startTimes, windowLengths)
-names(param.grid) = c("startTimes", "windowLengths")
 
 numCores <- detectCores() - 1
 cl <- makeCluster(numCores)
@@ -87,9 +77,9 @@ registerDoParallel(cores=numCores)
 
 mout <- foreach(i = 1:nrow(param.grid), .combine='bind_rows',
                 .packages = c("corrr","tidyverse")) %dopar% {
-                  
+                  if(i%%800==0) gc() # clean up memory a bit
                   fam_data %>% filter(t_norm > param.grid$startTimes[i], 
-                                      t_norm < (param.grid$startTimes[i] + param.grid$windowLengths[i])) %>%
+                                      t_norm < param.grid$endTimes[i]) %>%
                     group_by(dataset_name, age_binned, administration_id, english_stimulus_label) %>%
                     summarise(prop_corr = sum(aoi == "target") /
                                 sum(aoi %in% c("target", "distractor"))) %>%
@@ -102,13 +92,63 @@ mout <- foreach(i = 1:nrow(param.grid), .combine='bind_rows',
                     group_by(age_binned) %>%
                     summarise(mean = mean(interitem, na.rm=TRUE)) %>%
                     mutate(startTime = param.grid$startTimes[i],
-                           windowLength = param.grid$windowLengths[i])
+                           endTime = param.grid$endTimes[i])
 } 
   
 write.table(mout, file="data/time-window-results.csv")
 
 stopCluster(cl)
 ```
+
+```{r tidy-version}
+require(purrr)
+
+# Time bins are 25 ms 
+startTs <- seq(from = -300, to = 1500, by = 50) 
+# could use min(pb datasets min time) and max(pb datasets max time)
+#windowLengths <- seq(from = 300, to = 2500, by = 25)
+endTs <- seq(from = 0, to = 4000, by = 50)
+
+param.grid <- crossing(startTs, endTs)
+names(param.grid) = c("startTimes", "endTimes")
+
+do_interitem_analysis <- function(startTime, endTime) {
+      fam_data %>% filter(t_norm > startTime, 
+                          t_norm < endTime) %>%
+         group_by(dataset_name, age_binned, administration_id, english_stimulus_label) %>%
+         summarise(prop_corr = sum(aoi == "target") /
+                      sum(aoi %in% c("target", "distractor"))) %>%
+         group_by(dataset_name, age_binned) %>%
+         nest() %>%
+         mutate(interitem =  lapply(data, quietly(get_interitem)),
+                interitem = interitem[[1]]$result) %>%
+         select(-data) %>%
+         unnest(cols = "interitem") %>%
+         group_by(age_binned) %>%
+         summarise(mean = mean(interitem, na.rm=TRUE)) %>%
+         mutate(startTime = startTime,
+                endTime = endTime)
+}
+
+# this works
+do_interitem_analysis(-300, 0)
+
+# this should work
+mout <- map2_df(param.grid$startTimes, param.grid$endTimes, 
+             do_interitem_analysis)
+# Unknown or uninitialised column: `startTimes`.Unknown or uninitialised column: `endTimes`.
+
+mout <- param.grid %>% map2_df(startTimes, endTimes, 
+             do_interitem_analysis)
+# Error in as_mapper(.f, ...) : object 'endTimes' not found
+
+mout <- param.grid %>% walk2(startTimes, endTimes, 
+             do_interitem_analysis)
+
+write.table(mout, file="data/time-window-results.csv")             
+
+```
+
 
 ## Visualization 
 
@@ -126,7 +166,7 @@ plot_interitem <- function(dat, title) {
       coord_equal() + 
       scale_fill_gradient2(low = "blue", mid = "white", high = "red") +
       xlab("Start Time (ms)") +
-      ylab("Window Length (ms)") +
+      ylab("End Time (ms)") +
       facet_wrap( ~ age_binned) +
       ggtitle(title) 
 }
@@ -137,6 +177,10 @@ plot_interitem <- function(dat, title) {
 Visualize inter-item correlation (per-subject, dataset, and age-bin) as a function of start time and window length.
 
 
-```{r visualize-all-dat, fig.width=9, fig.height=8, echo=F}
+```{r visualize-start-window-length, fig.width=9, fig.height=8, echo=F}
 plot_interitem(mout, "Inter-item Correlations")
+```
+
+```{r visualize-start-stop, fig.width=9, fig.height=8, echo=F}
+plot_interitem_start_stop_time(mout, "Inter-item Correlations")
 ```
