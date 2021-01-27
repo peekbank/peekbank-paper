@@ -36,6 +36,7 @@ First take only familiar word data.
 
 ```{r}
 fam_data <- aoi_data_joined %>%
+  filter(dataset_name != "casillas_tseltal_2015") %>%
   filter(age > 12, age <= 60, 
          stimulus_novelty == "familiar") %>%
   mutate(age_binned = cut(age, seq(0,60,12))) 
@@ -114,7 +115,7 @@ ggplot(ms_timecourse,
   stat_summary(fun.data = mean_se, geom = "pointrange") +
   stat_summary(geom = "line") +
   xlab("Time (ms)") +
-  ylab("Proportion Target Looking") 
+  ylab("Target Looking (elogit)") 
 ```
 
 Now we make our orthogonal polynomials with code straight from Mirman (2014). Make more than we need so we can try out different degrees. 
@@ -132,6 +133,18 @@ ops_tibble <- tibble(ot1 = ops[,1],
 
 ms_timecourse <- left_join(ms_timecourse, ops_tibble)
 ```
+Plot these to understand them better. 
+
+```{r}
+ops_tibble %>%
+  pivot_longer(starts_with("ot")) %>%
+  ggplot(aes(x = t_window, y = value)) + 
+  geom_line() +
+  facet_wrap(~name)
+```
+
+
+# Models
 
 We explore a glmer over the discretized proportions. This fits slowly and has some convergence issues even when we prune to the most minimal random effect structure. I wasn't able to get any random slopes in there in particular, which seems like a deal-breaker. So let's skip this. 
 
@@ -164,7 +177,7 @@ Let's look at the model.
 summary(elogit)
 ```
 
-Now, let's look at model fits. I want to get this back into proportion space but I confess that I haven't managed it. 
+Now, let's look at model fits. 
 
 ```{r}
 elogit_data = ms_timecourse
@@ -177,7 +190,7 @@ ggplot(elogit_data,
   geom_hline(yintercept = 0, col = "black", lty = 2) +
   # ylim(0, 1) +
   xlab("Time (ms)") +
-  ylab("Proportion Target Looking") 
+  ylab("Target Looking (elogit)") 
 ```
 So x is the elogit value. 
 
@@ -200,6 +213,7 @@ elogit_to_prop <- function(x, N) {
 Plot in proportion space. 
 
 ```{r}
+# try VWPRE
 elogit_data$fitted_prop <- elogit_to_prop(elogit_data$fit, elogit_data$N)
 ggplot(elogit_data, 
        aes(x = t_window, y = prop_target, col = age_binned)) + 
@@ -212,7 +226,7 @@ ggplot(elogit_data,
 ```
 
 
-Plot model predictions from fixed effects. 
+Plot model predictions from fixed effects. **TODO: quadratic age effects**
 
 ```{r}
 newdata <- left_join(expand_grid(t_window = seq(50, 1450, 100), 
@@ -228,15 +242,63 @@ ggplot(newdata,
 ```
 
 
+```{r}
+tic()
+elogit_explore <- lmer(elogit ~ 0 + t_window + 
+                         I(t_window^2) + I(t_window^3) + 
+                         t_window:age_centered + 
+                         I(t_window^2):age_centered + 
+                         I(t_window^3):age_centered + 
+                       #(ot1 + ot2 + ot3) * age_centered +
+                         # age_centered + 
+                  (1 | administration_id) +
+                  (1 | dataset_id) +
+                  (1 | english_stimulus_label),
+                weights = 1/wts, 
+                data = ms_timecourse)
+toc()
+
+elogit_data$fit <- fitted(elogit_explore)
+
+elogit_data$fitted_prop <- elogit_to_prop(elogit_data$fit, elogit_data$N)
+p1 <- ggplot(elogit_data, 
+       aes(x = t_window, y = elogit, col = age_binned)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(aes(y = fit), fun = mean, geom = "line") +
+  geom_hline(yintercept = 0, col = "black", lty = 2) +
+  scale_color_solarized() + 
+  # ylim(0, 1) +
+  xlab("Time (ms)") +
+  ylab("Proportion Target Looking") + 
+  theme(legend.position = "bottom")
+
+newdata$pred <- predict(elogit_explore, newdata = newdata, re.form = NA)
+newdata$pred_prop <- elogit_to_prop(newdata$pred, 4)
+
+p2 <- ggplot(newdata, 
+       aes(x = t_window, y = pred, col = factor(age_centered+36))) + 
+  geom_line() + 
+  geom_hline(yintercept = 0, col = "black", lty = 2) +
+  scale_color_solarized(name = "Age") + 
+  xlab("Time (ms)") +
+  ylab("Proportion Target Looking") + 
+  theme(legend.position = "bottom")
+
+cowplot::plot_grid(p1, p2)
+```
+
+
 # Julia version
 
 Performance is slow here so we can't really add too much more in the way of bells and whistles, but I think we need them! So let's try Julia.
 
 ## Getting Julia up and running
 
+This step takes a while the first time you run it. 
+
 ```{r}
 library(jglmm)
-options(JULIA_HOME = "/Applications/Julia-1.5.app/Contents/Resources/julia/bin")
+options(JULIA_HOME = "/Applications/Julia-1.2.app/Contents/Resources/julia/bin")
 jglmm_setup()
 ```
 
@@ -273,7 +335,7 @@ ggplot(elogit_jl_data,
   geom_hline(yintercept = 0, col = "black", lty = 2) +
   # ylim(0, 1) +
   xlab("Time (ms)") +
-  ylab("Proportion Target Looking") 
+  ylab("Target Looking (elogit)") 
 ```
 
 Now we have a workflow that lets us fit a bigger class of models faster!
@@ -402,15 +464,38 @@ This model manages to get the (perhaps nonsensical, dataset-driven) difference b
 In the end, more simple random intercepts win over the others. 
 
 ```{r}
+ms_timecourse$tw <- ms_timecourse$t_window
+ms_timecourse$tw2 <- ms_timecourse$t_window^2
+ms_timecourse$tw3 <- ms_timecourse$t_window^3
+ms_timecourse$tw4 <- ms_timecourse$t_window^4
+ms_timecourse$age_centered2 <- ms_timecourse$age_centered^2
+
+elogit_jl <- jglmm(elogit ~ 
+                     0 + tw + tw2 + tw3 + tw4 + 
+                         tw:age_centered + 
+                     tw2:age_centered +
+                     tw3:age_centered +
+                     tw4:age_centered +
+                     tw:age_centered^2 + 
+                     tw2:age_centered^2 + 
+                     tw3:age_centered^2 +
+                     tw4:age_centered^2 +
+                  (1 | administration_id) +
+                  (1 | dataset_id) +
+                  (1 | english_stimulus_label),
+                family = "normal",
+                weights = 1/ms_timecourse$wts, 
+                data = ms_timecourse)
+
 elogit_jl_data <- augment(elogit_jl)
 elogit_jl_data$fitted_prop <- elogit_to_prop(elogit_jl_data$.fitted, 
                                              elogit_jl_data$N)
 
 ggplot(elogit_jl_data, 
-       aes(x = t_window, y = prop_target, col = age_binned)) + 
+       aes(x = t_window, y = elogit, col = age_binned)) + 
   stat_summary(fun.data = mean_se, geom = "pointrange") +
-  stat_summary(aes(y = fitted_prop), fun = mean, geom = "line") +
-  geom_hline(yintercept = 0.5, col = "black", lty = 2) +
+  stat_summary(aes(y = .fitted), fun = mean, geom = "line") +
+  # geom_hline(yintercept = 0.5, col = "black", lty = 2) +
   xlab("Time (ms)") +
   ylab("Target Looking (Empirical Logit)") + 
   scale_color_solarized(name = "Age Group") + 
@@ -421,10 +506,19 @@ Last piece is to look at how this looks in predictions ... showing that we can f
 ```{r, eval = FALSE}
 library(JuliaCall)
 library(glue)
+library(broom)
 source(here("misc/jglmm_helper.R"))
 
-train_ranefs <- jglmm_ranef(elogit_jl, "dataset_id")
-train_coefs <- tidy(elogit_jl)
+elogit_jl_coefs <- tidy(elogit_jl)
+elogit_jl_data <- augment(elogit_jl)
+elogit_jl_formula <- as.formula("elogit ~ (ot1 + ot2 + ot3) * age_centered")
+elogit_jl_cells <- ms_timecourse %>%
+  select(age_centered, age_binned, t_window, ot1, ot2, ot3) %>%
+  distinct() %>%
+  mutate(elogit = NA)
+elogit_jl_fits <- jglmm_predict_fixed(elogit_jl_coefs, elogit_jl_formula, elogit_jl_cells)
+
+
 test_predictions <- jglmm_predict(train_coefs, train_ranefs, formula, testing_data, group)
 newdata$pred <- jglmm_predict(elogit_jl, newdata = newdata)
 

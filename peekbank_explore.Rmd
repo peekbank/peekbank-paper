@@ -44,7 +44,7 @@ trials <- get_trials(connection = con)  %>% collect()
 
 dataset_info <- administrations %>%
   right_join(datasets) %>%
-  right_join(subjects)
+  right_join(subjects) 
 
 aoi_data_joined <- aoi_timepoints %>%
   right_join(administrations) %>%

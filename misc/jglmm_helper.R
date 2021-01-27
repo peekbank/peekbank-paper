@@ -1,28 +1,11 @@
-# looks like model.LMM doesn't hvae ranefs any more, it's just model
-# but then model ranefs don't have names attribute either...
-jglmm_ranef <- function(x, group) {
-  julia_assign("model", x$model)
-  julia_command(glue("model_ranef = ranef(model.LMM, named=true);"))
-  ranef_terms <- julia_eval("names(model_ranef[1])[1]")
-  ranef_groups <- julia_eval("names(model_ranef[1])[2]")
-  ranefs <- julia_eval("model_ranef[1]")
-  ranef_df <- ranefs %>% t() %>% as_tibble() %>% set_names(ranef_terms)
-  ranef_df[group] <- ranef_groups
-  ranef_df
-}
-
-# supports intercepts, slopes, polynomial terms, interactions
-# doesn't support categorical predictors
-jglmm_predict <- function(coefs, ranefs, formula, newdata, group) {
-  
+jglmm_predict_fixed <- function(coefs, formula, newdata) {
   fixed_effects <- coefs %>% dplyr::select(term, fixed_effect = estimate)
-  random_effects <- ranefs %>% gather(term, random_effect, -!!group)
-  
+  # TODO: get_all_vars only for x terms (then don't need deselect)
   newdata_vals <- get_all_vars(formula, newdata) %>% as_tibble() %>%
-    dplyr::select(-value) %>% distinct() %>%
-    mutate(id = 1:n(), stem = as.character(stem))
+    dplyr::select(-elogit) %>%
+    distinct() %>%
+    mutate(id = 1:n())
   newdata_terms <- colnames(newdata_vals) %>% discard(~. == "id")
-  
   # handle polynomial terms
   poly_terms <- coefs$term %>% discard(~str_detect(., "&")) %>%
     keep(~str_detect(., "\\^")) %>% str_split(" \\^ ")
@@ -32,7 +15,6 @@ jglmm_predict <- function(coefs, ranefs, formula, newdata, group) {
     poly_term <- paste(term_name, "^", term_val)
     newdata_vals %<>% mutate(!!poly_term := `^`(!!term_name, term_val))
   }
-  
   # handle interactions
   int_terms <- coefs$term %>% keep(~str_detect(., "&")) %>% str_split(" & ")
   for (term in int_terms) {
@@ -41,18 +23,15 @@ jglmm_predict <- function(coefs, ranefs, formula, newdata, group) {
     int_term <- paste(term_1, "&", term_2)
     newdata_vals %<>% mutate(!!int_term := !!term_1 * !!term_2)
   }
-  
   fits <- newdata_vals %>%
     mutate(`(Intercept)` = 1) %>%
-    gather(term, value, -id, -!!group) %>%
+    pivot_longer(cols = -id, names_to = "term", values_to = "value") %>%
     left_join(fixed_effects, by = "term") %>%
-    left_join(random_effects, by = c(group, "term")) %>%
     mutate_at(vars(matches("effect")), ~replace(., is.na(.), 0)) %>%
-    mutate(effect = fixed_effect * value + random_effect * value) %>%
+    mutate(effect = fixed_effect * value) %>%
     group_by(id) %>%
     summarise(.fitted = sum(effect)) %>%
     left_join(newdata_vals, by = "id")
-  
   newdata %>% left_join(fits, by = newdata_terms) %>%
     dplyr::select(!!colnames(newdata), .fitted)
 }
