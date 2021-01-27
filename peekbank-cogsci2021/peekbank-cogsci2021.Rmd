@@ -162,11 +162,12 @@ In the next analysis, we asked whether properties of a specific item - in partic
 Taking a similar approach to that of @Peelle2020, we conducted a multiverse-style analysis considering possible time windows which researchers might select analyze their data.
 Our multiverse analysis focuses on the reliability of participants' response to familiar words by measuring the subject-level inter-item correlation (IIC) for proportion of looking at familiar targets. 
 Although researchers typically consider windows in the range of 300 ms post-target onset to approximately 1500-1800 ms post-target onset, we examined a much broader range of window start and end times: we calculated subjects' mean IIC across from 300 ms pre-target onset to 1500 ms post-target word onset) and window end times (ranging from 0 ms to 4000 ms).
-We expect to not see any reliability in windows that start and end before target onset, and perhaps not for any windows that end within ~300 ms post-target onset.
+We expect see very low reliability in windows that start and end before target onset, and perhaps not for any windows that end within ~300 ms post-target onset.
 It is an open question what space of possible windows will show the greatest reliability.
 Since observations were unevenly distributed across the age range, and because  children likely show a varying response to familiar items as they age, we split our data into four age bins (12-24, 24-36, 36-48, and 48-60 months). 
 For each combination of window start time and end time with a minimum window duration of 50 ms, participants' average inter-item correlation for proportion of looking at familiar targets was calculated. 
 <!-- We removed the mahr_coartic dataset because it only included times up to 1800 ms post-target onset -->
+
 The resulting correlations of this multiverse analysis are shown in Figure \ref{fig:time_window}, where subjects' mean ICC for proportion of looking to familiar targets for each combination of window start time and end time is shown as a colored pixel. 
 The analysis shows that ICC is positive (red) under a wide range of window choices, and generally only negative (blue) or 0 (white) when the start time is less than ~500 ms and the end time is less than ~1000 ms -- far lower for both parameters than researchers generally consider. 
 Intriguingly, late end times and long overall window lengths--generally not used by researchers--show perhaps the greatest reliability, suggesting that researchers may consider keeping this data for analysis rather than discarding it.
@@ -175,7 +176,7 @@ Moreover, there is some variation by age group in where the strongest ICCs are f
 <!-- This suggests that researchers may be justified in using different start times and window sizes for different age ranges, likely due to the varying pull of familiarity and novelty as learners age. -->
 [GK: add correlations between ICC and start time, end time, window length?]
 
-```{r time_window, fig.env = "figure*", fig.pos = "h", fig.width=6.5, fig.height=4.33, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid."}
+```{r time_window, fig.env = "figure*", fig.pos = "h", fig.width=7, fig.height=4.5, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid."}
 img <- png::readPNG(here("figures","interitem_cors_window_analysis.png"))
 grid::grid.raster(img)
 ```
