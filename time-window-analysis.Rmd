@@ -75,14 +75,14 @@ get_interitem <- function (df) {
 ```{r tidy-version}
 
 # Time bins are 25 ms 
-startTs <- seq(from = -300, to = 1500, by = 50) 
+startTs <- seq(from = -300, to = 1500, by = 25) 
 # could use min(pb datasets min time) and max(pb datasets max time)
 #windowLengths <- seq(from = 300, to = 2500, by = 25)
-endTs <- seq(from = 0, to = 4000, by = 50)
+endTs <- seq(from = 0, to = 4000, by = 25)
 
 param.grid <- expand_grid(startTs, endTs) %>%
    rename(startTimes = startTs, endTimes = endTs) %>%
-   filter((endTimes - startTimes) > 50)
+   filter((endTimes - startTimes) > 25)
 
 do_interitem_analysis <- function(startTime, endTime) {
    print(paste(startTime, endTime))
@@ -138,9 +138,9 @@ plot_interitem <- function(dat, title) {
       scale_fill_gradient2(low = "blue", mid = "white", high = "red") +
       xlab("Start Time (ms)") +
       ylab("End Time (ms)") +
-      facet_wrap( ~ age_binned) +
-      ggtitle(title) 
-   ggsave("figures/interitem_cors_window_analysis.pdf", width=5,height=4)
+      facet_wrap( ~ age_binned)# +
+      #ggtitle(title) 
+   ggsave("figures/interitem_cors_window_analysis.png", width=8,height=5)
 }
 
 ```
@@ -152,3 +152,12 @@ Visualize inter-item correlation (per-subject, dataset, and age-bin) as a functi
 ```{r visualize-start-window-length, fig.width=8, fig.height=5, echo=F}
 plot_interitem(mout, "Inter-item Correlations")
 ```
+
+## Additional analyses
+
+What is the overall relationship between strength of correlation and start time, end time, or window length?
+
+```{r}
+
+```
+
