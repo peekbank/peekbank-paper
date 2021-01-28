@@ -15,6 +15,11 @@ library(tictoc)
 library(broom)
 library(tidyverse)
 library(cowplot)
+library(JuliaCall)
+library(glue)
+library(broom)
+source(here("misc/jglmm_helper.R"))
+
 
 theme_set(theme_bw() + 
             theme(strip.background = element_blank(), 
@@ -290,7 +295,7 @@ cowplot::plot_grid(p1, p2)
 
 # Julia version
 
-Performance is slow here so we can't really add too much more in the way of bells and whistles, but I think we need them! So let's try Julia.
+Performance is slow here, and convergence is imperfect, so we can't really add too much more in the way of bells and whistles, but I think we need them! So let's try Julia.
 
 ## Getting Julia up and running
 
@@ -298,7 +303,7 @@ This step takes a while the first time you run it.
 
 ```{r}
 library(jglmm)
-options(JULIA_HOME = "/Applications/Julia-1.2.app/Contents/Resources/julia/bin")
+options(JULIA_HOME = "/Applications/Julia-1.5.app/Contents/Resources/julia/bin")
 jglmm_setup()
 ```
 
@@ -476,10 +481,10 @@ elogit_jl <- jglmm(elogit ~
                      tw2:age_centered +
                      tw3:age_centered +
                      tw4:age_centered +
-                     tw:age_centered^2 + 
-                     tw2:age_centered^2 + 
-                     tw3:age_centered^2 +
-                     tw4:age_centered^2 +
+                     tw:age_centered2 + 
+                     tw2:age_centered2 + 
+                     tw3:age_centered2 +
+                     tw4:age_centered2 +
                   (1 | administration_id) +
                   (1 | dataset_id) +
                   (1 | english_stimulus_label),
@@ -490,42 +495,86 @@ elogit_jl <- jglmm(elogit ~
 elogit_jl_data <- augment(elogit_jl)
 elogit_jl_data$fitted_prop <- elogit_to_prop(elogit_jl_data$.fitted, 
                                              elogit_jl_data$N)
-
-ggplot(elogit_jl_data, 
-       aes(x = t_window, y = elogit, col = age_binned)) + 
-  stat_summary(fun.data = mean_se, geom = "pointrange") +
-  stat_summary(aes(y = .fitted), fun = mean, geom = "line") +
-  # geom_hline(yintercept = 0.5, col = "black", lty = 2) +
-  xlab("Time (ms)") +
-  ylab("Target Looking (Empirical Logit)") + 
-  scale_color_solarized(name = "Age Group") + 
-  theme_mikabr()
 ```
 Last piece is to look at how this looks in predictions ... showing that we can factor out some of the nutso stuff between the datasets.
 
-```{r, eval = FALSE}
-library(JuliaCall)
-library(glue)
-library(broom)
-source(here("misc/jglmm_helper.R"))
-
+```{r}
 elogit_jl_coefs <- tidy(elogit_jl)
 elogit_jl_data <- augment(elogit_jl)
-elogit_jl_formula <- as.formula("elogit ~ (ot1 + ot2 + ot3) * age_centered")
+elogit_jl_formula <- as.formula("elogit ~ 0 + tw + tw2 + tw3 + tw4 + 
+                         tw:age_centered + 
+                     tw2:age_centered +
+                     tw3:age_centered +
+                     tw4:age_centered +
+                     tw:age_centered2 + 
+                     tw2:age_centered2 + 
+                     tw3:age_centered2 +
+                     tw4:age_centered2")
 elogit_jl_cells <- ms_timecourse %>%
-  select(age_centered, age_binned, t_window, ot1, ot2, ot3) %>%
+  ungroup() %>%
+  select(age_centered, age_centered, age_centered2, tw, tw2, tw3, tw4) %>%
   distinct() %>%
   mutate(elogit = NA)
-elogit_jl_fits <- jglmm_predict_fixed(elogit_jl_coefs, elogit_jl_formula, elogit_jl_cells)
 
+elogit_to_prop2 <- VWPre::make_pelogit_fnc(ObsPerBin = 4, Constant = .5)
+elogit_jl_data$fitted_prop <- elogit_to_prop(elogit_jl_data$.fitted, 
+                                             elogit_jl_data$N)
 
-test_predictions <- jglmm_predict(train_coefs, train_ranefs, formula, testing_data, group)
-newdata$pred <- jglmm_predict(elogit_jl, newdata = newdata)
-
-ggplot(newdata, 
-       aes(x = t_window, y = pred, col = factor(age_centered+36))) + 
-  geom_line()
+elogit_jl_fits <- jglmm_predict_fixed(elogit_jl_coefs, 
+                                      elogit_jl_formula, elogit_jl_cells) %>%
+  mutate(age = age_centered + 36, 
+         fitted_prop = elogit_to_prop(.fitted, 4)) %>%
+  filter(age %in% c(18,30,42,54))
 ```
+
+Final plot: proportions:
+
+```{r}
+p1 <- ggplot(elogit_jl_data, 
+       aes(x = t_window, y = prop_target, col = age_binned)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(aes(y = fitted_prop), fun = mean, geom = "line") +
+  geom_hline(yintercept = 0.5, col = "black", lty = 2) +
+  xlab("Time (ms)") +
+  ylab("Proportion Target Looking") + 
+  scale_color_solarized(name = "Age Group") + 
+  theme(legend.position = "bottom")
+
+p2 <- ggplot(elogit_jl_fits, 
+       aes(x = tw, y = fitted_prop, col = factor(age))) + 
+  geom_line() + 
+  geom_hline(yintercept = .5, col = "black", lty = 2) +
+  scale_color_solarized(name = "Age") + 
+  xlab("Time (ms)") +
+  ylab("Proportion Target Looking") + 
+  theme(legend.position = "bottom")
+
+cowplot::plot_grid(p1, p2)
+```
+
+```{r}
+p1 <- ggplot(elogit_jl_data, 
+       aes(x = t_window, y = elogit, col = age_binned)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(aes(y = .fitted), fun = mean, geom = "line") +
+  geom_hline(yintercept = 0, col = "black", lty = 2) +
+  xlab("Time (ms)") +
+  ylab("Target Looking (elogit)") + 
+  scale_color_solarized(name = "Age Group") + 
+  theme(legend.position = "bottom")
+
+p2 <- ggplot(elogit_jl_fits, 
+       aes(x = tw, y = .fitted, col = factor(age))) + 
+  geom_line() + 
+  geom_hline(yintercept = 0, col = "black", lty = 2) +
+  scale_color_solarized(name = "Age") + 
+  xlab("Time (ms)") +
+  ylab("Target Looking (elogit)") + 
+  theme(legend.position = "bottom")
+
+cowplot::plot_grid(p1, p2)
+```
+
 # Composite Figure for Paper
 
 ```{r fig.width=5, fig.height=3}
