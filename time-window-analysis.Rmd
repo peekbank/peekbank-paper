@@ -13,9 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [Peelle and Van Engen (2020)](https://psyarxiv.com/pc3da/) style multiverse analysis considering possible time windows with logistic growth curve models in a dataset with words of varying frequency, stimuli with varying levels of noise, and with young or old adults. 
 
-```{r load-data, echo=F, message=F, warning=F}
-# get local copy by running peekbank_explore.Rmd
-load("data/aoi_data_joined.Rds") 
+```{r load-packages, echo=F, message=F, warning=F}
 # change t_range upper limit to 4000 for full window analysis
 
 library(tidyverse)
@@ -32,7 +30,10 @@ RUN_MODELS = FALSE
 
 For our analysis, we will restrict ourselves to familiar words, and will model age effects.
 
-```{r}
+```{r load-data, eval=RUN_MODELS}
+# get local copy by running peekbank_explore.Rmd
+load("data/aoi_data_joined.Rds") 
+
 fam_data <- aoi_data_joined %>%
   filter(age > 12, age <= 60, 
          stimulus_novelty == "familiar",
@@ -72,7 +73,7 @@ get_interitem <- function (df) {
 
 ```
 
-```{r tidy-version}
+```{r tidy-version, eval=RUN_MODELS}
 
 # Time bins are 25 ms 
 startTs <- seq(from = -300, to = 1500, by = 25) 
@@ -140,7 +141,7 @@ plot_interitem <- function(dat, title) {
       ylab("End Time (ms)") +
       facet_wrap( ~ age_binned)# +
       #ggtitle(title) 
-   ggsave("figures/interitem_cors_window_analysis.png", width=8,height=5)
+   #ggsave("figures/interitem_cors_window_analysis.png", width=8,height=5)
 }
 
 ```
@@ -153,11 +154,52 @@ Visualize inter-item correlation (per-subject, dataset, and age-bin) as a functi
 plot_interitem(mout, "Inter-item Correlations")
 ```
 
+Maybe annotate the region that we recommend?
+
 ## Additional analyses
 
 What is the overall relationship between strength of correlation and start time, end time, or window length?
 
 ```{r}
+mout <- mout %>% mutate(windowLength = endTime - startTime) 
+# summary(lm(data=mout, mean ~ startTime +  windowLength))
 
+cor(mout[,2:5])[1,2:4]
 ```
+
+Correlations only among the positive IICs:
+
+```{r}
+prop_positive = length(which(mout$mean>0)) / nrow(mout) # 92.6% positive
+hist(mout$mean)
+mout_pos <- mout %>% filter(mean > 0)
+cor(mout_pos[,2:5])[1,2:4]
+```
+
+`r round(prop_positive, 2)` of the time windows investigated resulted in positive IICs, and the median IIC from all simulations was `r round(median(mout$mean),2)`.
+The correlations of IIC with start time, end time, and window length are shown above: end time is most predictive of higher IIC.
+
+### Recommendations
+
+Where do we get bad ICCs? (<.01 -- should we consider a higher threshold? e.g. median IIC = .048)
+
+```{r}
+#require(GGally)
+mout_neg <- mout %>% filter(mean < 0.01)
+#ggpairs(mout_neg, columns=2:5, aes(color=age_binned), alpha=.3)
+summary(mout_neg)
+start_lt300 = length(which(mout_neg$startTime < 300)) / nrow(mout_neg)
+start_lt500 = length(which(mout_neg$startTime < 500)) / nrow(mout_neg) 
+
+# condition on start time at least 300ms like reasonable researchers? 
+# which(mout_neg$startTime >= 300 & 
+winLength_lt1500 = length(which(mout_neg$windowLength < 1500)) / nrow(mout_neg) # .94
+win1500_start300 = length(which(mout_neg$startTime >= 300 & mout_neg$windowLength >= 1500)) / nrow(mout_neg)
+
+rec_settings_iic_avg = mean(subset(mout, startTime>=500 & windowLength>=1500)$mean)
+```
+
+`r 100*round(start_lt300, 2)`% of low IICs (<.01) had start times <300ms, but pushing the start time out to at least 500 ms eliminated `r 100*round(start_lt500, 2)`% of the low IICs.
+A window length of at least 1500 ms eliminated `r 100*round(winLength_lt1500, 2)`% of low ICCs, and this threshold combined with a start time of at least 300 ms eliminated all but `r 100*round(win1500_start300, 3)`% of low ICCs. 
+A start time of 500 ms and a window of at least 1500 ms resulted in no IICs < .01, and an average IIC of `r round(rec_settings_iic_avg, 2)`.
 

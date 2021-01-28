@@ -1,0 +1,311 @@
+---
+title: "Peekbank Item Prediction"
+author: "Martin"
+date: "1/19/2021"
+output: html_document
+---
+
+Visualize item-specific trajectories
+
+```{r, message=F, warning=F}
+library(peekbankr)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(tictoc)
+library(langcog)
+library(here)
+library(tidymodels)
+library(wordbankr)
+#devtools::install_github("tidymodels/multilevelmod")
+library(multilevelmod)
+
+figure_path <- here("figures")
+
+load(file = "data/aoi_data_joined.Rds")
+knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
+dataset_name_mapping <- read_csv(here("data","dataset_name_mapping.csv"))
+
+con <- connect_to_peekbank()
+stimuli <- get_stimuli(connection = con) %>% collect()
+subjects <- get_subjects(connection = con) %>% collect()
+
+aoi_data_joined <- aoi_data_joined %>%
+  left_join(subjects)
+
+
+```
+
+## Fit and filter trial accuracy (proportion looking to target)
+
+
+```{r}
+t_min <- 300
+t_max <- 2000
+
+by_trial_means <- aoi_data_joined %>%
+  #remove dataset
+  #filter(dataset_name!="pomper_saffran_2016") %>%
+  #restrict to english datasets
+  filter(native_language == "eng") %>%
+  #restrict age range
+  filter(age > 12, age <= 60) %>%
+  # familiar target items only %>%
+  filter(stimulus_novelty == "familiar") %>%
+  #window of analysis
+  filter(t_norm > t_min, t_norm < t_max) %>%
+  mutate(age_binned = cut(age, seq(12,60,12))) %>%
+  rename(target_label = english_stimulus_label) %>%
+  group_by(administration_id, trial_id, target_label, distractor_id, 
+           age, age_binned) %>%
+  summarise(prop_looking = sum(aoi == "target", na.rm = TRUE) / 
+              (sum(aoi == "target", na.rm=TRUE) + 
+                 sum(aoi=="distractor", na.rm=TRUE)),
+            prop_missing = mean(aoi == "missing", na.rm = TRUE)) %>%
+  left_join(stimuli, by = c("distractor_id" = "stimulus_id")) %>%
+  rename(distractor_label = english_stimulus_label)
+  
+```
+
+```{r}
+acc_mod_data <- by_trial_means %>%
+  ungroup() %>%
+  filter(prop_missing < 1/3) %>%
+  mutate(age_centered = age - mean(age,na.rm=TRUE))
+
+target_label_counts <- acc_mod_data %>%
+  ungroup() %>%
+  group_by(target_label) %>%
+  summarize(
+    trial_count=n()
+  )
+
+acc_mod_data <- acc_mod_data %>%
+  left_join(target_label_counts)
+
+```
+
+## Add English Frequency Info
+
+```{r}
+freq <- read_csv(here("data/childes_english.csv"))
+
+acc_mod_freq <- left_join(acc_mod_data, 
+                      select(freq,word, word_count),by = c("target_label" = "word")) %>%
+  rename(target_word_count=word_count) %>%
+  left_join(select(freq,word, word_count),by = c("distractor_label" = "word")) %>%
+  rename(distractor_word_count=word_count) %>%
+  ungroup() %>%
+  mutate(target_log_freq = log(target_word_count), 
+         distractor_log_freq = log(distractor_word_count)) %>%
+  mutate(target_log_freq_centered = target_log_freq-mean(target_log_freq,na.rm=TRUE),
+         distractor_log_freq_centered = distractor_log_freq-mean(distractor_log_freq,na.rm=TRUE)) %>%
+  mutate(luce_log_freq = target_log_freq/ (target_log_freq+distractor_log_freq))
+
+by_target_item_means <- acc_mod_freq %>%
+  ungroup() %>%
+  group_by(target_label,target_word_count,target_log_freq,age_binned) %>%
+  summarise(
+    N=n(),
+    mean_prop_looking=mean(prop_looking,na.rm=TRUE)
+  )
+
+
+  
+```
+
+## Collect English AOA Information
+
+Run this code chunk to collect AOA information from the English (American) WS form on Wordbank. After identifying target labels that cannot be found on Wordbank, a .csv is exported to resolve inconsistencies by hand (e.g. "chicken" == "chicken (animal)" in Wordbank).
+
+```{r,eval = FALSE}
+items_for_aoa <- unique(acc_mod_data$target_label)
+#get wordbank items
+wordbank_items_eng_ws <- get_item_data(language = "English (American)", form = "WS")
+#compare to target label names
+setdiff(items_for_aoa,wordbank_items_eng_ws$definition)
+#output set difference for manual processing
+write_csv(data.frame(target_label=setdiff(items_for_aoa,wordbank_items_eng_ws$definition)),here("data","items_dropped_aoa.csv"))
+
+#set up and read in mapping file w/ aligned definitions for worddbank
+stimulus_label_wordbank_intersect <- data.frame(
+  target_label=intersect(items_for_aoa,wordbank_items_eng_ws$definition),
+  definition=intersect(items_for_aoa,wordbank_items_eng_ws$definition))
+stimulus_label_wordbank_mapping <- read_csv(here("data","stimulus_label_wordbank_mapping.csv"))
+stimulus_label_wordbank <- bind_rows(stimulus_label_wordbank_intersect,stimulus_label_wordbank_mapping)
+
+item_names_for_wordbank <- stimulus_label_wordbank$definition[!is.na(stimulus_label_wordbank$definition)]
+
+items_for_wordbank <- filter(wordbank_items_eng_ws,definition %in% c(item_names_for_wordbank))$item_id
+
+#get instrument data for target label items from wordbank
+eng_ws_data <- get_instrument_data(language = "English (American)",
+                                   form = "WS",
+                                   items = items_for_wordbank,
+                                   administrations=TRUE,
+                                   iteminfo=TRUE)
+
+#fit AOA curves to obtain AOA estimates (logistic regression)
+aoas_ws_produces <- fit_aoa(eng_ws_data,measure="produces", age_min=0) %>%
+  ungroup() %>%
+  select(aoa,item_id,definition) %>%
+  left_join(stimulus_label_wordbank) %>%
+  select(target_label,definition,aoa)
+
+write_csv(aoas_ws_produces,here("data","aoas_wordbank_ws_produces.csv"))
+```
+
+
+## Add English AOAs
+
+```{r}
+#aoas <- read_csv(here("data","bglm_aoas_english.csv")) 
+aoas <- read_csv(here("data","aoas_wordbank_ws_produces.csv"))
+
+acc_mod_freq_aoa <- left_join(acc_mod_freq, 
+                      aoas) %>% #%>%
+                        # transmute(target_label = definition, 
+                        #           target_aoa = bglm_aoa, 
+                        #           target_category = category)) %>%
+  rename(target_aoa=aoa) %>%             
+  left_join(aoas  %>%
+              transmute(distractor_label = definition, 
+                       distractor_aoa = aoa)) %>%
+  filter(!is.na(target_aoa), !is.na(distractor_aoa)) %>%
+  ungroup() %>%
+  mutate(target_aoa_centered = target_aoa - mean(target_aoa,na.rm=TRUE), 
+         distractor_aoa_centered = distractor_aoa - mean(distractor_aoa,na.rm=TRUE)) %>%
+  mutate(inverse_target = 1/target_aoa,
+         inverse_distractor = 1/distractor_aoa,
+         luce_untransformed=target_aoa/(target_aoa+distractor_aoa),
+         luce = inverse_target / (inverse_target + inverse_distractor),
+         luce_log = log(inverse_target) / (log(inverse_target) + log(inverse_distractor)))
+```
+
+## Frequency
+
+### Target Frequency - No item random effects
+
+```{r}
+m1 <- lmer(prop_looking ~ target_log_freq_centered+age_centered+(1|administration_id)+(1|dataset_name), data = acc_mod_freq)
+summary(m1)
+```
+
+### Target Frequency - With item random effects
+
+```{r}
+m1A <- lmer(prop_looking ~ target_log_freq_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label), data = acc_mod_freq)
+summary(m1A)
+```
+
+### Target Frequency - Trial Count Threshold
+
+```{r}
+m1A_red <- lmer(prop_looking ~ target_log_freq_centered+age_centered+(1|administration_id)+(1|target_label), data = filter(acc_mod_freq,trial_count>20))
+summary(m1A_red)
+```
+
+
+
+### Target & Distractor Frequency - No item random effects
+```{r}
+m2 <- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+age_centered+(1|administration_id), data = acc_mod_freq)
+summary(m2)
+```
+
+### Target & Distractor Frequency - item random effects
+```{r}
+m2A <- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+age_centered+(1|administration_id)+(1|target_label)+(1|distractor_label), data = acc_mod_freq)
+summary(m2A)
+```
+
+### Target & Distractor Frequency - Trial Count Threshold
+
+```{r}
+m2A_red <- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+age_centered+(1|administration_id)+(1|target_label)+(1|distractor_label), data = filter(acc_mod_freq,trial_count>20))
+summary(m2A_red)
+```
+
+## Plot Items Summarize
+
+```{r}
+n_cutoff <- 20
+by_target_item_means %>%
+  filter(N>n_cutoff) %>%
+  ggplot(aes(target_log_freq,mean_prop_looking,size=N,color=target_label))+
+  geom_point()+
+  geom_smooth(method="lm",color="black")+
+  theme(legend.position="none")+
+  facet_wrap(~age_binned)
+
+
+acc_mod_freq %>%
+  #filter(dataset_name!="pomper_saffran_2016") %>%
+  ggplot(aes(target_log_freq,prop_looking))+
+  geom_point(alpha=0.01)+
+  geom_smooth(method="lm")+
+  facet_wrap(~age_binned)
+
+
+```
+
+## AOA
+
+### Target AOA - No item random effects
+
+```{r}
+m3 <- lmer(prop_looking ~ target_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name), data = acc_mod_freq_aoa)
+summary(m3)
+```
+
+### Target AOA - With item random effects
+
+```{r}
+m3A <- lmer(prop_looking ~ target_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label), data = acc_mod_freq_aoa)
+summary(m3A)
+```
+
+### Target AOA - Trial Count Threshold
+
+```{r}
+m3A_red <- lmer(prop_looking ~ target_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label), data = filter(acc_mod_freq_aoa,trial_count>20))
+summary(m3A_red)
+```
+
+### Target & Distractor AOA - No item random effects
+```{r}
+m4 <- lmer(prop_looking ~ target_aoa_centered+distractor_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name), data = acc_mod_freq_aoa)
+summary(m4)
+```
+
+### Target & Distractor AOA - item random effects
+```{r}
+m4A <- lmer(prop_looking ~ target_aoa_centered+distractor_aoa_centered+age_centered+age_centered+(1|administration_id)+(1|target_label)+(1|distractor_label), data = acc_mod_freq_aoa)
+summary(m4A)
+```
+
+### Target & Distractor AOA - Trial Count Threshold
+
+```{r}
+m4A_red <- lmer(prop_looking ~ target_aoa_centered+distractor_aoa_centered+age_centered+age_centered+(1|administration_id)+(1|target_label)+(1|distractor_label), data = filter(acc_mod_freq_aoa,trial_count>20))
+summary(m4A_red)
+```
+
+## Frequency and AOA
+
+### Frequency & AOA - no item random effects
+```{r}
+m5 <- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+target_aoa_centered+distractor_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name), data = acc_mod_freq_aoa)
+summary(m5)
+```
+
+
+### Frequency & AOA - item random effects
+```{r}
+m5A <- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+target_aoa_centered+distractor_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label)+(1|distractor_label), data = acc_mod_freq_aoa)
+summary(m5A)
+```
+
+
+
+
