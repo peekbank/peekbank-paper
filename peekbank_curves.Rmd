@@ -561,7 +561,13 @@ p1 <- ggplot(elogit_jl_data,
   xlab("Time (ms)") +
   ylab("Target Looking (elogit)") + 
   scale_color_solarized(name = "Age Group") + 
-  theme(legend.position = "bottom")
+  theme(legend.position = "none") + 
+  ggrepel::geom_label_repel(data = filter(elogit_jl_data, t_window == 750) %>%
+                              group_by(age_binned) %>% 
+                              summarise(t_window = mean(t_window),
+                                        elogit = mean(elogit)), 
+                            aes(label = paste(age_binned,"mo")), 
+                            nudge_x = c(100,100,-100,-100))
 
 p2 <- ggplot(elogit_jl_fits, 
        aes(x = tw, y = .fitted, col = factor(age))) + 
@@ -570,59 +576,10 @@ p2 <- ggplot(elogit_jl_fits,
   scale_color_solarized(name = "Age") + 
   xlab("Time (ms)") +
   ylab("Target Looking (elogit)") + 
-  theme(legend.position = "bottom")
+  theme(legend.position = "none")
 
-cowplot::plot_grid(p1, p2)
-```
-
-# Composite Figure for Paper
-
-```{r fig.width=5, fig.height=3}
-a <- ggplot(means, 
-       aes(x = t_norm, y = prop_looking)) + 
-  geom_line(aes(col = dataset_name)) + 
-  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, 
-                  fill = dataset_name), alpha = .5) +
-  facet_grid(age_binned~stimulus_novelty) +
-  geom_hline(yintercept = .5, lty = 2) + 
-  # geom_vline(xintercept = 0, lty = 2) +
-  ylab("Proportion Target Looking") +
-  xlab("Time (msec)") +
-  xlim(c(0,2500)) + 
-  theme_classic() +
-  scale_color_solarized() +
-  scale_fill_solarized() + 
-  theme(legend.position = "bottom") + 
-  guides(fill = guide_legend(nrow=5,byrow=TRUE),
-         col = guide_legend(nrow=5,byrow=TRUE))
-
-
-b <- ggplot(elogit_jl_data, 
-       aes(x = t_window, y = prop_target, col = age_binned)) + 
-  stat_summary(fun.data = mean_se, geom = "pointrange") +
-  stat_summary(aes(y = fitted_prop), fun = mean, geom = "line") +
-  geom_hline(yintercept = .5, col = "black", lty = 2) +
-  xlab("Time (ms)") +
-  ylab("Prop. Target Looking") + 
-  scale_color_viridis(name = "Age Group (mo)") + 
-  theme(legend.position = "bottom")
-
-c <- ggplot(newdata, 
-       aes(x = t_window, y = fitted_prop, col = age_centered+36, group = age_centered+36)) + 
-  geom_line() + 
-  geom_hline(yintercept = .5, lty = 2) + 
-  xlab("Time (ms)") + 
-  ylab("Predicted looking") + 
-  scale_color_viridis("Age (mo)") + 
-  theme(legend.position = "bottom")
-
-p <-
-  plot_grid(a,
-          plot_grid(b, c, 
-                    nrow = 2,
-                    labels = c("B","C")), 
-          ncol = 2,
-          labels = c("A",""))
-
-ggsave("~/Desktop/sample.pdf", plot = p, width = 10, height = 8)
+p <- cowplot::plot_grid(p1, p2, labels = c("A","B"))
+p
+ggsave(p, filename = here("figures/age_gca.png"),
+       width = 7, height = 3)
 ```
