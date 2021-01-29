@@ -7,17 +7,20 @@ document-params: "10pt, letterpaper"
 author-information: > 
     \author{{\large \bf Martin Zettersten (martincz@princeton.edu)} \\ Department of Psychology, South Dr \\ Princeton, NJ 08540 USA
     \AND {\large \bf CLinger Xu (txu@iu.edu)} 
-    \AND {\large \bf Claire Bergey (cbergey@uchicago.edu)} 
-    \AND {\large \bf Naiti S. Bhatt (nbhatt@hmc.edu)} 
-    \AND {\large \bf Veronica Boyce (vboyce@stanford.edu)} 
+    \AND {\large \bf Stephan Meylan (smeylan@mit.edu)} 
     \AND {\large \bf Mika Braginsky (mikabr@mit.edu)} 
     \AND {\large \bf George Kachergis (kachergis@stanford.edu)} 
     \AND {\large \bf Molly Lewis (mollyllewis@gmail.com)} 
+    \AND {\large \bf Claire Bergey (cbergey@uchicago.edu)} 
+    \AND {\large \bf Naiti S. Bhatt (nbhatt@hmc.edu)} 
+    \AND {\large \bf Veronica Boyce (vboyce@stanford.edu)} 
     \AND {\large \bf Jessica Mankewitz (jmankewitz@stanford.edu)}
-    \AND {\large \bf Stephan Meylan (smeylan@mit.edu)} 
+    \AND {\large \bf Bria Long (bria@stanford.edu)} 
+     \AND {\large \bf Daniel Yurovsky (yurovsky@stanford.edu)} 
     \AND {\large \bf Annissa Saleh (ans638@nyu.edu)} 
-    \AND {\large \bf Rose Schneider (roschnei@ucsd.edu)}  
-    \AND {\large \bf Daniel Yurovsky (yurovsky@stanford.edu)} 
+    \AND {\large \bf Sarp Uner (sarp.uner@duke.edu)} 
+    \AND {\large \bf Alexandra Carstensen (abcarstensen@stanford.edu)} 
+    \AND {\large \bf Angeline Sin Mei Tsui (astsui@stanford.edu)}  
     \AND {\large \bf CMichael C. Frank (mcfrank@stanford.edu)}}
 
 abstract: >
@@ -131,14 +134,53 @@ The database currently includes `r length(summarize_datasets$dataset_rename)` da
 
 # Results
 
-## General descriptives
+## General Descriptives
 
-(Fig. \ref{fig:peekbank_item_vis})
+```{r xtable2, num.cols.cap=1, results="asis"}
+dataset_means <- read_csv(here("data","dataset_means_prop_looking.csv"))
+dataset_name_mapping <- read_csv(here("data","dataset_name_mapping.csv"))
+
+dataset_means <- dataset_means %>%
+  left_join(dataset_name_mapping) %>%
+  select(dataset_rename,unique_items,prop_looking,prop_looking_lower_ci,prop_looking_upper_ci) %>%
+  arrange(dataset_rename) %>%
+  mutate(ci=paste0("[",round(prop_looking_lower_ci,2),", ",round(prop_looking_upper_ci,2),"]")) %>%
+  select(-prop_looking_lower_ci,-prop_looking_upper_ci)
+
+tab2 <- xtable::xtable(dataset_means, digits=c(0,0,0,2,0), 
+                       caption = "Average Proportion Target Looking in each dataset.")
+
+names(tab2) <- c("Dataset Name", "Unique Items","Prop. Target", "95% CI")
+print(tab2, type="latex", comment = F, table.placement = "H",include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont")
+
+participant_means_novelty <- read_csv(here("data","participant_means_prop_looking_novelty.csv"))
+
+overall_novelty <- participant_means_novelty %>%
+  group_by(stimulus_novelty) %>%
+  summarize(
+    N=n(),
+    prop_looking=mean(avg_prop_looking,na.rm=TRUE),
+    prop_looking_ci=qt(0.975, N-1)*sd(avg_prop_looking,na.rm=TRUE)/sqrt(N),
+    prop_looking_lower_ci=prop_looking-prop_looking_ci,
+    prop_looking_upper_ci=prop_looking+prop_looking_ci
+  )
+
+# participant_means <- read_csv(here("data","participant_means_prop_looking.csv"))
+# #fit age prediction model
+# m <- lmer(avg_prop_looking ~ age+(1|dataset_name),data=by_participant_means)
+```
+
+In general, participants demonstrated robust, above-chance word recognition in each dataset. 
+Table 2 shows the average proportion of target looking within a standard critical window of 300 - 2000ms after the onset of the label for each dataset. 
+As can be seen in Figure \ref{fig:peekbank_item_vis}, the number of unique target labels and there is substantial variability in the accuracy curves associated with different items across datasets. 
+Proportion target looking was generally higher for familiar target labels (M = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,3)*100`%, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,3)*100`%, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,3)*100`%]) than for novel target labels that participants learned during the experiment (M = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,3)*100`%, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,3)*100`%, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,3)*100`%]). 
 
 ```{r peekbank_item_vis, fig.env = "figure*", fig.pos = "h", fig.width=6.5, fig.height=4.33, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Item-level variability in proportion target looking within each dataset. Colored lines represent specific target labels."}
 img <- png::readPNG(here("figures","peekbank_item_vis.png"))
 grid::grid.raster(img)
 ```
+
+
 
 ## Predicting Age-Related Changes While Generalizing Across Items
 
@@ -150,14 +192,10 @@ Peekbank provides the appropriate data for estimating these item-independent dev
 
 Figure \ref{fig:age_gca} depicts the results of this analysis. Panel A shows the mean empirical word recognition curves for four age groups, along with fitted model performance. Although model fits are acceptable, developmental change appears irregular - for example, 12--24 month-olds show if anything slightly earlier recognition than 24--36 month-olds! This pattern is an artifact of averaging across datasets with substantially different items and structures. Panel B shows model predictions for the population level of each random effect, giving our best estimates of the latent ability structure. Here we see continuous increases in both speed (point at which the curve rises) and accuracy (asymptote of the curve) across ages, though this developmental trend decelerates [consistent with other work on the development of reaction times in word recognition and more generally; @frank2016b; @kail1991]. This proof of concept suggests that Peekbank can be used to model developmental change over multiple years, overcoming the limitations of individual datasets.
 
-```{r age_gca, fig.env = "figure*", fig.pos = "", fig.align='center', fig.width="\\textwidth", set.cap.width=T, num.cols.cap=1, fig.cap = "Growth curve models of proportion target looking during the critical target window at each age range (in months)."}
+```{r age_gca, fig.env = "figure", fig.pos = "H", fig.align='center', set.cap.width=T, num.cols.cap=1, fig.cap = "Growth curve models of proportion target looking during the critical target window at each age range (in months)."}
 img <- png::readPNG(here("figures","age_gca.png"))
 grid::grid.raster(img)
 ```
-
-## Predicting Target Fixation from Word AOA
-
-In the next analysis, we asked whether properties of a specific item - in particular, the age of acquisition (AOA) for a particular item - predict children's lexical processing. Using estimates of the age of acquisition derived from Wordbank [@Frank2016] for the target and the distractor word, we modeled whether earlier-acquired target words are more likely to be fixated accurately. XX.
 
 ## Time Window Selection
 
@@ -192,15 +230,13 @@ Many central questions in developmental science face a fundamental data collecti
 
 Diving into more specifics
 
-Future directions and limitations
-
-limitations in language background (almost entirely English, monolingual)
-
-limitations in participant background (almost entirely WEIRD participants)
-
-growing the database will address these questions while increasing our power to answer the key generalization questions of interest
-
-expanding beyond child lexical processing: tools and infrastructure can in principle be expanded to accommodate any eyetracking paradigm used with infants and toddlers
+There are a number of critical limitations surrounding the current scope of the database.  A key priority in future work will be to expand the size of the database. 
+With 11 datasets currently available in the dataset, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results. 
+Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, allowing for more robust generalizations regarding participant- and item-level variability.
+The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (with one exception, all participants are growing up in WEIRD environments;). Increasing the diversity of the participant backgrounds and languages contributing to the current database will increase the scope of the generalizations we can form about child lexical processing.
+Finally, while the current database is current mainly focused on studies of lexical processing, the tools and infrastructure developed in the current project can in principle be expanded to accommodate any eyetracking paradigm used with infants and toddlers, opening up new avenues for insights into infant development. 
+Infant looking has been at the core of many of the key advances in our understanding infant cognition. 
+Aggregating large datasets of infant looking behavior in a single, openly accessible format promises to bring a fuller picture of infant cognitive development into view.
 
 # Acknowledgements
 

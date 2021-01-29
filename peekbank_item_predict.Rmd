@@ -1,13 +1,18 @@
 ---
 title: "Peekbank Item Prediction"
-author: "Martin"
-date: "1/19/2021"
-output: html_document
+author: "Martin Z"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 4
+    toc_float: true
 ---
 
-Visualize item-specific trajectories
 
 ```{r, message=F, warning=F}
+library(knitr)
 library(peekbankr)
 library(tidyverse)
 library(lme4)
@@ -15,15 +20,15 @@ library(lmerTest)
 library(tictoc)
 library(langcog)
 library(here)
-library(tidymodels)
+#library(tidymodels)
 library(wordbankr)
 #devtools::install_github("tidymodels/multilevelmod")
-library(multilevelmod)
+#library(multilevelmod)
 
 figure_path <- here("figures")
 
 load(file = "data/aoi_data_joined.Rds")
-knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE)
 dataset_name_mapping <- read_csv(here("data","dataset_name_mapping.csv"))
 
 con <- connect_to_peekbank()
@@ -36,8 +41,21 @@ aoi_data_joined <- aoi_data_joined %>%
 
 ```
 
-## Fit and filter trial accuracy (proportion looking to target)
+The goal is to explore relationships between item-level properties (specifically, child-directed word frequency and age of acquisition) and accurate looking in the looking while listening paradigm across age.
 
+## Preparing the data 
+
+### Fit and filter trial accuracy (proportion looking to target)
+
+Compute trial-level accuracy (proportion looking to the target) in a fixed critical window (300-2000ms).
+
+We are focusing only on 
+
+* familiar words
+
+* ages between 12-60 months
+
+* English datasets (since this is what we have norms for)
 
 ```{r}
 t_min <- 300
@@ -67,6 +85,8 @@ by_trial_means <- aoi_data_joined %>%
   
 ```
 
+Filter the data to trials where there is sufficient looking data (target or distractor looking on at least 2/3 of the trial)
+
 ```{r}
 acc_mod_data <- by_trial_means %>%
   ungroup() %>%
@@ -85,7 +105,9 @@ acc_mod_data <- acc_mod_data %>%
 
 ```
 
-## Add English Frequency Info
+### Add English Frequency Info
+
+TO DO: re-extract frequency information using childes-db. Source for the current frequency values: https://github.com/mikabr/aoa-prediction
 
 ```{r}
 freq <- read_csv(here("data/childes_english.csv"))
@@ -114,7 +136,7 @@ by_target_item_means <- acc_mod_freq %>%
   
 ```
 
-## Collect English AOA Information
+### Collect English AOA Information
 
 Run this code chunk to collect AOA information from the English (American) WS form on Wordbank. After identifying target labels that cannot be found on Wordbank, a .csv is exported to resolve inconsistencies by hand (e.g. "chicken" == "chicken (animal)" in Wordbank).
 
@@ -155,8 +177,7 @@ aoas_ws_produces <- fit_aoa(eng_ws_data,measure="produces", age_min=0) %>%
 write_csv(aoas_ws_produces,here("data","aoas_wordbank_ws_produces.csv"))
 ```
 
-
-## Add English AOAs
+### Add English AOAs
 
 ```{r}
 #aoas <- read_csv(here("data","bglm_aoas_english.csv")) 
@@ -182,51 +203,42 @@ acc_mod_freq_aoa <- left_join(acc_mod_freq,
          luce_log = log(inverse_target) / (log(inverse_target) + log(inverse_distractor)))
 ```
 
-## Frequency
+## Does item frequency predict target looking? {.tabset}
 
-### Target Frequency - No item random effects
+### Plots {.tabset}
 
-```{r}
-m1 <- lmer(prop_looking ~ target_log_freq_centered+age_centered+(1|administration_id)+(1|dataset_name), data = acc_mod_freq)
-summary(m1)
-```
-
-### Target Frequency - With item random effects
+#### general correlation
 
 ```{r}
-m1A <- lmer(prop_looking ~ target_log_freq_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label), data = acc_mod_freq)
-summary(m1A)
+#by age bin
+acc_mod_freq %>%
+  ggplot(aes(target_log_freq,prop_looking))+
+  geom_point(alpha=0.01)+
+  geom_smooth(method="lm")
 ```
 
-### Target Frequency - Trial Count Threshold
+#### By Age Bin
 
 ```{r}
-m1A_red <- lmer(prop_looking ~ target_log_freq_centered+age_centered+(1|administration_id)+(1|target_label), data = filter(acc_mod_freq,trial_count>20))
-summary(m1A_red)
+#by age bin
+acc_mod_freq %>%
+  ggplot(aes(target_log_freq,prop_looking))+
+  geom_point(alpha=0.01)+
+  geom_smooth(method="lm")+
+  facet_wrap(~age_binned)
 ```
-
-
-
-### Target & Distractor Frequency - No item random effects
-```{r}
-m2 <- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+age_centered+(1|administration_id), data = acc_mod_freq)
-summary(m2)
-```
-
-### Target & Distractor Frequency - item random effects
-```{r}
-m2A <- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+age_centered+(1|administration_id)+(1|target_label)+(1|distractor_label), data = acc_mod_freq)
-summary(m2A)
-```
-
-### Target & Distractor Frequency - Trial Count Threshold
+#### By Dataset
 
 ```{r}
-m2A_red <- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+age_centered+(1|administration_id)+(1|target_label)+(1|distractor_label), data = filter(acc_mod_freq,trial_count>20))
-summary(m2A_red)
+#by dataset
+acc_mod_freq %>%
+  ggplot(aes(target_log_freq,prop_looking))+
+  geom_point(alpha=0.01)+
+  geom_smooth(method="lm")+
+  facet_wrap(~dataset_name)
 ```
 
-## Plot Items Summarize
+#### Plot summarized Items
 
 ```{r}
 n_cutoff <- 20
@@ -237,73 +249,174 @@ by_target_item_means %>%
   geom_smooth(method="lm",color="black")+
   theme(legend.position="none")+
   facet_wrap(~age_binned)
-
-
-acc_mod_freq %>%
-  #filter(dataset_name!="pomper_saffran_2016") %>%
-  ggplot(aes(target_log_freq,prop_looking))+
-  geom_point(alpha=0.01)+
-  geom_smooth(method="lm")+
-  facet_wrap(~age_binned)
-
-
 ```
 
-## AOA
+### Target Frequency {.tabset}
 
-### Target AOA - No item random effects
+Predict proportion looking from target frequency, controlling for age. Frequency effect does not generalize across items
+
+#### No item random effects
+
+```{r}
+m1 <- lmer(prop_looking ~ target_log_freq_centered+age_centered+(1|administration_id)+(1|dataset_name), data = acc_mod_freq)
+summary(m1)
+```
+
+#### With item random effects
+
+```{r}
+m1A <- lmer(prop_looking ~ target_log_freq_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label), data = acc_mod_freq)
+summary(m1A)
+```
+
+#### Trial Count Threshold
+
+```{r}
+m1A_red <- lmer(prop_looking ~ target_log_freq_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label), data = filter(acc_mod_freq,trial_count>20))
+summary(m1A_red)
+```
+
+### Target & Distractor Frequency {.tabset}
+
+Add distractor frequency
+
+#### No item random effects
+```{r}
+m2 <- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+age_centered+(1|administration_id)+(1|dataset_name), data = acc_mod_freq)
+summary(m2)
+```
+
+#### Item random effects
+```{r}
+m2A <- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label)+(1|distractor_label), data = acc_mod_freq)
+summary(m2A)
+```
+
+#### Trial Count Threshold
+
+Restrict to items with >20 observations
+
+```{r}
+m2A_red <- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label)+(1|distractor_label), data = filter(acc_mod_freq,trial_count>20))
+summary(m2A_red)
+```
+
+## Does AOA predict target looking? {.tabset}
+
+### Target AOA {.tabset}
+
+Predict proportion target looking from target aoa controlling for age.
+
+#### No item random effects
 
 ```{r}
 m3 <- lmer(prop_looking ~ target_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name), data = acc_mod_freq_aoa)
 summary(m3)
 ```
 
-### Target AOA - With item random effects
+#### With item random effects
 
 ```{r}
 m3A <- lmer(prop_looking ~ target_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label), data = acc_mod_freq_aoa)
 summary(m3A)
 ```
 
-### Target AOA - Trial Count Threshold
+#### Trial Count Threshold
 
 ```{r}
 m3A_red <- lmer(prop_looking ~ target_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label), data = filter(acc_mod_freq_aoa,trial_count>20))
 summary(m3A_red)
 ```
 
-### Target & Distractor AOA - No item random effects
+#### Alternate Analysis: AOA - Age
+
+We considered an alternate analysis in which we considered *relative aoa* (age - age of acquisition). While this is a strong predictor, this is likely largely due to the strong relationship between age and proportion target looking.
+
+
+```{r}
+#compute "relative" AOA
+acc_mod_freq_aoa <- acc_mod_freq_aoa %>%
+  mutate(relative_target_aoa=age-target_aoa,
+         relative_distractor_aoa=age-distractor_aoa)
+
+ggplot(acc_mod_freq_aoa,aes(relative_target_aoa,prop_looking))+
+  geom_point()+
+  geom_smooth()
+```
+
+```{r}
+##target alone
+m_diff_target <- lmer(prop_looking ~ relative_target_aoa+(1|administration_id)+(1|dataset_name)+(1|target_label)+(1|distractor_label), data = acc_mod_freq_aoa)
+summary(m_diff_target)
+
+##distractor alone
+m_diff_distractor <- lmer(prop_looking ~ relative_distractor_aoa+(1|administration_id)+(1|dataset_name)+(1|target_label)+(1|distractor_label), data = acc_mod_freq_aoa)
+summary(m_diff_distractor)
+
+## target and distractor
+m_diff_td <- lmer(prop_looking ~ relative_target_aoa+relative_distractor_aoa+(1|administration_id)+(1|dataset_name)+(1|target_label)+(1|distractor_label), data = acc_mod_freq_aoa)
+summary(m_diff_td)
+
+```
+
+### Target & Distractor AOA {.tabset}
+
+#### No item random effects
 ```{r}
 m4 <- lmer(prop_looking ~ target_aoa_centered+distractor_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name), data = acc_mod_freq_aoa)
 summary(m4)
 ```
 
-### Target & Distractor AOA - item random effects
+#### Item random effects
 ```{r}
-m4A <- lmer(prop_looking ~ target_aoa_centered+distractor_aoa_centered+age_centered+age_centered+(1|administration_id)+(1|target_label)+(1|distractor_label), data = acc_mod_freq_aoa)
+m4A <- lmer(prop_looking ~ target_aoa_centered+distractor_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label)+(1|distractor_label), data = acc_mod_freq_aoa)
 summary(m4A)
 ```
 
-### Target & Distractor AOA - Trial Count Threshold
+#### Trial Count Threshold
 
 ```{r}
-m4A_red <- lmer(prop_looking ~ target_aoa_centered+distractor_aoa_centered+age_centered+age_centered+(1|administration_id)+(1|target_label)+(1|distractor_label), data = filter(acc_mod_freq_aoa,trial_count>20))
+m4A_red <- lmer(prop_looking ~ target_aoa_centered+distractor_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label)+(1|distractor_label), data = filter(acc_mod_freq_aoa,trial_count>20))
 summary(m4A_red)
 ```
 
-## Frequency and AOA
+### Target & Distractor AOA {.tabset}
 
-### Frequency & AOA - no item random effects
+Using Mike Frank's suggestion for a Luce choice predictor (1/target_aoa)/(1/target_aoa+1/distractor_aoa)
+
+#### No item random effects
+
+```{r}
+m4B <- lmer(prop_looking ~ luce+age_centered+(1|administration_id)+(1|dataset_name), data = acc_mod_freq_aoa)
+summary(m4B)
+```
+#### With item random effects
+
+```{r}
+m4C <- lmer(prop_looking ~ luce+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label)+(1|distractor_label), data = acc_mod_freq_aoa)
+summary(m4C)
+```
+
+
+## Combined Effect of Frequency and AOA {.tabset}
+
+Next, we combined all frequency and AOA predictors into a single model.
+
+### no item random effects
 ```{r}
 m5 <- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+target_aoa_centered+distractor_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name), data = acc_mod_freq_aoa)
 summary(m5)
 ```
 
 
-### Frequency & AOA - item random effects
+### item random effects
+
+Target AOA is the only effect that remains significant after accounting for non-independence between items (targets and distractors).
+
 ```{r}
 m5A <- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+target_aoa_centered+distractor_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label)+(1|distractor_label), data = acc_mod_freq_aoa)
 summary(m5A)
+#vif.mer(m5A)
 ```
 
 

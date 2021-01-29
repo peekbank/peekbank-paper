@@ -52,17 +52,14 @@
 % \textwidth 16cm
 % \textheight 21cm
 
-\title{Peekbank: Exploring child lexical processing through a
-large-scale open-source database of developmental eyetracking datasets}
+\title{Peekbank: Exploring child lexical processing through a large-scale
+open-source database of developmental eyetracking datasets}
 
 
-\author{{\large \bf Martin Zettersten (martincz@princeton.edu)} \\ Department of Psychology, South Dr \\ Princeton, NJ 08540 USA \AND {\large \bf CLinger Xu (txu@iu.edu)}  \AND {\large \bf Claire Bergey (cbergey@uchicago.edu)}  \AND {\large \bf Naiti S. Bhatt (nbhatt@hmc.edu)}  \AND {\large \bf Veronica Boyce (vboyce@stanford.edu)}  \AND {\large \bf Mika Braginsky (mikabr@mit.edu)}  \AND {\large \bf George Kachergis (kachergis@stanford.edu)}  \AND {\large \bf Molly Lewis (mollyllewis@gmail.com)}  \AND {\large \bf Jessica Mankewitz (jmankewitz@stanford.edu)} \AND {\large \bf Stephan Meylan (smeylan@mit.edu)}  \AND {\large \bf Annissa Saleh (ans638@nyu.edu)}  \AND {\large \bf Rose Schneider (roschnei@ucsd.edu)}   \AND {\large \bf Daniel Yurovsky (yurovsky@stanford.edu)}  \AND {\large \bf CMichael C. Frank (mcfrank@stanford.edu)}}
+\author{{\large \bf Martin Zettersten (martincz@princeton.edu)} \\ Department of Psychology, South Dr \\ Princeton, NJ 08540 USA \AND {\large \bf CLinger Xu (txu@iu.edu)}  \AND {\large \bf Stephan Meylan (smeylan@mit.edu)}  \AND {\large \bf Mika Braginsky (mikabr@mit.edu)}  \AND {\large \bf George Kachergis (kachergis@stanford.edu)}  \AND {\large \bf Molly Lewis (mollyllewis@gmail.com)}  \AND {\large \bf Claire Bergey (cbergey@uchicago.edu)}  \AND {\large \bf Naiti S. Bhatt (nbhatt@hmc.edu)}  \AND {\large \bf Veronica Boyce (vboyce@stanford.edu)}  \AND {\large \bf Jessica Mankewitz (jmankewitz@stanford.edu)} \AND {\large \bf Bria Long (bria@stanford.edu)} 
+ \AND {\large \bf Daniel Yurovsky (yurovsky@stanford.edu)} 
+\AND {\large \bf Annissa Saleh (ans638@nyu.edu)}  \AND {\large \bf Sarp Uner (sarp.uner@duke.edu)}  \AND {\large \bf Alexandra Carstensen (abcarstensen@stanford.edu)}  \AND {\large \bf Angeline Sin Mei Tsui (astsui@stanford.edu)}   \AND {\large \bf CMichael C. Frank (mcfrank@stanford.edu)}}
 
-\newlength{\cslhangindent}
-\setlength{\cslhangindent}{1.5em}
-\newenvironment{cslreferences}%
-  {}%
-  {\par}
 
 \begin{document}
 
@@ -98,7 +95,7 @@ looking-while-listening
 \section{Introduction}\label{introduction}}
 
 Across their first years of life, children learn words in their native
-tongues at a rapid pace (Braginsky, Yurovsky, Marchman, \& Frank, 2019).
+tongues at a rapid pace (Frank, Braginsky, Yurovsky, \& Marchman, 2021).
 A key part of the word learning process is children's ability to rapidly
 process words and link them to relevant meanings in context - often
 referred to as lexical processing. Developing lexical processing skills
@@ -151,11 +148,11 @@ across studies. For example, researchers vary in their decisions
 regarding how to select time windows for analysis, modeling how lexical
 processing unfolds over time, and the appropriate transformations to
 perform on the dependent measure of target fixations (Csibra, Hernik,
-Mascaro, Tatone, \& Lengyel, 2016; Fernald, Zangl, Portillo, \&
-Marchman, 2008; Huang \& Snedeker, 2020). Establishing best practices
-regarding analytic decisions of this kind requires a large database of
-infant lexical processing studies, in order to independently test the
-potential consequences of a variety of methodological decisions on the
+Mascaro, Tatone, \& Lengyel, 2016; Fernald et al., 2008; Huang \&
+Snedeker, 2020). Establishing best practices regarding analytic
+decisions of this kind requires a large database of infant lexical
+processing studies, in order to independently test the potential
+consequences of a variety of methodological decisions on the
 interpretation of study results.
 
 \hypertarget{peekbank-a-large-scale-database-of-looking-while-listening-studies}{%
@@ -184,7 +181,7 @@ for quickly accessing and analyzing the database.
 \begin{CodeChunk}
 \begin{figure}[tb]
 
-{\centering \includegraphics{figs/fig_framework_overview-1}
+{\centering \includegraphics{figs/fig_framework_overview-1} 
 
 }
 
@@ -209,7 +206,7 @@ database.
 \begin{CodeChunk}
 \begin{figure}[tb]
 
-{\centering \includegraphics{figs/fig_schema-1}
+{\centering \includegraphics{figs/fig_schema-1} 
 
 }
 
@@ -254,23 +251,23 @@ datasets, including resampling observations to a common sampling rate
 \begingroup\fontsize{9pt}{10pt}\selectfont
 \begin{tabular}{lrrl}
   \hline
-Dataset Name & N & Mean Age & Method \\
+Dataset Name & N & Mean Age & Method \\ 
   \hline
-canine & 36 & 23.8 & manual coding \\
-  coartic & 29 & 20.8 & eyetracking \\
-  cowpig & 45 & 20.5 & manual coding \\
-  ft\_pt & 69 & 17.1 & manual coding \\
-  reflook\_socword & 435 & 33.6 & eyetracking \\
-  reflook\_v4 & 347 & 37.2 & eyetracking \\
-  salientme & 44 & 40.1 & manual coding \\
-  switchingCues & 60 & 44.3 & manual coding \\
-  tablet & 110 & 33.8 & eyetracking \\
-  tseltal & 23 & 31.3 & manual coding \\
-  yoursmy & 35 & 14.5 & eyetracking \\
+canine & 36 & 23.8 & manual coding \\ 
+  coartic & 29 & 20.8 & eyetracking \\ 
+  cowpig & 45 & 20.5 & manual coding \\ 
+  ft\_pt & 69 & 17.1 & manual coding \\ 
+  reflook\_socword & 435 & 33.6 & eyetracking \\ 
+  reflook\_v4 & 347 & 37.2 & eyetracking \\ 
+  salientme & 44 & 40.1 & manual coding \\ 
+  switchingCues & 60 & 44.3 & manual coding \\ 
+  tablet & 110 & 33.8 & eyetracking \\ 
+  tseltal & 23 & 31.3 & manual coding \\ 
+  yoursmy & 35 & 14.5 & eyetracking \\ 
    \hline
 \end{tabular}
 \endgroup
-\caption{Overview over the datasets in the current database.}
+\caption{Overview over the datasets in the current database.} 
 \end{table}
 
 The database currently includes 11 datasets comprising N=1233 total
@@ -290,14 +287,47 @@ pseudowords were tested.
 \section{Results}\label{results}}
 
 \hypertarget{general-descriptives}{%
-\subsection{General descriptives}\label{general-descriptives}}
+\subsection{General Descriptives}\label{general-descriptives}}
 
-(Fig. \ref{fig:peekbank_item_vis})
+\begin{table}[H]
+\centering
+\begingroup\fontsize{9pt}{10pt}\selectfont
+\begin{tabular}{lrrl}
+  \hline
+Dataset Name & Unique Items & Prop. Target & 95\% CI \\ 
+  \hline
+canine & 16 & 0.64 & [0.61, 0.67] \\ 
+  coartic & 10 & 0.70 & [0.67, 0.73] \\ 
+  cowpig & 12 & 0.60 & [0.58, 0.63] \\ 
+  ft\_pt & 8 & 0.64 & [0.63, 0.66] \\ 
+  reflook\_socword & 6 & 0.61 & [0.6, 0.63] \\ 
+  reflook\_v4 & 10 & 0.63 & [0.61, 0.64] \\ 
+  salientme & 16 & 0.73 & [0.71, 0.75] \\ 
+  switchingCues & 40 & 0.77 & [0.75, 0.79] \\ 
+  tablet & 24 & 0.53 & [0.51, 0.56] \\ 
+  tseltal & 30 & 0.59 & [0.54, 0.63] \\ 
+  yoursmy & 87 & 0.60 & [0.55, 0.64] \\ 
+   \hline
+\end{tabular}
+\endgroup
+\caption{Average Proportion Target Looking in each dataset.} 
+\end{table}
+
+In general, participants demonstrated robust, above-chance word
+recognition in each dataset. Table 2 shows the average proportion of
+target looking within a standard critical window of 300 - 2000ms after
+the onset of the label for each dataset. As can be seen in Figure
+\ref{fig:peekbank_item_vis}, the number of unique target labels and
+there is substantial variability in the accuracy curves associated with
+different items across datasets. Proportion target looking was generally
+higher for familiar target labels (M = 67.5\%, 95\% CI = {[}66.6\%,
+68.5\%{]}) than for novel target labels that participants learned during
+the experiment (M = 55.1\%, 95\% CI = {[}53.8\%, 56.3\%{]}).
 
 \begin{CodeChunk}
 \begin{figure*}[h]
 
-{\centering \includegraphics{figs/peekbank_item_vis-1}
+{\centering \includegraphics{figs/peekbank_item_vis-1} 
 
 }
 
@@ -310,43 +340,74 @@ pseudowords were tested.
 Items}\label{predicting-age-related-changes-while-generalizing-across-items}}
 
 Developmental changes in word recognition have been a central issue
-since early investigations of eye-tracking techniques. For example,
-(\textbf{fernald1998?}) famously showed \ldots{}
+since early investigations of eye-tracking techniques (Fernald, Pinto,
+Swingley, Weinberg, \& McRoberts, 1998 et seq.). Children's speed and
+accuracy of word recognition increases across early childhood, yet
+measuring these increases creates a tricky issue. Words that are
+appropriate for an 18-month-old will be far too easy for a
+three-year-old; those that are appopriate for a three-year-old will be
+hard or even unfamiliar to the 18-month-old. Failure to choose
+appropriate test items can even lead to spurious conclusions about
+development (Peter et al., 2019).
 
-Following the approach of Mirman (2014), we used growth curve modeling
-to assess the timecourse of children's fixations to the target object at
-different ages, generalizing across items. Specifically, we predicted
-children's proportion of target looking during the critical window from
-the interaction between age and four orthogonal polynomial time terms
-(linear, quadratic, cubic, and quartic). We included by-item and
-by-dataset random effects. Figure \ref{fig:age_gca} depicts the model
-fit at four different age bins (though not that age was analyzed
-continuously in the model).
+This issue is familiar in psychometrics: test developers interested in
+measuring across a wide range of a particular latent ability must choose
+items appropriate for different abilities. One solution is to use data
+from a bank of questions that have been taken by test-takers of a range
+of abilities, and then use item-response theory models to create
+different test versions appropriate for different ability ranges
+(Embretson \& Reise, 2013). Such tests can then be used to extract
+estimates of developmental change that are independent of individual
+tests and their particular items.
 
-We found that XXXXX.
+Peekbank provides the appropriate data for estimating these
+item-independent developmental changes and designing age-appropriate
+tests in the future. Here we show a proof of concept by providing an
+estimate of the item-independent growth of word recognition accuracy
+across development. We take advantage of the equivalence between item
+response theory and linear mixed effects models (LMMs; De Boeck et al.,
+2011), using LMMs to model the trajectory of word recognition across
+age. We follow the approach of Mirman (2014) and use growth curve LMMs
+to predict the timecourse of recognition. Specifically, we predicted
+children's proportion of target looking during an early window of time
+(0 - 1500ms), using an empirical logit transform on the proportion of
+target looking to allow the use of linear (rather than logistic)
+regression models. Our predictors were time after word onset and age,
+and we additionally included polynomial functions of time (up to fourth
+order) and quadratic effects of age, as well as their interactions. We
+subtracted all intercepts to force fits to start at a baseline of 0
+(chance performance) at time zero. As a random effect structure, we
+included by-item, by-subject, and by-dataset random intercepts; though a
+larger random effect structure could be justified by the data, the size
+of the dataset precluded fitting these.
 
-% \begin{CodeChunk}
-\begin{figure*}
+Figure \ref{fig:age_gca} depicts the results of this analysis. Panel A
+shows the mean empirical word recognition curves for four age groups,
+along with fitted model performance. Although model fits are acceptable,
+developmental change appears irregular - for example, 12--24 month-olds
+show if anything slightly earlier recognition than 24--36 month-olds!
+This pattern is an artifact of averaging across datasets with
+substantially different items and structures. Panel B shows model
+predictions for the population level of each random effect, giving our
+best estimates of the latent ability structure. Here we see continuous
+increases in both speed (point at which the curve rises) and accuracy
+(asymptote of the curve) across ages, though this developmental trend
+decelerates (consistent with other work on the development of reaction
+times in word recognition and more generally; Frank, Lewis, \&
+MacDonald, 2016; Kail, 1991). This proof of concept suggests that
+Peekbank can be used to model developmental change over multiple years,
+overcoming the limitations of individual datasets.
 
-{\centering \includegraphics[width = \textwidth]{figs/age_gca-1}
+\begin{CodeChunk}
+\begin{figure}[H]
+
+{\centering \includegraphics{figs/age_gca-1} 
 
 }
 
 \caption[Growth curve models of proportion target looking during the critical target window at each age range (in months)]{Growth curve models of proportion target looking during the critical target window at each age range (in months).}\label{fig:age_gca}
-\end{figure*}
-% \end{CodeChunk}
-
-\hypertarget{predicting-target-fixation-from-word-aoa}{%
-\subsection{Predicting Target Fixation from Word
-AOA}\label{predicting-target-fixation-from-word-aoa}}
-
-In the next analysis, we asked whether properties of a specific item -
-in particular, the age of acquisition (AOA) for a particular item -
-predict children's lexical processing. Using estimates of the age of
-acquisition derived from Wordbank (Frank, Braginsky, Yurovsky, \&
-Marchman, 2017) for the target and the distractor word, we modeled
-whether earlier-acquired target words are more likely to be fixated
-accurately. XX.
+\end{figure}
+\end{CodeChunk}
 
 \hypertarget{time-window-selection}{%
 \subsection{Time Window Selection}\label{time-window-selection}}
@@ -401,7 +462,7 @@ strength of the IICs are generally much weaker than might be desired
 \begin{CodeChunk}
 \begin{figure*}[h]
 
-{\centering \includegraphics{figs/time_window-1}
+{\centering \includegraphics{figs/time_window-1} 
 
 }
 
@@ -429,20 +490,30 @@ processing and providing data-driven guidance on methodological choices.
 
 Diving into more specifics
 
-Future directions and limitations
-
-limitations in language background (almost entirely English,
-monolingual)
-
-limitations in participant background (almost entirely WEIRD
-participants)
-
-growing the database will address these questions while increasing our
-power to answer the key generalization questions of interest
-
-expanding beyond child lexical processing: tools and infrastructure can
-in principle be expanded to accommodate any eyetracking paradigm used
-with infants and toddlers
+There are a number of critical limitations surrounding the current scope
+of the database. A key priority in future work will be to expand the
+size of the database. With 11 datasets currently available in the
+dataset, idiosyncrasies of particular designs and condition
+manipulations still have substantial influence on modeling results.
+Expanding the set of distinct datasets will allow us to increase the
+number of observations per item across datasets, allowing for more
+robust generalizations regarding participant- and item-level
+variability. The current database is also limited by the relatively
+homogeneous background of its participants, both with respect to
+language (almost entirely monolingual native English speakers) and
+cultural background (with one exception, all participants are growing up
+in WEIRD environments;). Increasing the diversity of the participant
+backgrounds and languages contributing to the current database will
+increase the scope of the generalizations we can form about child
+lexical processing. Finally, while the current database is current
+mainly focused on studies of lexical processing, the tools and
+infrastructure developed in the current project can in principle be
+expanded to accommodate any eyetracking paradigm used with infants and
+toddlers, opening up new avenues for insights into infant development.
+Infant looking has been at the core of many of the key advances in our
+understanding infant cognition. Aggregating large datasets of infant
+looking behavior in a single, openly accessible format promises to bring
+a fuller picture of infant cognitive development into view.
 
 \hypertarget{acknowledgements}{%
 \section{Acknowledgements}\label{acknowledgements}}
@@ -453,125 +524,143 @@ data publicly available in the database.
 \hypertarget{references}{%
 \section{References}\label{references}}
 
-\setlength{\parindent}{-0.1in}
+\setlength{\parindent}{-0.1in} 
 \setlength{\leftskip}{0.125in}
 
 \noindent
 
 \hypertarget{refs}{}
-\begin{CSLReferences}{1}{0}
 \leavevmode\hypertarget{ref-Bergelson2012a}{}%
-Bergelson, E., \& Swingley, D. (2012). {At 6-9 months, human infants
-know the meanings of many common nouns.} \emph{Proceedings of the
-National Academy of Sciences of the United States of America},
-\emph{109}(9), 3253--8.
-http://doi.org/\href{https://doi.org/10.1073/pnas.1113380109}{10.1073/pnas.1113380109}
+Bergelson, E., \& Swingley, D. (2012). At 6-9 months, human infants know
+the meanings of many common nouns. \emph{Proceedings of the National
+Academy of Sciences of the United States of America}, \emph{109}(9),
+3253--8. \url{http://doi.org/10.1073/pnas.1113380109}
 
 \leavevmode\hypertarget{ref-Bergmann2018}{}%
 Bergmann, C., Tsuji, S., Piccinini, P. E., Lewis, M. L., Braginsky, M.,
-Frank, M. C., \& Cristia, A. (2018). {Promoting replicability in
+Frank, M. C., \& Cristia, A. (2018). Promoting replicability in
 developmental research through meta-analyses: Insights from language
-acquisition research}. \emph{Child Development}, \emph{89}(6),
-1996--2009.
-http://doi.org/\href{https://doi.org/10.1111/cdev.13079}{10.1111/cdev.13079}
+acquisition research. \emph{Child Development}, \emph{89}(6),
+1996--2009. \url{http://doi.org/10.1111/cdev.13079}
 
 \leavevmode\hypertarget{ref-Bleses2016}{}%
 Bleses, D., Makransky, G., Dale, P. S., Højen, A., \& Ari, B. A. (2016).
-{Early productive vocabulary predicts academic achievement 10 years
-later}. \emph{Applied Psycholinguistics}, \emph{37}(6), 1461--1476.
-http://doi.org/\href{https://doi.org/10.1017/S0142716416000060}{10.1017/S0142716416000060}
-
-\leavevmode\hypertarget{ref-Braginsky2019}{}%
-Braginsky, M., Yurovsky, D., Marchman, V. A., \& Frank, M. C. (2019).
-{Consistency and variability in children's word learning across
-languages}. \emph{Open Mind}, \emph{3}, 52--67.
-http://doi.org/\href{https://doi.org/10.1162/opmi_a_00026}{10.1162/opmi\_a\_00026}
+Early productive vocabulary predicts academic achievement 10 years
+later. \emph{Applied Psycholinguistics}, \emph{37}(6), 1461--1476.
+\url{http://doi.org/10.1017/S0142716416000060}
 
 \leavevmode\hypertarget{ref-Csibra2016}{}%
 Csibra, G., Hernik, M., Mascaro, O., Tatone, D., \& Lengyel, M. (2016).
-{Statistical treatment of looking-time data}. \emph{Developmental
+Statistical treatment of looking-time data. \emph{Developmental
 Psychology}, \emph{52}(4), 521--536.
-http://doi.org/\href{https://doi.org/10.1037/dev0000083}{10.1037/dev0000083}
+\url{http://doi.org/10.1037/dev0000083}
+
+\leavevmode\hypertarget{ref-de-boeck2011}{}%
+De Boeck, P., Bakker, M., Zwitser, R., Nivard, M., Hofman, A.,
+Tuerlinckx, F., \ldots{} others. (2011). The estimation of item response
+models with the lmer function from the lme4 package in r. \emph{Journal
+of Statistical Software}, \emph{39}(12), 1--28.
+
+\leavevmode\hypertarget{ref-embretson2013}{}%
+Embretson, S. E., \& Reise, S. P. (2013). \emph{Item response theory}.
+Psychology Press.
+
+\leavevmode\hypertarget{ref-fernald1998}{}%
+Fernald, A., Pinto, J. P., Swingley, D., Weinberg, A., \& McRoberts, G.
+W. (1998). Rapid gains in speed of verbal processing by infants in the
+2nd year. \emph{Psychological Science}, \emph{9}(3), 228--231.
 
 \leavevmode\hypertarget{ref-Fernald2008}{}%
 Fernald, A., Zangl, R., Portillo, A. L., \& Marchman, V. A. (2008).
-{Looking while listening: Using eye movements to monitor spoken language
-comprehension by infants and young children}. In I. A. Sekerina, E. M.
+Looking while listening: Using eye movements to monitor spoken language
+comprehension by infants and young children. In I. A. Sekerina, E. M.
 Fernandez, \& H. Clahsen (Eds.), \emph{Developmental psycholinguistics:
 On-line methods in children's language processing} (pp. 97--135).
 Amsterdam: John Benjamins.
 
-\leavevmode\hypertarget{ref-Frank2016}{}%
-Frank, M. C., Braginsky, M., Yurovsky, D., \& Marchman, V. A. (2017).
-{Wordbank: An open repository for developmental vocabulary data}.
-\emph{Journal of Child Language}, \emph{44}(3), 677--694.
-http://doi.org/\href{https://doi.org/10.1017/S0305000916000209}{10.1017/S0305000916000209}
+\leavevmode\hypertarget{ref-frank2021}{}%
+Frank, M. C., Braginsky, M., Yurovsky, D., \& Marchman, V. A. (2021).
+\emph{Variability and Consistency in Early Language Learning: The
+Wordbank Project}. Cambridge, MA: MIT Press. Retrieved from
+\url{http://wordbank-book.stanford.edu}
+
+\leavevmode\hypertarget{ref-frank2016b}{}%
+Frank, M. C., Lewis, M., \& MacDonald, K. (2016). A performance model
+for early word learning. In \emph{CogSci}.
 
 \leavevmode\hypertarget{ref-Golinkoff2013}{}%
 Golinkoff, R. M., Ma, W., Song, L., \& Hirsh-Pasek, K. (2013).
-{Twenty-five years using the intermodal preferential looking paradigm to
-study language acquisition: What have we learned?} \emph{Perspectives on
+Twenty-five years using the intermodal preferential looking paradigm to
+study language acquisition: What have we learned? \emph{Perspectives on
 Psychological Science}, \emph{8}(3), 316--339.
-http://doi.org/\href{https://doi.org/10.1177/1745691613484936}{10.1177/1745691613484936}
+\url{http://doi.org/10.1177/1745691613484936}
 
 \leavevmode\hypertarget{ref-Goodman2008}{}%
-Goodman, J. C., Dale, P. S., \& Li, P. (2008). {Does frequency count?
-Parental input and the acquisition of vocabulary}. \emph{Journal of
-Child Language}, \emph{35}(3), 515--531.
-http://doi.org/\href{https://doi.org/10.1017/S0305000907008641}{10.1017/S0305000907008641}
+Goodman, J. C., Dale, P. S., \& Li, P. (2008). Does frequency count?
+Parental input and the acquisition of vocabulary. \emph{Journal of Child
+Language}, \emph{35}(3), 515--531.
+\url{http://doi.org/10.1017/S0305000907008641}
 
 \leavevmode\hypertarget{ref-Hirsh-Pasek1987}{}%
 Hirsh-Pasek, K., Cauley, K. M., Golinkoff, R. M., \& Gordon, L. (1987).
-{The eyes have it: Lexical and syntactic comprehension in a new
-paradigm}. \emph{Journal of Child Language}, \emph{14}(1), 23--45.
-http://doi.org/\href{https://doi.org/10.1017/S030500090001271X}{10.1017/S030500090001271X}
+The eyes have it: Lexical and syntactic comprehension in a new paradigm.
+\emph{Journal of Child Language}, \emph{14}(1), 23--45.
+\url{http://doi.org/10.1017/S030500090001271X}
 
 \leavevmode\hypertarget{ref-Huang2020}{}%
-Huang, Y., \& Snedeker, J. (2020). {Evidence from the visual world
+Huang, Y., \& Snedeker, J. (2020). Evidence from the visual world
 paradigm raises questions about unaccusativity and growth curve
-analyses}. \emph{Cognition}, \emph{200}, 104251.
-http://doi.org/\href{https://doi.org/10.1016/j.cognition.2020.104251}{10.1016/j.cognition.2020.104251}
+analyses. \emph{Cognition}, \emph{200}, 104251.
+\url{http://doi.org/10.1016/j.cognition.2020.104251}
+
+\leavevmode\hypertarget{ref-kail1991}{}%
+Kail, R. (1991). Developmental change in speed of processing during
+childhood and adolescence. \emph{Psychological Bulletin}, \emph{109}(3),
+490.
 
 \leavevmode\hypertarget{ref-Lew-Williams2007}{}%
-Lew-Williams, C., \& Fernald, A. (2007). {Young children learning
-Spanish make rapid use of grammatical gender in spoken word
-recognition}. \emph{Psychological Science}, \emph{18}(3), 193--198.
-http://doi.org/\href{https://doi.org/10.1111/j.1467-9280.2007.01871.x}{10.1111/j.1467-9280.2007.01871.x}
+Lew-Williams, C., \& Fernald, A. (2007). Young children learning Spanish
+make rapid use of grammatical gender in spoken word recognition.
+\emph{Psychological Science}, \emph{18}(3), 193--198.
+\url{http://doi.org/10.1111/j.1467-9280.2007.01871.x}
 
 \leavevmode\hypertarget{ref-Marchman2018}{}%
 Marchman, V. A., Loi, E. C., Adams, K. A., Ashland, M., Fernald, A., \&
-Feldman, H. M. (2018). {Speed of language comprehension at 18 months old
+Feldman, H. M. (2018). Speed of language comprehension at 18 months old
 predicts school-relevant outcomes at 54 months old in children born
-preterm}. \emph{Journal of Developmental {\&} Behavioral Pediatrics}, 1.
-http://doi.org/\href{https://doi.org/10.1097/DBP.0000000000000541}{10.1097/DBP.0000000000000541}
+preterm. \emph{Journal of Developmental \& Behavioral Pediatrics}, 1.
+\url{http://doi.org/10.1097/DBP.0000000000000541}
 
 \leavevmode\hypertarget{ref-Mirman2014}{}%
-Mirman, D. (2014). \emph{{Growth curve analysis and visualization using
-R}}. CRC Press.
+Mirman, D. (2014). \emph{Growth curve analysis and visualization using
+R}. CRC Press.
 
 \leavevmode\hypertarget{ref-Peelle2020}{}%
-Peelle, J. E., \& Van Engen, K. J. (2020). {Time stand still: Effects of
-temporal window selection on eye tracking analysis}.
-http://doi.org/\url{https://doi.org/10.31234/osf.io/pc3da}
+Peelle, J. E., \& Van Engen, K. J. (2020). Time stand still: Effects of
+temporal window selection on eye tracking analysis.
+\url{http://doi.org/https://doi.org/10.31234/osf.io/pc3da}
+
+\leavevmode\hypertarget{ref-peter2019}{}%
+Peter, M. S., Durrant, S., Jessop, A., Bidgood, A., Pine, J. M., \&
+Rowland, C. F. (2019). Does speed of processing or vocabulary size
+predict later language growth in toddlers? \emph{Cognitive Psychology},
+\emph{115}, 101238.
 
 \leavevmode\hypertarget{ref-Roy2015}{}%
 Roy, B. C., Frank, M. C., Decamp, P., Miller, M., \& Roy, D. (2015).
-{Predicting the birth of a spoken word}. \emph{PNAS}, \emph{112}(41),
-12663--12668.
-http://doi.org/\href{https://doi.org/10.1073/pnas.1419773112}{10.1073/pnas.1419773112}
+Predicting the birth of a spoken word. \emph{PNAS}, \emph{112}(41),
+12663--12668. \url{http://doi.org/10.1073/pnas.1419773112}
 
 \leavevmode\hypertarget{ref-Swingley2000}{}%
-Swingley, D., \& Aslin, R. N. (2000). {Spoken word recognition and
-lexical representation in very young children.} \emph{Cognition},
+Swingley, D., \& Aslin, R. N. (2000). Spoken word recognition and
+lexical representation in very young children. \emph{Cognition},
 \emph{76}(2), 147--66.
 
 \leavevmode\hypertarget{ref-TheManyBabiesConsortium2020}{}%
-The ManyBabies Consortium. (2020). {Quantifying sources of variability
-in infancy research using the infant-directed speech preference}.
+The ManyBabies Consortium. (2020). Quantifying sources of variability in
+infancy research using the infant-directed speech preference.
 \emph{Advances in Methods and Practices in Psychological Science}.
-http://doi.org/\href{https://doi.org/10.1177/2515245919900809}{10.1177/2515245919900809}
-
-\end{CSLReferences}
+\url{http://doi.org/10.1177/2515245919900809}
 
 \bibliographystyle{apacite}
 
