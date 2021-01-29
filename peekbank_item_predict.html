@@ -1739,6 +1739,7 @@ write_csv(aoas_ws_produces,here(&quot;data&quot;,&quot;aoas_wordbank_ws_produces
 </div>
 <div id="add-english-aoas" class="section level3">
 <h3>Add English AOAs</h3>
+<p>Join English AOAs into the trial-level accuracy data, both for target labels and for distractor labels.</p>
 <pre class="r"><code>#aoas &lt;- read_csv(here(&quot;data&quot;,&quot;bglm_aoas_english.csv&quot;)) 
 aoas &lt;- read_csv(here(&quot;data&quot;,&quot;aoas_wordbank_ws_produces.csv&quot;))
 
@@ -1764,6 +1765,12 @@ acc_mod_freq_aoa &lt;- left_join(acc_mod_freq,
 </div>
 <div id="does-item-frequency-predict-target-looking" class="section level2 tabset">
 <h2>Does item frequency predict target looking?</h2>
+<p>First, we’re going to explore whether the log word frequency of the relevant items (from CHILDES) predicts proportion target looking. We’ll look at just the target word frequency first, and then more complex models that also include distractor label frequency. The crux is that although it appears that there is some signal here (see plots below and model without random item effects), that signal doesn’t generalize across items (i.e., once random effects for items are added into the model). This is probably the result of a few different things coming together:</p>
+<ol style="list-style-type: decimal">
+<li><p>We have vastly different numbers of observations for different items</p></li>
+<li><p>There are idiosyncrasies to these datasets, and one or two datasets with a distinct set of items can have a vast amount of influence at this point.</p></li>
+<li><p>The items are not randomly distributed across e.g., age, but are specifically selected for the age range tested, so there is significant range restriction likely going on.</p></li>
+</ol>
 <div id="plots" class="section level3 tabset">
 <h3>Plots</h3>
 <div id="general-correlation" class="section level4">
@@ -1794,6 +1801,7 @@ acc_mod_freq %&gt;%
 </div>
 <div id="plot-summarized-items" class="section level4">
 <h4>Plot summarized Items</h4>
+<p>This plot shows relationships between frequency and proportion target looking when averaging across trials for each specific item.</p>
 <pre class="r"><code>n_cutoff &lt;- 20
 by_target_item_means %&gt;%
   filter(N&gt;n_cutoff) %&gt;%
@@ -1807,7 +1815,7 @@ by_target_item_means %&gt;%
 </div>
 <div id="target-frequency" class="section level3 tabset">
 <h3>Target Frequency</h3>
-<p>Predict proportion looking from target frequency, controlling for age. Frequency effect does not generalize across items</p>
+<p>Predict proportion looking from target frequency, controlling for age. The frequency effect does not appear generalize across items (i.e., it disappears once by-item random effects are included).</p>
 <div id="no-item-random-effects" class="section level4">
 <h4>No item random effects</h4>
 <pre class="r"><code>m1 &lt;- lmer(prop_looking ~ target_log_freq_centered+age_centered+(1|administration_id)+(1|dataset_name), data = acc_mod_freq)
@@ -1884,6 +1892,7 @@ summary(m1A)</code></pre>
 </div>
 <div id="trial-count-threshold" class="section level4">
 <h4>Trial Count Threshold</h4>
+<p>I also considered restricting the data to just items where there is some minimum number of observations (in this case, 20), since I thought items with only small numbers of observations might be introducing a lot of noise. This does not appear to make a big difference to the models, however.</p>
 <pre class="r"><code>m1A_red &lt;- lmer(prop_looking ~ target_log_freq_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label), data = filter(acc_mod_freq,trial_count&gt;20))
 summary(m1A_red)</code></pre>
 <pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [
@@ -1923,7 +1932,7 @@ summary(m1A_red)</code></pre>
 </div>
 <div id="target-distractor-frequency" class="section level3 tabset">
 <h3>Target &amp; Distractor Frequency</h3>
-<p>Add distractor frequency</p>
+<p>Fit more complex models including both target word and distractor word frequency. The issues remain similar.</p>
 <div id="no-item-random-effects-1" class="section level4">
 <h4>No item random effects</h4>
 <pre class="r"><code>m2 &lt;- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+age_centered+(1|administration_id)+(1|dataset_name), data = acc_mod_freq)
@@ -2069,6 +2078,7 @@ summary(m2A_red)</code></pre>
 </div>
 <div id="does-aoa-predict-target-looking" class="section level2 tabset">
 <h2>Does AOA predict target looking?</h2>
+<p>Next, I focused on predicting proportion target looking on each trial from target AOA, and then subsequently more complex models also including distractor AOA. The issue of generalizing across items is very similar to the case of frequency, likely for similar reasons.</p>
 <div id="target-aoa" class="section level3 tabset">
 <h3>Target AOA</h3>
 <p>Predict proportion target looking from target aoa controlling for age.</p>
@@ -2434,8 +2444,8 @@ summary(m4A_red)</code></pre>
 ## age_centerd -0.019 -0.028 -0.014</code></pre>
 </div>
 </div>
-<div id="target-distractor-aoa-1" class="section level3 tabset">
-<h3>Target &amp; Distractor AOA</h3>
+<div id="luce-choice-aoa" class="section level3 tabset">
+<h3>Luce Choice AOA</h3>
 <p>Using Mike Frank’s suggestion for a Luce choice predictor (1/target_aoa)/(1/target_aoa+1/distractor_aoa)</p>
 <div id="no-item-random-effects-4" class="section level4">
 <h4>No item random effects</h4>
@@ -2516,7 +2526,7 @@ summary(m4C)</code></pre>
 </div>
 <div id="combined-effect-of-frequency-and-aoa" class="section level2 tabset">
 <h2>Combined Effect of Frequency and AOA</h2>
-<p>Next, we combined all frequency and AOA predictors into a single model.</p>
+<p>Finally, we combined all frequency and AOA predictors into a single model. Again, almost all putative effects do not “survive” including by-item random effects (with the exception of perhaps target word AOA).</p>
 <div id="no-item-random-effects-5" class="section level3">
 <h3>no item random effects</h3>
 <pre class="r"><code>m5 &lt;- lmer(prop_looking ~ target_log_freq_centered+distractor_log_freq_centered+target_aoa_centered+distractor_aoa_centered+age_centered+(1|administration_id)+(1|dataset_name), data = acc_mod_freq_aoa)

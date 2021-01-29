@@ -179,6 +179,8 @@ write_csv(aoas_ws_produces,here("data","aoas_wordbank_ws_produces.csv"))
 
 ### Add English AOAs
 
+Join English AOAs into the trial-level accuracy data, both for target labels and for distractor labels.
+
 ```{r}
 #aoas <- read_csv(here("data","bglm_aoas_english.csv")) 
 aoas <- read_csv(here("data","aoas_wordbank_ws_produces.csv"))
@@ -204,6 +206,17 @@ acc_mod_freq_aoa <- left_join(acc_mod_freq,
 ```
 
 ## Does item frequency predict target looking? {.tabset}
+
+First, we're going to explore whether the log word frequency of the relevant items (from CHILDES) predicts proportion target looking. 
+We'll look at just the target word frequency first, and then more complex models that also include distractor label frequency. 
+The crux is that although it appears that there is some signal here (see plots below and model without random item effects), that signal doesn't generalize across items (i.e., once random effects for items are added into the model).
+This is probably the result of a few different things coming together:
+
+1. We have vastly different numbers of observations for different items
+
+2. There are idiosyncrasies to these datasets, and one or two datasets with a distinct set of items can have a vast amount of influence at this point.
+
+3. The items are not randomly distributed across e.g., age, but are specifically selected for the age range tested, so there is significant range restriction likely going on.
 
 ### Plots {.tabset}
 
@@ -240,6 +253,8 @@ acc_mod_freq %>%
 
 #### Plot summarized Items
 
+This plot shows relationships between frequency and proportion target looking when averaging across trials for each specific item.
+
 ```{r}
 n_cutoff <- 20
 by_target_item_means %>%
@@ -253,7 +268,7 @@ by_target_item_means %>%
 
 ### Target Frequency {.tabset}
 
-Predict proportion looking from target frequency, controlling for age. Frequency effect does not generalize across items
+Predict proportion looking from target frequency, controlling for age. The frequency effect does not appear generalize across items (i.e., it disappears once by-item random effects are included).
 
 #### No item random effects
 
@@ -271,6 +286,8 @@ summary(m1A)
 
 #### Trial Count Threshold
 
+I also considered restricting the data to just items where there is some minimum number of observations (in this case, 20), since I thought items with only small numbers of observations might be introducing a lot of noise. This does not appear to make a big difference to the models, however.
+
 ```{r}
 m1A_red <- lmer(prop_looking ~ target_log_freq_centered+age_centered+(1|administration_id)+(1|dataset_name)+(1|target_label), data = filter(acc_mod_freq,trial_count>20))
 summary(m1A_red)
@@ -278,7 +295,7 @@ summary(m1A_red)
 
 ### Target & Distractor Frequency {.tabset}
 
-Add distractor frequency
+Fit more complex models including both target word and distractor word frequency. The issues remain similar.
 
 #### No item random effects
 ```{r}
@@ -302,6 +319,8 @@ summary(m2A_red)
 ```
 
 ## Does AOA predict target looking? {.tabset}
+
+Next, I focused on predicting proportion target looking on each trial from target AOA, and then subsequently more complex models also including distractor AOA. The issue of generalizing across items is very similar to the case of frequency, likely for similar reasons.
 
 ### Target AOA {.tabset}
 
@@ -380,7 +399,7 @@ m4A_red <- lmer(prop_looking ~ target_aoa_centered+distractor_aoa_centered+age_c
 summary(m4A_red)
 ```
 
-### Target & Distractor AOA {.tabset}
+### Luce Choice AOA {.tabset}
 
 Using Mike Frank's suggestion for a Luce choice predictor (1/target_aoa)/(1/target_aoa+1/distractor_aoa)
 
@@ -400,7 +419,7 @@ summary(m4C)
 
 ## Combined Effect of Frequency and AOA {.tabset}
 
-Next, we combined all frequency and AOA predictors into a single model.
+Finally, we combined all frequency and AOA predictors into a single model. Again, almost all putative effects do not "survive" including by-item random effects (with the exception of perhaps target word AOA). 
 
 ### no item random effects
 ```{r}
