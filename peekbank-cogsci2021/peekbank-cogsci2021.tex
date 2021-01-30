@@ -53,7 +53,7 @@
 % \textheight 21cm
 
 \title{Peekbank: Exploring child lexical processing through a large-scale
-open-source database of developmental eyetracking datasets}
+open-source database of developmental eye-tracking datasets}
 
 
 \author{{\large \bf Martin Zettersten (martincz@princeton.edu)} \\ Department of Psychology, South Dr \\ Princeton, NJ 08540 USA \AND {\large \bf CLinger Xu (txu@iu.edu)}  \AND {\large \bf Stephan Meylan (smeylan@mit.edu)}  \AND {\large \bf Mika Braginsky (mikabr@mit.edu)}  \AND {\large \bf George Kachergis (kachergis@stanford.edu)}  \AND {\large \bf Molly Lewis (mollyllewis@gmail.com)}  \AND {\large \bf Claire Bergey (cbergey@uchicago.edu)}  \AND {\large \bf Naiti S. Bhatt (nbhatt@hmc.edu)}  \AND {\large \bf Veronica Boyce (vboyce@stanford.edu)}  \AND {\large \bf Jessica Mankewitz (jmankewitz@stanford.edu)} \AND {\large \bf Bria Long (bria@stanford.edu)} 
@@ -72,11 +72,11 @@ language development. Children's lexical processing is typically studied
 in the looking-while-listening paradigm, which measures infants'
 fixation of a target object (vs.~a distracter) after hearing a target
 label. We present a large-scale open-source database of infant and
-toddler eye-tracking data from looking-hile-listening tasks. The goal of
-this database is to address theoretical and methodological challenges in
-measuring infant vocabulary development. We present two analyses of the
-current database (N=1,233): (1) models capturing age-related changes in
-infants' lexical processing while generalizing across item-level
+toddler eye-tracking data from looking-while-listening tasks. The goal
+of this database is to address theoretical and methodological challenges
+in measuring infant vocabulary development. We present two analyses of
+the current database (N=1,233): (1) models capturing age-related changes
+in infants' lexical processing while generalizing across item-level
 variability and (2) an analysis of how a central methodological decision
 -- selecting the time window of analysis -- impacts measure reliability.
 Future efforts will expand the scope of the current database to advance
@@ -84,7 +84,7 @@ our understanding of participant-level and item-level variation in
 children's vocabulary development.
 
 \textbf{Keywords:}
-lexical processing; eyetracking; database; vocabulary development;
+lexical processing; eye-tracking; database; vocabulary development;
 looking-while-listening
 \end{abstract}
 
@@ -94,29 +94,28 @@ looking-while-listening
 Across their first years of life, children learn words in their native
 tongues at a rapid pace (Frank, Braginsky, Yurovsky, \& Marchman, 2021).
 A key part of the word learning process is children's ability to rapidly
-process words and link them to relevant meanings in context - often
-referred to as lexical processing. Developing lexical processing skills
-builds a foundation for children's language development and is
-predictive of both linguistic and more general cognitive outcomes later
-in life (Bleses, Makransky, Dale, Højen, \& Ari, 2016; Marchman et al.,
-2018).
+process words and link them to relevant meanings - often referred to as
+lexical processing. Developing lexical processing skills builds a
+foundation for children's language development and is predictive of
+later linguistic and general cognitive outcomes (Bleses, Makransky,
+Dale, Højen, \& Ari, 2016; Marchman et al., 2018).
 
-Lexical processing is traditionally studied in
-``looking-while-listening'' studies (alternatively referred to as the
+Lexical processing is traditionally studied in the
+``looking-while-listening'' paradigm (alternatively referred to as the
 intermodal preferential looking procedure) (Fernald, Zangl, Portillo, \&
 Marchman, 2008; Hirsh-Pasek, Cauley, Golinkoff, \& Gordon, 1987). In
 such studies, infants listen to a sentence prompting a specific referent
 (e.g., \emph{Look at the dog!}) while viewing two images on the screen
 (e.g., an image of a dog - the target image - and an image of a duck -
 the distractor image). Infants' lexical processing is measured in terms
-of how quickly and accurately infants subsequently fixate the correct
-target image after hearing its label. Studies using this basic design
-have contributed to our understanding of a wide range of questions in
-language development (Golinkoff, Ma, Song, \& Hirsh-Pasek, 2013),
-including infants' early noun knowledge (Bergelson \& Swingley, 2012),
-phonological representations of words ({\textbf{???}}), prediction
-during language processing (Lew-Williams \& Fernald, 2007), and
-individual differences in language development (Marchman et al., 2018).
+of how quickly and accurately they fixate on the correct target image
+after hearing its label. Studies using this design have contributed to
+our understanding of a wide range of questions in language development
+(Golinkoff, Ma, Song, \& Hirsh-Pasek, 2013), including infants' early
+noun knowledge (Bergelson \& Swingley, 2012), phonological
+representations of words (Swingley \& Aslin, 2000), prediction during
+language processing (Lew-Williams \& Fernald, 2007), and individual
+differences in language development (Marchman et al., 2018).
 
 While the looking-while-listening paradigm has been highly fruitful in
 advancing understanding of early word knowledge, fundamental questions
@@ -125,18 +124,17 @@ ability and the nature of the method itself. One central question
 relates to teasing apart variability due to participants and variability
 due to specific items across development. Drawing inferences about
 item-level variability is key to many questions in how word learning
-unfolds, including how properties of the language input influence
-lexical development (Goodman, Dale, \& Li, 2008; Roy, Frank, Decamp,
-Miller, \& Roy, 2015). Most studies of infant lexical processing focus
-on generalizing performance across participants, and are constrained in
+unfolds, such as how properties of the language input influence lexical
+development (Goodman, Dale, \& Li, 2008; Roy, Frank, Decamp, Miller, \&
+Roy, 2015). Most studies of infant lexical processing focus on
+generalizing performance across participants, and are constrained in
 their ability to provide generalizations across the item level - the
 level of specific words. Generalizing behavior on the level of both
-participants and items simultaneously is often difficult in the context
-of a solitary study, especially given practical constraints on the
-number of trials (and consequently items) tested within a given infant.
-One key to meeting this challenge is having sufficiently large datasets
-to account for and explain variability in lexical processing on the item
-level.
+participants and items simultaneously is difficult in the context of a
+solitary study, especially given practical constraints on the number of
+trials (and consequently items) tested within a given infant. One key to
+meeting this challenge is having sufficiently large datasets to account
+for and explain variability in lexical processing on the item level.
 
 A second question relates to evaluating methodological best-practices.
 In particular, many fundamental analytic decisions vary substantially
@@ -148,34 +146,28 @@ Mascaro, Tatone, \& Lengyel, 2016; Fernald et al., 2008; Huang \&
 Snedeker, 2020). This problem is made more complex by the fact that many
 of these decisions likely depend on a variety of design-related and
 participant-related factors (e.g., infant age). Establishing best
-practices regarding analytic decisions therefore requires a large
-database of infant lexical processing studies varying across such
-factors, in order to independently test the potential consequences of a
-variety of methodological decisions and study factors on the
-interpretation of study results.
+practices therefore requires a large database of infant lexical
+processing studies varying across such factors, in order to
+independently test the potential consequences of a variety of
+methodological decisions on the interpretation of study results.
 
-\hypertarget{peekbank-a-large-scale-database-of-looking-while-listening-studies}{%
-\subsection{Peekbank: A large-scale database of
-looking-while-listening-studies}\label{peekbank-a-large-scale-database-of-looking-while-listening-studies}}
-
-What these questions and challenges share is that they are difficult to
-answer at the scale of a single looking-while-listening study. In order
-to address these questions, we introduce \emph{peekbank}, a flexible and
+What these questions share is that they are difficult to answer at the
+scale of a single looking-while-listening study. In order to address
+this challenge, we introduce \emph{Peekbank}, a flexible and
 reproducible interface to an open database of developmental eye-tracking
-studies. Here, we give a brief overview over the key components of the
-peekbank project and some initial demonstrations of its utility in
-advancing theoretical and methodological questions in the study of
-children's lexical processing. The peekbank project (a) collects a large
-set of eye-tracking datasets on children's lexical processing, (b)
+studies. Here, we give a brief overview of the key components of the
+project and some initial demonstrations of its utility in advancing
+theoretical and methodological questions in the study of children's
+lexical processing. The \emph{Peekbank} project (a) collects a large set
+of eye-tracking datasets on children's lexical processing, (b)
 introduces a data format and processing tools for standardizing
-eyetracking data across different data sources, and (c) provides an API
-for quickly accessing and analyzing the database. We report two analyses
-using the database and associated tools (N=1,233 unique participants):
-(1) a growth-curve analysis modeling age-related changes in infants'
-lexical processing while generalizing across item-level variability and
-(2) a multiverse-style analysis of how a central methodological decision
--- selecting the time window of analysis -- impacts reliability when
-measuring infants' proportion looking to the target.
+eye-tracking data across data sources, and (c) provides an API for
+accessing and analyzing the database. We report two analyses using the
+database and associated tools (N=1,233): (1) a growth-curve analysis
+modeling age-related changes in infants' lexical processing while
+generalizing across item-level variability and (2) a multiverse-style
+analysis of how a central methodological decision -- selecting the time
+window of analysis -- impacts measure reliability.
 
 \hypertarget{methods}{%
 \section{Methods}\label{methods}}
@@ -194,8 +186,8 @@ measuring infants' proportion looking to the target.
 \end{figure}
 \end{CodeChunk}
 
-The Peekbank data framework consists of three libraries that help to
-populate and query a relational database (Fig.
+The \emph{Peekbank} data framework consists of three libraries that help
+to populate and query a relational database (Fig.
 \ref{fig:fig_framework_overview}). The \texttt{peekds} library (for the
 R language) helps researchers convert and validate existing datasets to
 use the relational format used by the database. The \texttt{peekbank}
@@ -212,25 +204,23 @@ database.
 \subsection{Data Format and
 Processing}\label{data-format-and-processing}}
 
-One of the main challenges in compiling a large-scale eyetracking
+One of the main challenges in compiling a large-scale eye-tracking
 dataset is the lack of a shared re-usable data format among labs
-conducting individual experiments. Eyetracking methods and researcher
-teams vary in their conventions for exporting and structuring data,
-rendering the task of integrating datasets from different labs and data
-sources difficult. We developed a common, tidy format for the
-eyetracking data in peekbank to ease the process of conducting
-cross-dataset analyses. The schema of the database is sufficiently
-general to handle heterogeneous datasets from many studies from many
-labs, including both manually coded and automated eyetracking data.
+conducting individual experiments. Researcher conventions for exporting
+and structuring data vary, rendering the task of integrating datasets
+from different labs and data sources difficult. We developed a common,
+tidy format for the eye-tracking data in \emph{Peekbank} to ease the
+process of conducting cross-dataset analyses. The schema of the database
+is sufficiently general to handle heterogeneous datasets, including both
+manually coded and automated eye-tracking data.
 
-During data import, raw eyetracking datasets are processed to conform to
-the peekbank data schema. The centerpiece of the schema is the
-aoi\_timepoints table , which records whether participants looked to the
-target or distracter stimulus at each timepoint of a given trial.
-Additional tables track information about data sources (datasets),
-participant characteristics (subjects, administrations), trial
-characteristics (trials, trial\_types), stimuli (stimuli), and raw
-eyetracking data information (xy\_timepoints, aoi\_region\_sets). In
+During data import, raw eye-tracking datasets are processed to conform
+to the \emph{Peekbank} data schema. The centerpiece of the schema is the
+aoi\_timepoints table (Fig. \ref{fig:fig_framework_overview}), which
+records whether participants looked to the target or the distracter
+stimulus at each timepoint of a given trial. Additional tables track
+information about data sources, participant characteristics, trial
+characteristics, stimuli, and raw eye-tracking data information. In
 addition to unifying the data format, we conduct several additional
 pre-processing steps to facilitate analyses across datasets, including
 resampling observations to a common sampling rate (40 Hz) and
@@ -266,15 +256,25 @@ canine & 36 & 23.8 & manual coding \\
 The database currently includes 11 datasets comprising N=1233 total
 participants, with 23 to 435 participants per dataset (Table 1). The
 vast majority of datasets (10 out of 11 total) consist of monolingual
-native English speakers.\\
-The datasets span a wide age spectrum with participants ranging from 8
-to 84 months of age, and are balanced in terms of gender (48\% female).
-The studies in the current database vary across a number of dimensions
-related to design and methodology. The database includes studies using
-both manually coded video recordings or aumotated eyetracking methods to
-measure children's gaze behavior. Most studies focused on testing
-familiar items, but the database also includes studies in which both
-familiar words and novel pseudowords were tested.
+native English speakers. The datasets span a wide age spectrum with
+participants ranging from 8 to 84 months of age, and are balanced in
+terms of gender (48\% female). The studies in the current database vary
+across a number of dimensions related to design and methodology. The
+database includes studies using both manually coded video recordings or
+aumotated eye-tracking methods to measure children's gaze behavior. Most
+studies focused on testing familiar items, but the database also
+includes studies in which novel pseudowords were tested.
+
+\begin{CodeChunk}
+\begin{figure*}[h]
+
+{\centering \includegraphics{figs/peekbank_item_vis-1} 
+
+}
+
+\caption[Item-level variability in proportion target looking within each dataset]{Item-level variability in proportion target looking within each dataset. Colored lines represent specific target labels.}\label{fig:peekbank_item_vis}
+\end{figure*}
+\end{CodeChunk}
 
 \hypertarget{results}{%
 \section{Results}\label{results}}
@@ -317,20 +317,20 @@ higher for familiar target labels (M = 67.5\%, 95\% CI = {[}66.6\%,
 68.5\%{]}) than for novel target labels that participants learned during
 the experiment (M = 55.1\%, 95\% CI = {[}53.8\%, 56.3\%{]}).
 
-\begin{CodeChunk}
-\begin{figure*}[h]
-
-{\centering \includegraphics{figs/peekbank_item_vis-1} 
-
-}
-
-\caption[Item-level variability in proportion target looking within each dataset]{Item-level variability in proportion target looking within each dataset. Colored lines represent specific target labels.}\label{fig:peekbank_item_vis}
-\end{figure*}
-\end{CodeChunk}
-
 \hypertarget{predicting-age-related-changes-while-generalizing-across-items}{%
 \subsection{Predicting Age-Related Changes While Generalizing Across
 Items}\label{predicting-age-related-changes-while-generalizing-across-items}}
+
+\begin{CodeChunk}
+\begin{figure*}[h]
+
+{\centering \includegraphics{figs/age_gca-1} 
+
+}
+
+\caption[Growth curve models of proportion target looking during the critical target window at each age range (in months)]{Growth curve models of proportion target looking during the critical target window at each age range (in months).}\label{fig:age_gca}
+\end{figure*}
+\end{CodeChunk}
 
 Developmental changes in word recognition have been a central issue
 since early investigations of eye-tracking techniques (Fernald, Pinto,
@@ -348,11 +348,11 @@ items appropriate for different abilities. One solution is to use data
 from a bank of questions that have been taken by test-takers of a range
 of abilities, and then use item-response theory models to create
 different test versions appropriate for different ability ranges
-(Embretson \& Reise, 2013). Such tests can then be used to extract
+(Embretson \& Reise, 2000). Such tests can then be used to extract
 estimates of developmental change that are independent of individual
 tests and their particular items.
 
-Peekbank provides the appropriate data for estimating these
+\emph{Peekbank} provides the appropriate data for estimating these
 item-independent developmental changes and designing age-appropriate
 tests in the future. Here we show a proof of concept by providing an
 estimate of the item-independent growth of word recognition accuracy
@@ -387,22 +387,22 @@ increases in both speed (point at which the curve rises) and accuracy
 decelerates (consistent with other work on the development of reaction
 times in word recognition and more generally; Frank, Lewis, \&
 MacDonald, 2016; Kail, 1991). This proof of concept suggests that
-Peekbank can be used to model developmental change over multiple years,
-overcoming the limitations of individual datasets.
+\emph{Peekbank} can be used to model developmental change over multiple
+years, overcoming the limitations of individual datasets.
+
+\hypertarget{time-window-selection}{%
+\subsection{Time Window Selection}\label{time-window-selection}}
 
 \begin{CodeChunk}
 \begin{figure*}[h]
 
-{\centering \includegraphics{figs/age_gca-1} 
+{\centering \includegraphics{figs/time_window-1} 
 
 }
 
-\caption[Growth curve models of proportion target looking during the critical target window at each age range (in months)]{Growth curve models of proportion target looking during the critical target window at each age range (in months).}\label{fig:age_gca}
+\caption[Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group]{Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid.}\label{fig:time_window}
 \end{figure*}
 \end{CodeChunk}
-
-\hypertarget{time-window-selection}{%
-\subsection{Time Window Selection}\label{time-window-selection}}
 
 Taking a similar approach to that of Peelle \& Van Engen (2020), we
 conducted a multiverse-style analysis considering possible time windows
@@ -412,23 +412,24 @@ familiar words by measuring the subject-level inter-item correlation
 (IIC) for proportion of looking at familiar targets. The time windows
 selected by researchers varies substantially in the literature, with
 some studies analyzing shorter time windows between 300 ms and 1800-2000
-ms post-target onset ({\textbf{???}}; Fernald et al., 2008), while
-longer time windows extending to approximately 3000-4000ms post-target
-onset are often also used ({\textbf{???}}; {\textbf{???}}). We thus
-examined a broad range of window start and end times: we calculated
-subjects' mean IIC across from 300 ms pre-target onset to 1500 ms
-post-target word onset) and window end times (ranging from 0 ms to 4000
-ms). While it is an open question what space of possible windows will
-yield the greatest reliability, we expect to see very low reliability
-(i.e.~0) in windows that start and end before target onset, and likely
-for any windows that end within 300 ms post-target onset, before
-participants have had a chance to execute a response. Since observations
-were unevenly distributed across the age range, and because children
-likely show a varying response to familiar items as they age, we split
-our data into four age bins (12-24, 24-36, 36-48, and 48-60 months). For
-each combination of window start time and end time with a minimum window
-duration of 50 ms, participants' average inter-item correlation for
-proportion of looking at familiar targets was calculated.
+ms post-target onset (Fernald et al., 2008; Swingley \& Aslin, 2000),
+while longer time windows extending to approximately 3000-4000ms
+post-target onset are often also used (Bergelson \& Swingley, 2012;
+Kartushina \& Mayor, 2019). We thus examined a broad range of window
+start and end times: we calculated subjects' mean IIC across from 300 ms
+pre-target onset to 1500 ms post-target word onset) and window end times
+(ranging from 0 ms to 4000 ms). While it is an open question what space
+of possible windows will yield the greatest reliability, we expect to
+see very low reliability (i.e.~0) in windows that start and end before
+target onset, and likely for any windows that end within 300 ms
+post-target onset, before participants have had a chance to execute a
+response. Since observations were unevenly distributed across the age
+range, and because children likely show a varying response to familiar
+items as they age, we split our data into four age bins (12-24, 24-36,
+36-48, and 48-60 months). For each combination of window start time and
+end time with a minimum window duration of 50 ms, participants' average
+inter-item correlation for proportion of looking at familiar targets was
+calculated.
 
 The resulting correlations of this multiverse analysis are shown in
 Figure \ref{fig:time_window}, where subjects' mean ICC for proportion of
@@ -456,17 +457,6 @@ However, the overall strength of the IICs are generally much weaker than
 might be desired (median = .05), with maximum values of 0.15 (reached
 only in 3-year-olds).
 
-\begin{CodeChunk}
-\begin{figure*}[h]
-
-{\centering \includegraphics{figs/time_window-1} 
-
-}
-
-\caption[Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group]{Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid.}\label{fig:time_window}
-\end{figure*}
-\end{CodeChunk}
-
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
 
@@ -475,14 +465,14 @@ collection challenge: Studying effects of interest requires a large
 amount of observations, but collecting infant data is difficult,
 time-intensive, and often limited to a small number of observations per
 participant. Recent years have seen a growing effort to build open
-source tools and pooling research efforts to meet the challenge of data
-collection and aggregation in developmental science (Bergmann et al.,
-2018; The ManyBabies Consortium, 2020). Peekbank expands on these
-efforts by building an infrastructure for aggregating eyetracking data
-across studies, with a particular focus on the looking-while-listening
+source tools and pooling research efforts to meet the challenge of
+building a cumulative developmental science (Bergmann et al., 2018; The
+ManyBabies Consortium, 2020). \emph{Peekbank} expands on these efforts
+by building an infrastructure for aggregating eye-tracking data across
+studies, with a particular focus on the looking-while-listening
 paradigm. This paper presents a preliminary illustration of some of the
-key theoretical and methodological questions the peekbank database aims
-to address: generalizing across item-level variability in children's
+key theoretical and methodological questions \emph{Peekbank} aims to
+address: generalizing across item-level variability in children's
 lexical processing and providing data-driven guidance on methodological
 choices.
 
@@ -503,15 +493,17 @@ cultural background (with one exception, all participants are growing up
 in WEIRD environments;). Increasing the diversity of the participant
 backgrounds and languages contributing to the current database will
 increase the scope of the generalizations we can form about child
-lexical processing. Finally, while the current database is current
-mainly focused on studies of lexical processing, the tools and
-infrastructure developed in the current project can in principle be
-expanded to accommodate any eyetracking paradigm used with infants and
-toddlers, opening up new avenues for insights into infant development.
-Infant looking has been at the core of many of the key advances in our
-understanding infant cognition. Aggregating large datasets of infant
-looking behavior in a single, openly accessible format promises to bring
-a fuller picture of infant cognitive development into view.
+lexical processing.
+
+Finally, while the current database is mainly focused on studies of
+lexical processing, the tools and infrastructure developed in the
+project can in principle be expanded to accommodate any eye-tracking
+paradigm used with infants and toddlers, opening up new avenues for
+insights into infant development. Infant looking has been at the core of
+many of the key advances in our understanding infant cognition.
+Aggregating large datasets of infant looking behavior in a single,
+openly accessible format promises to bring a fuller picture of infant
+cognitive development into view.
 
 \hypertarget{acknowledgements}{%
 \section{Acknowledgements}\label{acknowledgements}}
@@ -530,28 +522,25 @@ data publicly available in the database.
 \hypertarget{refs}{}
 \leavevmode\hypertarget{ref-Bergelson2012a}{}%
 Bergelson, E., \& Swingley, D. (2012). At 6-9 months, human infants know
-the meanings of many common nouns. \emph{Proceedings of the National
-Academy of Sciences of the United States of America}, \emph{109}(9),
-3253--8. \url{http://doi.org/10.1073/pnas.1113380109}
+the meanings of many common nouns. \emph{PNAS}, \emph{109}(9),
+3253--3258.
 
 \leavevmode\hypertarget{ref-Bergmann2018}{}%
 Bergmann, C., Tsuji, S., Piccinini, P. E., Lewis, M. L., Braginsky, M.,
 Frank, M. C., \& Cristia, A. (2018). Promoting replicability in
 developmental research through meta-analyses: Insights from language
 acquisition research. \emph{Child Development}, \emph{89}(6),
-1996--2009. \url{http://doi.org/10.1111/cdev.13079}
+1996--2009.
 
 \leavevmode\hypertarget{ref-Bleses2016}{}%
 Bleses, D., Makransky, G., Dale, P. S., Højen, A., \& Ari, B. A. (2016).
 Early productive vocabulary predicts academic achievement 10 years
 later. \emph{Applied Psycholinguistics}, \emph{37}(6), 1461--1476.
-\url{http://doi.org/10.1017/S0142716416000060}
 
 \leavevmode\hypertarget{ref-Csibra2016}{}%
 Csibra, G., Hernik, M., Mascaro, O., Tatone, D., \& Lengyel, M. (2016).
 Statistical treatment of looking-time data. \emph{Developmental
 Psychology}, \emph{52}(4), 521--536.
-\url{http://doi.org/10.1037/dev0000083}
 
 \leavevmode\hypertarget{ref-de-boeck2011}{}%
 De Boeck, P., Bakker, M., Zwitser, R., Nivard, M., Hofman, A.,
@@ -559,9 +548,9 @@ Tuerlinckx, F., \ldots{} others. (2011). The estimation of item response
 models with the lmer function from the lme4 package in r. \emph{Journal
 of Statistical Software}, \emph{39}(12), 1--28.
 
-\leavevmode\hypertarget{ref-embretson2013}{}%
-Embretson, S. E., \& Reise, S. P. (2013). \emph{Item response theory}.
-Psychology Press.
+\leavevmode\hypertarget{ref-embretson2000}{}%
+Embretson, S. E., \& Reise, S. P. (2000). \emph{Item response theory for
+psychologists}. Mahwah, NJ: Lawrence Erlbaum Associates.
 
 \leavevmode\hypertarget{ref-fernald1998}{}%
 Fernald, A., Pinto, J. P., Swingley, D., Weinberg, A., \& McRoberts, G.
@@ -579,63 +568,64 @@ Amsterdam: John Benjamins.
 \leavevmode\hypertarget{ref-frank2021}{}%
 Frank, M. C., Braginsky, M., Yurovsky, D., \& Marchman, V. A. (2021).
 \emph{Variability and Consistency in Early Language Learning: The
-Wordbank Project}. Cambridge, MA: MIT Press. Retrieved from
-\url{http://wordbank-book.stanford.edu}
+Wordbank Project}. Cambridge, MA: MIT Press.
 
 \leavevmode\hypertarget{ref-frank2016b}{}%
 Frank, M. C., Lewis, M., \& MacDonald, K. (2016). A performance model
-for early word learning. In \emph{CogSci}.
+for early word learning. In \emph{Proceedings of the 38th annual
+conference of the cognitive science society} (pp. 2610--2614). Austin,
+TX: Cognitive Science Society.
 
 \leavevmode\hypertarget{ref-Golinkoff2013}{}%
 Golinkoff, R. M., Ma, W., Song, L., \& Hirsh-Pasek, K. (2013).
 Twenty-five years using the intermodal preferential looking paradigm to
 study language acquisition: What have we learned? \emph{Perspectives on
 Psychological Science}, \emph{8}(3), 316--339.
-\url{http://doi.org/10.1177/1745691613484936}
 
 \leavevmode\hypertarget{ref-Goodman2008}{}%
 Goodman, J. C., Dale, P. S., \& Li, P. (2008). Does frequency count?
 Parental input and the acquisition of vocabulary. \emph{Journal of Child
 Language}, \emph{35}(3), 515--531.
-\url{http://doi.org/10.1017/S0305000907008641}
 
 \leavevmode\hypertarget{ref-Hirsh-Pasek1987}{}%
 Hirsh-Pasek, K., Cauley, K. M., Golinkoff, R. M., \& Gordon, L. (1987).
 The eyes have it: Lexical and syntactic comprehension in a new paradigm.
 \emph{Journal of Child Language}, \emph{14}(1), 23--45.
-\url{http://doi.org/10.1017/S030500090001271X}
 
 \leavevmode\hypertarget{ref-Huang2020}{}%
 Huang, Y., \& Snedeker, J. (2020). Evidence from the visual world
 paradigm raises questions about unaccusativity and growth curve
 analyses. \emph{Cognition}, \emph{200}, 104251.
-\url{http://doi.org/10.1016/j.cognition.2020.104251}
 
 \leavevmode\hypertarget{ref-kail1991}{}%
 Kail, R. (1991). Developmental change in speed of processing during
 childhood and adolescence. \emph{Psychological Bulletin}, \emph{109}(3),
 490.
 
+\leavevmode\hypertarget{ref-Mayor2019}{}%
+Kartushina, N., \& Mayor, J. (2019). Word knowledge in six- to
+nine-month-old Norwegian infants? Not without additional frequency cues.
+\emph{Royal Society Open Science}, \emph{6}, 180711.
+
 \leavevmode\hypertarget{ref-Lew-Williams2007}{}%
 Lew-Williams, C., \& Fernald, A. (2007). Young children learning Spanish
 make rapid use of grammatical gender in spoken word recognition.
 \emph{Psychological Science}, \emph{18}(3), 193--198.
-\url{http://doi.org/10.1111/j.1467-9280.2007.01871.x}
 
 \leavevmode\hypertarget{ref-Marchman2018}{}%
 Marchman, V. A., Loi, E. C., Adams, K. A., Ashland, M., Fernald, A., \&
 Feldman, H. M. (2018). Speed of language comprehension at 18 months old
 predicts school-relevant outcomes at 54 months old in children born
-preterm. \emph{Journal of Developmental \& Behavioral Pediatrics}, 1.
-\url{http://doi.org/10.1097/DBP.0000000000000541}
+preterm. \emph{Journal of Developmental \& Behavioral Pediatrics},
+\emph{39}(3), 246--253.
 
 \leavevmode\hypertarget{ref-Mirman2014}{}%
 Mirman, D. (2014). \emph{Growth curve analysis and visualization using
-R}. CRC Press.
+R}. Boca Raton, FL: CRC Press.
 
 \leavevmode\hypertarget{ref-Peelle2020}{}%
 Peelle, J. E., \& Van Engen, K. J. (2020). Time stand still: Effects of
-temporal window selection on eye tracking analysis.
+temporal window selection on eye tracking analysis. \emph{PsyArXiv}.
 \url{http://doi.org/https://doi.org/10.31234/osf.io/pc3da}
 
 \leavevmode\hypertarget{ref-peter2019}{}%
@@ -647,13 +637,18 @@ predict later language growth in toddlers? \emph{Cognitive Psychology},
 \leavevmode\hypertarget{ref-Roy2015}{}%
 Roy, B. C., Frank, M. C., Decamp, P., Miller, M., \& Roy, D. (2015).
 Predicting the birth of a spoken word. \emph{PNAS}, \emph{112}(41),
-12663--12668. \url{http://doi.org/10.1073/pnas.1419773112}
+12663--12668.
+
+\leavevmode\hypertarget{ref-Swingley2000}{}%
+Swingley, D., \& Aslin, R. N. (2000). Spoken word recognition and
+lexical representation in very young children. \emph{Cognition},
+\emph{76}(2), 147--66.
 
 \leavevmode\hypertarget{ref-TheManyBabiesConsortium2020}{}%
 The ManyBabies Consortium. (2020). Quantifying sources of variability in
 infancy research using the infant-directed speech preference.
-\emph{Advances in Methods and Practices in Psychological Science}.
-\url{http://doi.org/10.1177/2515245919900809}
+\emph{Advances in Methods and Practices in Psychological Science},
+\emph{3}(1), 24--52.
 
 \bibliographystyle{apacite}
 

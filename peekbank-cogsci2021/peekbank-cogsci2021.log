@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  29 JAN 2021 19:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  30 JAN 2021 04:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -407,126 +407,100 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 92.
 
-Underfull \hbox (badness 2150) in paragraph at lines 121--140
+Underfull \hbox (badness 2150) in paragraph at lines 120--138
 []\OT1/ptm/m/n/10 While the looking-while-listening paradigm has been
  []
-
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
 
 [1{/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
 
 ]
-<figs/fig_framework_overview-1.pdf, id=66, 216.81pt x 290.08376pt>
+<figs/fig_framework_overview-1.pdf, id=61, 216.81pt x 287.0725pt>
 File: figs/fig_framework_overview-1.pdf Graphic file (type pdf)
 <use figs/fig_framework_overview-1.pdf>
 Package pdftex.def Info: figs/fig_framework_overview-1.pdf  used on input line 
-189.
-(pdftex.def)             Requested size: 216.80946pt x 290.08304pt.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
+181.
+(pdftex.def)             Requested size: 216.80946pt x 287.0718pt.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 245.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 235.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 245.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 235.
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-[2 <./figs/fig_framework_overview-1.pdf>]
-Underfull \hbox (badness 1629) in paragraph at lines 266--278
+Underfull \hbox (badness 1629) in paragraph at lines 256--267
 \OT1/ptm/m/n/10 The database cur-rently in-cludes 11 datasets com-pris-ing
  []
 
-<figs/peekbank_item_vis-1.pdf, id=85, 469.755pt x 313.17pt>
+<figs/peekbank_item_vis-1.pdf, id=64, 433.62pt x 289.08pt>
 File: figs/peekbank_item_vis-1.pdf Graphic file (type pdf)
 <use figs/peekbank_item_vis-1.pdf>
-Package pdftex.def Info: figs/peekbank_item_vis-1.pdf  used on input line 323.
-(pdftex.def)             Requested size: 469.75386pt x 313.16922pt.
+Package pdftex.def Info: figs/peekbank_item_vis-1.pdf  used on input line 271.
+(pdftex.def)             Requested size: 433.61894pt x 289.07928pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[3]
-<figs/age_gca-1.pdf, id=98, 469.755pt x 202.7575pt>
+[2 <./figs/fig_framework_overview-1.pdf>]
+<figs/age_gca-1.pdf, id=84, 469.755pt x 202.7575pt>
 File: figs/age_gca-1.pdf Graphic file (type pdf)
 <use figs/age_gca-1.pdf>
-Package pdftex.def Info: figs/age_gca-1.pdf  used on input line 396.
+Package pdftex.def Info: figs/age_gca-1.pdf  used on input line 327.
 (pdftex.def)             Requested size: 469.75386pt x 202.757pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
+[3 <./figs/peekbank_item_vis-1.pdf>]
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-Underfull \vbox (badness 3679) has occurred while \output is active []
+<figs/time_window-1.pdf, id=100, 433.62pt x 271.0125pt>
+File: figs/time_window-1.pdf Graphic file (type pdf)
+<use figs/time_window-1.pdf>
+Package pdftex.def Info: figs/time_window-1.pdf  used on input line 399.
+(pdftex.def)             Requested size: 433.61894pt x 271.01183pt.
 
-[4 <./figs/peekbank_item_vis-1.pdf>]
-LaTeX Font Info:    Try loading font information for OML+ptm on input line 454.
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[4 <./figs/age_gca-1.pdf>]
+LaTeX Font Info:    Try loading font information for OML+ptm on input line 455.
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/omlptm.fd
 File: omlptm.fd 
 )
 LaTeX Font Info:    Font shape `OML/ptm/m/n' in size <10> not available
-(Font)              Font shape `OML/cmm/m/it' tried instead on input line 454.
-<figs/time_window-1.pdf, id=112, 462.72874pt x 289.08pt>
-File: figs/time_window-1.pdf Graphic file (type pdf)
-<use figs/time_window-1.pdf>
-Package pdftex.def Info: figs/time_window-1.pdf  used on input line 462.
-(pdftex.def)             Requested size: 462.72762pt x 289.07928pt.
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 455.
 
-LaTeX Warning: `h' float specifier changed to `ht'.
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-
-Underfull \vbox (badness 6725) has occurred while \output is active []
-
-[5 <./figs/age_gca-1.pdf>]
-Underfull \hbox (badness 1062) in paragraph at lines 589--595
- \OT1/ptm/m/n/10 What have we learned? \OT1/ptm/m/it/10 Per-spec-tives on Psy-c
-ho-log-i-
- []
-
-[6 <./figs/time_window-1.pdf>]
-Underfull \hbox (badness 1867) in paragraph at lines 619--624
- \OT1/ptm/m/it/10 ence\OT1/ptm/m/n/10 , \OT1/ptm/m/it/10 18\OT1/ptm/m/n/10 (3),
- 193--198. []$\OT1/pcr/m/n/10 http :// doi [] .org / 10 [] .1111 / j []
- []
-
-
-Underfull \hbox (badness 1005) in paragraph at lines 636--640
- \OT1/ptm/m/n/10 y-sis. []$\OT1/pcr/m/n/10 http :// doi [] .org / https :// doi
- [] .org / 10 [] .31234 /
- []
-
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 661.
+[5 <./figs/time_window-1.pdf>] [6]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 656.
 [7
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 661.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 656.
 (./peekbank-cogsci2021.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 661.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 661.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 656.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 656.
 Package rerunfilecheck Info: File `peekbank-cogsci2021.out' has not changed.
-(rerunfilecheck)             Checksum: DD2C6D01731A8E88FD2326DEC6F6B655;844.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 661.
+(rerunfilecheck)             Checksum: 1CFE23641E508A4320268E3A186C877C;730.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 656.
  ) 
 Here is how much of TeX's memory you used:
- 8193 strings out of 492649
- 122273 string characters out of 6129622
- 224101 words of memory out of 5000000
- 11909 multiletter control sequences out of 15000+600000
+ 8191 strings out of 492649
+ 122145 string characters out of 6129622
+ 221102 words of memory out of 5000000
+ 11907 multiletter control sequences out of 15000+600000
  35947 words of font info for 81 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 36i,11n,39p,690b,325s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,11n,39p,690b,323s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/te
 xlive/2018/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/20
 18/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2018/texmf-d
 ist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fonts/
 type1/urw/times/utmri8a.pfb>
-Output written on peekbank-cogsci2021.pdf (7 pages, 2686683 bytes).
+Output written on peekbank-cogsci2021.pdf (7 pages, 2653283 bytes).
 PDF statistics:
- 229 PDF objects out of 1000 (max. 8388607)
- 197 compressed objects within 2 object streams
+ 201 PDF objects out of 1000 (max. 8388607)
+ 169 compressed objects within 2 object streams
  63 named destinations out of 1000 (max. 500000)
- 125 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 117 words of extra memory for PDF output out of 10000 (max. 10000000)
 
