@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  30 JAN 2021 14:21
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  30 JAN 2021 15:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -431,11 +431,11 @@ Underfull \hbox (badness 1629) in paragraph at lines 256--267
 \OT1/ptm/m/n/10 The database cur-rently in-cludes 11 datasets com-pris-ing
  []
 
-<figs/peekbank_item_vis-1.pdf, id=64, 433.62pt x 289.08pt>
+<figs/peekbank_item_vis-1.pdf, id=64, 469.755pt x 282.05376pt>
 File: figs/peekbank_item_vis-1.pdf Graphic file (type pdf)
 <use figs/peekbank_item_vis-1.pdf>
 Package pdftex.def Info: figs/peekbank_item_vis-1.pdf  used on input line 271.
-(pdftex.def)             Requested size: 433.61894pt x 289.07928pt.
+(pdftex.def)             Requested size: 469.75386pt x 282.05305pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
@@ -498,7 +498,7 @@ xlive/2018/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/20
 18/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2018/texmf-d
 ist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fonts/
 type1/urw/times/utmri8a.pfb>
-Output written on peekbank-cogsci2021.pdf (7 pages, 2654467 bytes).
+Output written on peekbank-cogsci2021.pdf (7 pages, 4463921 bytes).
 PDF statistics:
  201 PDF objects out of 1000 (max. 8388607)
  169 compressed objects within 2 object streams

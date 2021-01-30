@@ -66,13 +66,19 @@ ggplot(aes(x = t_norm, y = prop_looking,color=english_stimulus_label)) +
   #             aes(y=avg_prop_looking,ymin = ci_lower, ymax = ci_upper),color="black",stat="identity")+
   geom_smooth(color="black",se=F,method="gam")+
   geom_hline(yintercept = .5, lty = 2) + 
-  geom_vline(xintercept = 0, lty = 2) +
+  geom_vline(xintercept = 0, lty = "solid") +
   ylab("Proportion Target Looking") +
   xlab("Time (msec)") +
   theme_classic() +
   scale_color_solarized() +
   scale_fill_solarized() +
   facet_wrap(~dataset_rename,nrow=3)+
-  theme(legend.position="none")
-ggsave(here(figure_path,"peekbank_item_vis.png"),width=9,height=6)
+  theme(legend.position="none")+
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=18))+
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5))+
+  scale_x_continuous(breaks=seq(-500,3000,500))
+  
+  
+ggsave(here(figure_path,"peekbank_item_vis.png"),width=10,height=6,dpi=600)
 ```

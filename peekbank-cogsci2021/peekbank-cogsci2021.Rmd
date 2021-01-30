@@ -140,7 +140,7 @@ The database currently includes `r length(summarize_datasets$dataset_rename)` da
 The database includes studies using both manually coded video recordings or aumotated eye-tracking methods (e.g., Tobii, EyeLink) to measure children's gaze behavior. 
 Most studies focused on testing familiar items, but the database also includes studies with novel pseudowords.
 
-```{r peekbank_item_vis, fig.env = "figure*", fig.pos = "h", fig.width=6, fig.height=4, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Item-level variability in proportion target looking within each dataset. Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines."}
+```{r peekbank_item_vis, fig.env = "figure*", fig.pos = "h", fig.width=6.5, fig.height=3.9, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Item-level variability in proportion target looking within each dataset. Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines."}
 img <- png::readPNG(here("figures","peekbank_item_vis.png"))
 grid::grid.raster(img)
 ```
@@ -195,7 +195,7 @@ img <- png::readPNG(here("figures","age_gca.png"))
 grid::grid.raster(img)
 ```
 
-Developmental changes in word recognition have been a central issue since early investigations of eye-tracking techniques [@fernald1998]. Children's speed and accuracy of word recognition increases across early childhood, yet measuring these increases creates a tricky issue. Words that are appropriate for an 18-month-old will be too easy for a three-year-old; those that are appropriate for a three-year-old will be difficult for the 18-month-old. Failure to choose appropriate test items can even lead to spurious conclusions about development [@peter2019]. 
+Developmental changes in word recognition have been a central issue since early investigations of eye-tracking techniques [@fernald1998]. Children's speed and accuracy of word recognition increases across early childhood, yet measuring these increases creates a tricky issue. Words that are appropriate for an 18-month-old will be too easy for a three-year-old; those that are appropriate for a three-year-old will be difficult the 18-month-old. Failure to choose appropriate test items can even lead to spurious conclusions about development [@peter2019]. 
 
 This issue is familiar in psychometrics: test developers interested in measuring across a wide range of a particular latent ability must choose items appropriate for different abilities. One solution is to use data from a bank of questions that have been taken by test-takers of a range of abilities, and then use item-response theory models to create different test versions appropriate for different ability ranges [@embretson2000]. Such tests can then be used to extract estimates of developmental change that are independent of individual tests and their particular items. 
 
