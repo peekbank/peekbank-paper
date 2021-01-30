@@ -64,7 +64,7 @@ ggplot(aes(x = t_norm, y = prop_looking,color=english_stimulus_label)) +
   #                 fill = dataset_name), alpha = .5) +
   # geom_smooth(data=average_across_items,
   #             aes(y=avg_prop_looking,ymin = ci_lower, ymax = ci_upper),color="black",stat="identity")+
-  geom_smooth(color="black",se=F)+
+  geom_smooth(color="black",se=F,method="gam")+
   geom_hline(yintercept = .5, lty = 2) + 
   geom_vline(xintercept = 0, lty = 2) +
   ylab("Proportion Target Looking") +

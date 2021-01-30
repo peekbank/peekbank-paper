@@ -261,9 +261,9 @@ participants ranging from 8 to 84 months of age, and are balanced in
 terms of gender (48\% female). The studies in the current database vary
 across a number of dimensions related to design and methodology. The
 database includes studies using both manually coded video recordings or
-aumotated eye-tracking methods to measure children's gaze behavior. Most
-studies focused on testing familiar items, but the database also
-includes studies in which novel pseudowords were tested.
+aumotated eye-tracking methods (e.g., Tobii, EyeLink) to measure
+children's gaze behavior. Most studies focused on testing familiar
+items, but the database also includes studies with novel pseudowords.
 
 \begin{CodeChunk}
 \begin{figure*}[h]
@@ -272,15 +272,16 @@ includes studies in which novel pseudowords were tested.
 
 }
 
-\caption[Item-level variability in proportion target looking within each dataset]{Item-level variability in proportion target looking within each dataset. Colored lines represent specific target labels.}\label{fig:peekbank_item_vis}
+\caption[Item-level variability in proportion target looking within each dataset]{Item-level variability in proportion target looking within each dataset. Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines.}\label{fig:peekbank_item_vis}
 \end{figure*}
 \end{CodeChunk}
 
 \hypertarget{results}{%
 \section{Results}\label{results}}
 
-\hypertarget{general-descriptives}{%
-\subsection{General Descriptives}\label{general-descriptives}}
+\hypertarget{general-descriptives-and-item-variability}{%
+\subsection{General descriptives and item
+variability}\label{general-descriptives-and-item-variability}}
 
 \begin{table}[H]
 \centering
@@ -303,19 +304,19 @@ canine & 16 & 0.64 & [0.61, 0.67] \\
    \hline
 \end{tabular}
 \endgroup
-\caption{Average Proportion Target Looking in each dataset.} 
+\caption{Average proportion target looking in each dataset.} 
 \end{table}
 
 In general, participants demonstrated robust, above-chance word
-recognition in each dataset. Table 2 shows the average proportion of
-target looking within a standard critical window of 300 - 2000ms after
-the onset of the label for each dataset. As can be seen in Figure
-\ref{fig:peekbank_item_vis}, the number of unique target labels and
-there is substantial variability in the accuracy curves associated with
-different items across datasets. Proportion target looking was generally
-higher for familiar target labels (M = 67.5\%, 95\% CI = {[}66.6\%,
-68.5\%{]}) than for novel target labels that participants learned during
-the experiment (M = 55.1\%, 95\% CI = {[}53.8\%, 56.3\%{]}).
+recognition in each dataset (chance=0.5). Table 2 shows the average
+proportion of target looking within a standard critical window of 300 -
+2000ms after the onset of the label for each dataset (Swingley \& Aslin,
+2000). The number of unique target labels and their associated accuracy
+vary widely across datasets (Figure \ref{fig:peekbank_item_vis}).
+Proportion target looking was generally higher for familiar target
+labels (M = 67.5\%, 95\% CI = {[}66.6\%, 68.5\%{]}) than for novel
+target labels learned during the experiment (M = 55.1\%, 95\% CI =
+{[}53.8\%, 56.3\%{]}).
 
 \hypertarget{predicting-age-related-changes-while-generalizing-across-items}{%
 \subsection{Predicting Age-Related Changes While Generalizing Across
@@ -337,10 +338,10 @@ since early investigations of eye-tracking techniques (Fernald, Pinto,
 Swingley, Weinberg, \& McRoberts, 1998). Children's speed and accuracy
 of word recognition increases across early childhood, yet measuring
 these increases creates a tricky issue. Words that are appropriate for
-an 18-month-old will be far too easy for a three-year-old; those that
-are appropriate for a three-year-old will be hard or even unfamiliar to
-the 18-month-old. Failure to choose appropriate test items can even lead
-to spurious conclusions about development (Peter et al., 2019).
+an 18-month-old will be too easy for a three-year-old; those that are
+appropriate for a three-year-old will be difficult for the 18-month-old.
+Failure to choose appropriate test items can even lead to spurious
+conclusions about development (Peter et al., 2019).
 
 This issue is familiar in psychometrics: test developers interested in
 measuring across a wide range of a particular latent ability must choose
@@ -377,18 +378,17 @@ Figure \ref{fig:age_gca} depicts the results of this analysis. Panel A
 shows the mean empirical word recognition curves for four age groups,
 along with fitted model performance. Although model fits are acceptable,
 developmental change appears irregular - for example, 12--24 month-olds
-show if anything slightly earlier recognition than 24--36 month-olds.
-This pattern is an artifact of averaging across datasets with
-substantially different items and structures. Panel B shows model
-predictions for the population level of each random effect, giving our
-best estimates of the latent ability structure. Here we see continuous
-increases in both speed (point at which the curve rises) and accuracy
-(asymptote of the curve) across ages, though this developmental trend
-decelerates (consistent with other work on the development of reaction
-times in word recognition and more generally; Frank, Lewis, \&
-MacDonald, 2016; Kail, 1991). This proof of concept suggests that
-\emph{Peekbank} can be used to model developmental change over multiple
-years, overcoming the limitations of individual datasets.
+show slightly earlier recognition than 24--36 month-olds. This pattern
+is an artifact of averaging across datasets with substantially different
+items and structures. Panel B shows model predictions for the population
+level of each random effect -- our best estimates of the latent ability
+structure. Here we see continuous increases in both speed (point at
+which the curve rises) and accuracy (asymptote of the curve) across
+ages, though this developmental trend decelerates (consistent with other
+work on reaction time development; Frank, Lewis, \& MacDonald, 2016;
+Kail, 1991). This proof of concept suggests that \emph{Peekbank} can be
+used to model developmental change over multiple years, overcoming the
+limitations of individual datasets.
 
 \hypertarget{time-window-selection}{%
 \subsection{Time Window Selection}\label{time-window-selection}}
@@ -414,22 +414,21 @@ selected by researchers varies substantially in the literature, with
 some studies analyzing shorter time windows between 300 ms and 1800-2000
 ms post-target onset (Fernald et al., 2008; Swingley \& Aslin, 2000),
 while longer time windows extending to approximately 3000-4000ms
-post-target onset are often also used (Bergelson \& Swingley, 2012;
-Kartushina \& Mayor, 2019). We thus examined a broad range of window
-start and end times: we calculated subjects' mean IIC across from 300 ms
-pre-target onset to 1500 ms post-target word onset) and window end times
-(ranging from 0 ms to 4000 ms). While it is an open question what space
-of possible windows will yield the greatest reliability, we expect to
-see very low reliability (i.e.~0) in windows that start and end before
-target onset, and likely for any windows that end within 300 ms
-post-target onset, before participants have had a chance to execute a
-response. Since observations were unevenly distributed across the age
-range, and because children likely show a varying response to familiar
-items as they age, we split our data into four age bins (12-24, 24-36,
-36-48, and 48-60 months). For each combination of window start time and
-end time with a minimum window duration of 50 ms, participants' average
-inter-item correlation for proportion of looking at familiar targets was
-calculated.
+post-target onset are often also used (e.g., Bergelson \& Swingley,
+2012). We thus examined a broad range of window start and end times: we
+calculated subjects' mean IIC across from 300 ms pre-target onset to
+1500 ms post-target word onset) and window end times (ranging from 0 ms
+to 4000 ms). While it is an open question what space of possible windows
+will yield the greatest reliability, we expect to see very low
+reliability (i.e.~0) in windows that start before target onset, and
+likely for any windows that end within 300 ms post-target onset, before
+participants have had a chance to execute a response. Since observations
+were unevenly distributed across the age range, and because children
+likely show a varying response to familiar items as they age, we split
+our data into four age bins (12-24, 24-36, 36-48, and 48-60 months). For
+each combination of window start time and end time with a minimum window
+duration of 50 ms, participants' average inter-item correlation for
+proportion of looking at familiar targets was calculated.
 
 The resulting correlations of this multiverse analysis are shown in
 Figure \ref{fig:time_window}, where subjects' mean ICC for proportion of
@@ -453,7 +452,7 @@ at least 1500 ms eliminated 94\% of low ICCs, and this threshold
 combined with a start time of at least 300 ms eliminated all but 0.5\%
 of low ICCs. A start time of 500 ms and a window length of at least 1500
 ms resulted in no IICs \textless{} .01, and an average IIC of 0.08.
-However, the overall strength of the IICs are generally much weaker than
+However, the overall strength of the IICs are generally weaker than
 might be desired (median = .05), with maximum values of 0.15 (reached
 only in 3-year-olds).
 
@@ -476,7 +475,27 @@ address: generalizing across item-level variability in children's
 lexical processing and providing data-driven guidance on methodological
 choices.
 
-Diving into more specifics
+In our first analysis, we show that \emph{Peekbank} can be used to model
+item-independent changes in the speed and accuracy of lexical processing
+across development. Children showed steady age-related increases in the
+speed of lexical processing across one to five years of age, replicating
+and extending past foundational work (e.g., Fernald et al., 1998), while
+demonstrating that these word processing gains generalize across items
+and are not only attributable word-specific gains in processing speed.
+The second analysis provides a demonstration of how \emph{Peekbank} can
+be used to inform principled, data-driven analytic decisions,
+specifically the decision of how to choose time windows for analyzing
+eye-tracking data. In looking-while-listening studies, researchers often
+choose a relatively short time window of roughly 300-1800 or 2000 ms
+(Fernald et al., 2008), with the justification that eye movements
+occurring after this window may no longer reflect fixations related to
+the target label (Swingley \& Aslin, 2000). Intriguingly, we find that
+longer time windows that extend as much as 4000 ms after the target
+label typically continue to increase the reliability of proportion
+target looking. Our results recommend that researchers consider
+increasing the size of the time window for analyzing target fixations
+(at least for familiar words) to maximize the consistent signal present
+in children's target fixations.
 
 There are a number of critical limitations surrounding the current scope
 of the database. A key priority in future work will be to expand the
@@ -489,11 +508,10 @@ robust generalizations regarding participant- and item-level
 variability. The current database is also limited by the relatively
 homogeneous background of its participants, both with respect to
 language (almost entirely monolingual native English speakers) and
-cultural background (with one exception, all participants are growing up
-in WEIRD environments;). Increasing the diversity of the participant
-backgrounds and languages contributing to the current database will
-increase the scope of the generalizations we can form about child
-lexical processing.
+cultural background (all but one dataset comes from WEIRD environments;
+Muthukrishna et al., 2020). Increasing the diversity of participant
+backgrounds and languages will increase the scope of the generalizations
+we can form about child lexical processing.
 
 Finally, while the current database is mainly focused on studies of
 lexical processing, the tools and infrastructure developed in the
@@ -602,11 +620,6 @@ Kail, R. (1991). Developmental change in speed of processing during
 childhood and adolescence. \emph{Psychological Bulletin}, \emph{109}(3),
 490.
 
-\leavevmode\hypertarget{ref-Mayor2019}{}%
-Kartushina, N., \& Mayor, J. (2019). Word knowledge in six- to
-nine-month-old Norwegian infants? Not without additional frequency cues.
-\emph{Royal Society Open Science}, \emph{6}, 180711.
-
 \leavevmode\hypertarget{ref-Lew-Williams2007}{}%
 Lew-Williams, C., \& Fernald, A. (2007). Young children learning Spanish
 make rapid use of grammatical gender in spoken word recognition.
@@ -622,6 +635,13 @@ preterm. \emph{Journal of Developmental \& Behavioral Pediatrics},
 \leavevmode\hypertarget{ref-Mirman2014}{}%
 Mirman, D. (2014). \emph{Growth curve analysis and visualization using
 R}. Boca Raton, FL: CRC Press.
+
+\leavevmode\hypertarget{ref-Muthukrishna2020}{}%
+Muthukrishna, M., Bell, A. V., Henrich, J., Curtin, C. M., Gedranovich,
+A., McInerney, J., \& Thue, B. (2020). Beyond Western, Educated,
+Industrial, Rich, and Democratic (WEIRD) Psychology: Measuring and
+Mapping Scales of Cultural and Psychological Distance.
+\emph{Psychological Science}, \emph{31}(6), 678--701.
 
 \leavevmode\hypertarget{ref-Peelle2020}{}%
 Peelle, J. E., \& Van Engen, K. J. (2020). Time stand still: Effects of
