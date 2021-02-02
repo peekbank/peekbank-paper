@@ -6,7 +6,7 @@ document-params: "10pt, letterpaper"
 
 author-information: > 
     \author{{\large \bf Martin Zettersten (martincz@princeton.edu)} \\ Department of Psychology, South Dr \\ Princeton, NJ 08540 USA
-    \AND {\large \bf Linger Xu (txu@iu.edu)} 
+    \AND {\large \bf Tian Linger Xu (txu@iu.edu)} 
     \AND {\large \bf Stephan Meylan (smeylan@mit.edu)} 
     \AND {\large \bf Mika Braginsky (mikabr@mit.edu)} 
     \AND {\large \bf George Kachergis (kachergis@stanford.edu)} 
@@ -16,10 +16,12 @@ author-information: >
     \AND {\large \bf Veronica Boyce (vboyce@stanford.edu)} 
     \AND {\large \bf Jessica Mankewitz (jmankewitz@stanford.edu)}
     \AND {\large \bf Bria Long (bria@stanford.edu)} 
+    \AND {\large \bf Benny deMayo (bdemayo@princeton.edu)} 
     \AND {\large \bf Daniel Yurovsky (yurovsky@stanford.edu)} 
-    \AND {\large \bf Annissa Saleh (ans638@nyu.edu)} 
+    \AND {\large \bf Annissa N. Saleh (ans638@nyu.edu)} 
     \AND {\large \bf Sarp Uner (sarp.uner@duke.edu)} 
     \AND {\large \bf Alexandra Carstensen (abcarstensen@stanford.edu)} 
+    \AND {\large \bf Rose M. Schneider (roschnei@ucsd.edu)} 
     \AND {\large \bf Angeline Sin Mei Tsui (astsui@stanford.edu)}  
     \AND {\large \bf Michael C. Frank (mcfrank@stanford.edu)}}
 
@@ -63,20 +65,20 @@ In such studies, infants listen to a sentence prompting a specific referent (e.g
 Infants’ word recognition is measured in terms of how quickly and accurately they fixate the correct target image after hearing its label. 
 Studies using this design have contributed to our understanding of a wide range of questions in language development [@Golinkoff2013], including infants’ early noun knowledge [@Bergelson2012a], phonological representations of words [@Swingley2000], prediction during language processing [@Lew-Williams2007], and individual differences in language development [@Marchman2018].
 
-While the looking-while-listening paradigm has been highly fruitful in advancing understanding of early word knowledge, fundamental questions remain both about the trajectory of children's word recognition ability and the nature of the method itself. One central question relates to teasing apart variability due to participants and variability due to specific items across development. Drawing inferences about item-level variability is key to many questions in how word learning unfolds, such as how properties of the language input influence lexical development [@Goodman2008;@Roy2015]. Most studies of infant word recognition focus on generalizing performance across participants, and are constrained in their ability to provide generalizations across the item level - the level of specific words. Generalizing behavior on the level of both participants and items simultaneously is difficult in the context of a solitary study, especially given practical constraints on the number of trials (and consequently items) tested within a given infant. One key to meeting this challenge is having sufficiently large datasets to account for and explain variability in word recognition on the item level.
+While the looking-while-listening paradigm has been highly fruitful in advancing understanding of early word knowledge, fundamental questions remain both about the trajectory of children's word recognition ability and the nature of the method itself. One central question is how to tease apart variability due to specific items (words) and variability due to participants across development. Most studies of infant word recognition focus on generalizing performance across participants, and are constrained in their ability to provide generalizations across words (items). Generalizing behavior on the level of both items and participants simultaneously is difficult in the context of a solitary study, especially given practical constraints on the number of trials (and consequently items) tested within a given infant. One key to meeting this challenge is having sufficiently large datasets to account for and explain variability in word recognition on the item level.
 
 A second question relates to evaluating methodological best-practices. 
-In particular, many fundamental analytic decisions vary substantially across studies. 
-For example, researchers vary in their decisions regarding how to select time windows for analysis, modeling how word recognition unfolds over time, and the appropriate transformations to perform on the dependent measure of target fixations [@Csibra2016;@Fernald2008;@Huang2020]. 
+In particular, many fundamental analytic decisions vary substantially across studies, and different decisions may lead to different inferences about children's word recognition. 
+For example, researchers vary in how they  select time windows for analysis, transform the dependent measure of target fixations, and model the time course of word recognition [@Csibra2016;@Fernald2008;@Huang2020]. 
 This problem is made more complex by the fact that many of these decisions likely depend on a variety of design-related and participant-related factors (e.g., infant age).
-Establishing best practices therefore requires a large database of infant word recognition studies varying across such factors, in order to independently test the potential consequences of a variety of methodological decisions on the interpretation of study results.
+Establishing best practices therefore requires a large database of infant word recognition studies varying across such factors, in order to independently test the potential consequences of methodological decisions on the interpretation of study results.
 
 <!-- Peekbank: A large-scale database of looking-while-listening-studies -->
 What these two questions share is that they are difficult to answer at the scale of a single study. 
 To address this challenge, we introduce *Peekbank*, a flexible and reproducible interface to an open database of developmental eye-tracking studies.
 The Peekbank project (a) collects a large set of eye-tracking datasets on children’s word recognition, (b) introduces a data format and processing tools for standardizing eye-tracking data across data sources, and (c) provides an API for accessing and analyzing the database. 
 In the current paper, we give a brief overview of the key components of the project and some initial demonstrations of its utility in advancing theoretical and methodological questions in the study of children’s early language. 
-We report two analyses using the database and associated tools (N=1,233): (1) a growth-curve analysis modeling age-related changes in infants' word recognition while generalizing across item-level variability and (2) a multiverse-style analysis of how a central methodological decision -- selecting the time window of analysis -- impacts measure reliability.
+We report two analyses using the database and associated tools (N=1,233): (1) a growth-curve analysis modeling age-related changes in infants' word recognition while generalizing across item-level variability and (2) a multiverse-style analysis of how a central methodological decision -- selecting the time window of analysis -- impacts inter-item reliability.
 
 # Methods
 
@@ -87,7 +89,7 @@ img <- png::readPNG(here("figures","peekbankflowchartv4.png"))
 grid::grid.raster(img)
 ```
 
-The *Peekbank* data framework consists of three libraries that help to populate and query a relational database (Fig. \ref{fig:fig_framework_overview}).
+The *Peekbank* data framework consists of three libraries that take in raw experimental datasets, populate  a relational database, and provide an API interface (Fig. \ref{fig:fig_framework_overview}).
 The \texttt{peekds} library (for the R language) helps researchers convert and validate existing datasets to use the relational format used by the database. 
 The \texttt{peekbank} library (Python) creates a database with the relational schema and populates it with the standardized datasets produced by \texttt{peekds}.
 The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet.
@@ -140,11 +142,11 @@ names(tab1) <- c("Dataset Name", "N","Mean Age", "Method")
 print(tab1, type="latex", comment = F, table.placement = "H",include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont")
 ```
 
-The database currently includes `r length(summarize_datasets$dataset_rename)` datasets comprising N=`r sum(summarize_datasets$num_subj)` total participants, with `r min(summarize_datasets$num_subj)` to `r max(summarize_datasets$num_subj)` participants per dataset (Table 1). Most datasets (10 out of 11 total) consist of data from monolingual native English speakers. They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),2)*100`% female). The studies in the current database vary across a number of dimensions related to design and methodology. 
-The database includes studies using both manually coded video recordings or automated eye-tracking methods (e.g., Tobii, EyeLink) to measure children's gaze behavior. 
+The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising N=`r sum(summarize_datasets$num_subj)` total participants, with `r min(summarize_datasets$num_subj)` to `r max(summarize_datasets$num_subj)` participants per dataset (Table 1). Most datasets (10 out of 11 total) consist of data from monolingual native English speakers. They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),2)*100`% female). The studies in the current database vary across a number of dimensions related to design and methodology. 
+The database includes studies using both manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure children's gaze behavior. 
 Most studies focused on testing familiar items, but the database also includes studies with novel pseudowords.
 
-```{r peekbank_item_vis, fig.env = "figure*", fig.pos = "h", fig.width=6.5, fig.height=3.9, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Item-level variability in proportion target looking within each dataset. Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines."}
+```{r peekbank_item_vis, fig.env = "figure*", fig.pos = "h", fig.width=6.5, fig.height=3.9, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Item-level variability in proportion target looking within each dataset (chance=0.5). Time is centered on the onset of the target label (vertical line). Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines."}
 img <- png::readPNG(here("figures","peekbank_item_vis.png"))
 grid::grid.raster(img)
 ```
@@ -227,14 +229,14 @@ For each combination of window start time and end time with a minimum window dur
 Results from this multiverse analysis are shown in Figure \ref{fig:time_window}, where subjects' mean IIC for proportion of looking to familiar targets for each combination of window start time and end time is shown as a colored pixel. 
 The analysis shows that IIC is positive (red) under a wide range of sensible window choices. 
 IIC is relatively low however, especially for the youngest age group, suggesting that individual items carry only limited shared signal regarding children's underlying ability. 
-It may be the case that even averaging many such trials does not yield highly reliable measures of individual differences, although some multi-trial paradims are exceptions to this generalization [@Fernald2008].
+It may be the case that even averaging many such trials does not yield highly reliable measures of individual differences, although some multi-trial paradigms are exceptions to this generalization [@Fernald2008].
 
 Intriguingly, however, late end times and long overall window lengths show the greatest reliability. 
-Shorter windows (e.g., 300-2000ms, as we used above) likely maximize absolute recognition performance by fitting the peak of the recognition curve but simultaneously lower reliability by failing to include all relevant data. 
+Shorter windows (e.g., 300-2000ms, as we used above) likely maximize absolute recognition performance by fitting the peak of the recognition curve, but simultaneously lower reliability by failing to include all relevant data. 
 Especially for older children, the maximal IICs were found with windows that started between 500 and 1000ms and ended between 3000 and 4000ms, windows usually reserved for younger children. 
-This finding is sensible from a psychometric perspective -- averaging more timepoints (even if some of them contain limited signal) will increase reliability and reduce variation.
-Thus, future researchers interested in better measurement of individual variation or condition differences should consider using longer windows by default.
-<!-- Moreover, there is some variation by age group in where the strongest ICCs are found (and in the overall strength of ICCs). <!-- discuss more? [GK: add mean +ICC per age?]) --> -->
+This finding is sensible from a psychometric perspective -- averaging more timepoints (even if some contain limited signal) increases reliability and reduces variation.
+Thus, researchers interested in better measurement of individual variation or condition differences should consider using longer windows by default.
+<!-- Moreover, there is some variation by age group in where the strongest ICCs are found (and in the overall strength of ICCs). <!-- discuss more? [GK: add mean +ICC per age?]) -->
 
 <!-- What general recommendations follow from this analysis? -->
 <!-- We minimally consider which start times and window lengths result in IICs of at least .01, noting that this is still a rather low target. -->
