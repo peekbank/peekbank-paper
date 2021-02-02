@@ -108,12 +108,12 @@ such studies, infants listen to a sentence prompting a specific referent
 the distractor image). Infants' word recognition is measured in terms of
 how quickly and accurately they fixate the correct target image after
 hearing its label. Studies using this design have contributed to our
-understanding of a wide range of questions in language development
-(Golinkoff, Ma, Song, \& Hirsh-Pasek, 2013), including infants' early
-noun knowledge (Bergelson \& Swingley, 2012), phonological
-representations of words (Swingley \& Aslin, 2000), prediction during
-language processing (Lew-Williams \& Fernald, 2007), and individual
-differences in language development (Marchman et al., 2018).
+understanding of a wide range of questions in language development,
+including infants' early noun knowledge, phonological representations of
+words, prediction during language processing, and individual differences
+in language development (Bergelson \& Swingley, 2012; Golinkoff, Ma,
+Song, \& Hirsh-Pasek, 2013; Lew-Williams \& Fernald, 2007; Marchman et
+al., 2018; Swingley \& Aslin, 2000).
 
 While the looking-while-listening paradigm has been highly fruitful in
 advancing understanding of early word knowledge, fundamental questions
@@ -176,7 +176,7 @@ reliability.
 
 }
 
-\caption[Overview of the peekbank data ecosystem]{Overview of the peekbank data ecosystem.}\label{fig:fig_framework_overview}
+\caption[Overview of the peekbank data ecosystem]{Overview of the peekbank data ecosystem. Peekbank libraries and tools are highlighted in green.}\label{fig:fig_framework_overview}
 \end{figure}
 \end{CodeChunk}
 
@@ -205,9 +205,9 @@ and structuring data vary, as do the technical specifications of
 different devices, rendering the task of integrating datasets from
 different labs and data sources difficult. We developed a common, tidy
 format for the eye-tracking data in \emph{Peekbank} to ease the process
-of conducting cross-dataset analyses. The schema of the database is
-sufficiently general to handle heterogeneous datasets, including both
-manually coded and automated eye-tracking data.
+of conducting cross-dataset analyses (Wickham et al., 2019). The schema
+of the database is sufficiently general to handle heterogeneous
+datasets, including both manually coded and automated eye-tracking data.
 
 During data import, raw eye-tracking datasets are processed to conform
 to the \emph{Peekbank} data schema. The centerpiece of the schema is the
@@ -248,17 +248,17 @@ canine & 36 & 23.8 & manual coding \\
 \caption{Overview over the datasets in the current database.} 
 \end{table}
 
-The database currently includes 11 datasets comprising N=1233 total
-participants, with 23 to 435 participants per dataset (Table 1). Most
-datasets (10 out of 11 total) consist of data from monolingual native
-English speakers. They span a wide age spectrum with participants
-ranging from 8 to 84 months of age, and are balanced in terms of gender
-(48\% female). The studies in the current database vary across a number
-of dimensions related to design and methodology. The database includes
-studies using both manually coded video recordings or automated
-eye-tracking methods (e.g., Tobii, EyeLink) to measure children's gaze
-behavior. Most studies focused on testing familiar items, but the
-database also includes studies with novel pseudowords.
+The database currently includes 11 looking-while-listening datasets
+comprising N=1233 total participants, with 23 to 435 participants per
+dataset (Table 1). Most datasets (10 out of 11 total) consist of data
+from monolingual native English speakers. They span a wide age spectrum
+with participants ranging from 8 to 84 months of age, and are balanced
+in terms of gender (48\% female). The studies in the current database
+vary across a number of dimensions related to design and methodology.
+The database includes studies using both manually coded video recordings
+and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure
+children's gaze behavior. Most studies focused on testing familiar
+items, but the database also includes studies with novel pseudowords.
 
 \begin{CodeChunk}
 \begin{figure*}[h]
@@ -267,7 +267,7 @@ database also includes studies with novel pseudowords.
 
 }
 
-\caption[Item-level variability in proportion target looking within each dataset]{Item-level variability in proportion target looking within each dataset. Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines.}\label{fig:peekbank_item_vis}
+\caption[Item-level variability in proportion target looking within each dataset (chance=0.5)]{Item-level variability in proportion target looking within each dataset (chance=0.5). Time is centered on the onset of the target label (vertical line). Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines.}\label{fig:peekbank_item_vis}
 \end{figure*}
 \end{CodeChunk}
 
@@ -324,7 +324,7 @@ Items}\label{predicting-age-related-changes-while-generalizing-across-items}}
 
 }
 
-\caption[Growth curve models of proportion target looking during the critical target window at each age range (in months)]{Growth curve models of proportion target looking during the critical target window at each age range (in months).}\label{fig:age_gca}
+\caption[Growth curve models of proportion target looking during the critical target window at each age range (in months)]{Growth curve models of proportion target looking during the critical target window at each age range (in months). (A) Mean empirical word recognition fit. (B) Population-level estimates.}\label{fig:age_gca}
 \end{figure*}
 \end{CodeChunk}
 
@@ -411,36 +411,35 @@ measuring the subject-level inter-item correlation (IIC) for proportion
 of looking at familiar targets. The time windows selected by researchers
 varies substantially in the literature, with some studies analyzing
 shorter time windows between 300 ms and 1800-2000 ms post-target onset
-(Fernald et al., 2008; Swingley \& Aslin, 2000), while longer time
-windows extending to approximately 3000-4000ms post-target onset are
-often also used, especially with younger infants (e.g., Bergelson \&
-Swingley, 2012). We thus examined a broad range of window start and end
-times: we calculated subjects' mean IIC across from 300 ms pre-target
-onset to 1500 ms post-target word onset) and window end times (ranging
-from 0 ms to 4000 ms). While it is an open question what space of
-possible windows will yield the greatest reliability, we expect to see
-very low reliability (i.e.~0) in windows that start before target onset,
-and likely for any windows that end within 300 ms post-target onset,
-before participants have had a chance to execute a response. Since
-observations were unevenly distributed across the age range, and because
-children likely show a varying response to familiar items as they age,
-we split our data into four age bins (12-24, 24-36, 36-48, and 48-60
-months). For each combination of window start time and end time with a
-minimum window duration of 50 ms, participants' average inter-item
-correlation for proportion of looking at familiar targets was
-calculated.
+(Fernald et al., 2008; Swingley \& Aslin, 2000), and others using longer
+time windows extending to approximately 3000-4000ms (especially with
+younger infants; e.g., Bergelson \& Swingley, 2012). We thus examined a
+broad range of window start times ranging from 300 ms pre-target onset
+to 1500 ms post-target onset and window end times ranging from 0 ms to
+4000 ms post-target onset. For each combination of window start time and
+end time with a minimum window duration of 50 ms, we calculated
+participants' average inter-item correlation for proportion of looking
+at familiar targets (mean IIC). Since observations were unevenly
+distributed across the age range, and because children likely show a
+varying response to familiar items as they age (often motivating
+different window choices), we split our data into four age bins (12-24,
+24-36, 36-48, and 48-60 months). While it is an open question what space
+of possible windows will yield the greatest reliability, we expect to
+see low reliability (i.e.~0) in windows that start before target onset
+and in windows that end within 300 ms post-target onset, before
+participants are able to execute a response.
 
 Results from this multiverse analysis are shown in Figure
-\ref{fig:time_window}, where subjects' mean IIC for proportion of
-looking to familiar targets for each combination of window start time
-and end time is shown as a colored pixel. The analysis shows that IIC is
-positive (red) under a wide range of sensible window choices. IIC is
-relatively low however, especially for the youngest age group,
-suggesting that individual items carry only limited shared signal
-regarding children's underlying ability. It may be the case that even
-averaging many such trials does not yield highly reliable measures of
-individual differences, although some multi-trial paradigms are
-exceptions to this generalization (Fernald et al., 2008).
+\ref{fig:time_window}, where each colored pixel represents the mean IIC
+for proportion of looking to familiar targets for a specific combination
+of window start and end time. The analysis shows that IIC is positive
+(red) under a wide range of sensible window choices. IIC is relatively
+low however, especially for the youngest age group, suggesting that
+individual items carry only limited shared signal regarding children's
+underlying ability. It may be the case that even averaging many such
+trials does not yield highly reliable measures of individual
+differences, although some multi-trial paradigms are exceptions to this
+generalization (Fernald et al., 2008).
 
 Intriguingly, however, late end times and long overall window lengths
 show the greatest reliability. Shorter windows (e.g., 300-2000ms, as we
@@ -461,8 +460,8 @@ differences should consider using longer windows by default.
 Theoretical progress in understanding child development requires rich
 datasets, but collecting infant data is expensive, difficult, and
 time-intensive. Recent years have seen a growing effort to build open
-source tools and pooling research efforts to meet the challenge of
-building a cumulative developmental science (Bergmann et al., 2018; The
+source tools and pool research efforts to meet the challenge of building
+a cumulative developmental science (Bergmann et al., 2018; The
 ManyBabies Consortium, 2020). The Peekbank project expands on these
 efforts by building an infrastructure for aggregating eye-tracking data
 across studies, with a particular focus on the looking-while-listening
@@ -653,6 +652,11 @@ The ManyBabies Consortium. (2020). Quantifying sources of variability in
 infancy research using the infant-directed speech preference.
 \emph{Advances in Methods and Practices in Psychological Science},
 \emph{3}(1), 24--52.
+
+\leavevmode\hypertarget{ref-Wickham2019}{}%
+Wickham, H., Averick, M., Bryan, J., Chang, W., McGowan, L. D.,
+François, R., \ldots{} Yutani, H. (2019). Welcome to the tidyverse.
+\emph{Journal of Open Source Software}, \emph{4}(43), 1686.
 
 \bibliographystyle{apacite}
 
