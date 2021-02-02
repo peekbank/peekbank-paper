@@ -55,8 +55,9 @@
 \title{Peekbank: Exploring children's word recognition through an open,
 large-scale repository for developmental eye-tracking data}
 
+\usepackage[raggedright]{sidecap}
 
-\author{{\large \bf Martin Zettersten (martincz@princeton.edu)} \\ Department of Psychology, South Dr \\ Princeton, NJ 08540 USA \AND {\large \bf Tian Linger Xu (txu@iu.edu)}  \AND {\large \bf Stephan Meylan (smeylan@mit.edu)}  \AND {\large \bf Mika Braginsky (mikabr@mit.edu)}  \AND {\large \bf George Kachergis (kachergis@stanford.edu)}  \AND {\large \bf Molly Lewis (mollyllewis@gmail.com)}  \AND {\large \bf Claire Bergey (cbergey@uchicago.edu)}  \AND {\large \bf Naiti S. Bhatt (nbhatt@hmc.edu)}  \AND {\large \bf Veronica Boyce (vboyce@stanford.edu)}  \AND {\large \bf Jessica Mankewitz (jmankewitz@stanford.edu)} \AND {\large \bf Bria Long (bria@stanford.edu)}  \AND {\large \bf Benny deMayo (bdemayo@princeton.edu)}  \AND {\large \bf Daniel Yurovsky (yurovsky@stanford.edu)}  \AND {\large \bf Annissa N. Saleh (ans638@nyu.edu)}  \AND {\large \bf Sarp Uner (sarp.uner@duke.edu)}  \AND {\large \bf Alexandra Carstensen (abcarstensen@stanford.edu)}  \AND {\large \bf Rose M. Schneider (roschnei@ucsd.edu)}  \AND {\large \bf Angeline Sin Mei Tsui (astsui@stanford.edu)}   \AND {\large \bf Michael C. Frank (mcfrank@stanford.edu)}}
+\author{{\large \bf Martin Zettersten (martincz@princeton.edu)} \\ Department of Psychology, South Dr \\ Princeton, NJ 08540 USA \AND {\large \bf Tian Linger Xu (txu@iu.edu)}  \AND {\large \bf Stephan Meylan (smeylan@mit.edu)}  \AND {\large \bf Mika Braginsky (mikabr@mit.edu)}  \AND {\large \bf George Kachergis (kachergis@stanford.edu)}  \AND {\large \bf Molly Lewis (mollyllewis@gmail.com)}  \AND {\large \bf Claire Bergey (cbergey@uchicago.edu)}  \AND {\large \bf Naiti S. Bhatt (nbhatt@hmc.edu)}  \AND {\large \bf Veronica Boyce (vboyce@stanford.edu)}  \AND {\large \bf Jessica Mankewitz (jmankewitz@stanford.edu)} \AND {\large \bf Bria Long (bria@stanford.edu)}  \AND {\large \bf Benny deMayo (bdemayo@princeton.edu)}  \AND {\large \bf Kyle MacDonald (kylem412@gmail.com)} \AND {\large \bf Daniel Yurovsky (yurovsky@stanford.edu)}  \AND {\large \bf Annissa N. Saleh (ans638@nyu.edu)}  \AND {\large \bf Sarp Uner (sarp.uner@duke.edu)}  \AND {\large \bf Alexandra Carstensen (abcarstensen@stanford.edu)}  \AND {\large \bf Rose M. Schneider (roschnei@ucsd.edu)}  \AND {\large \bf Angeline Sin Mei Tsui (astsui@stanford.edu)}   \AND {\large \bf Michael C. Frank (mcfrank@stanford.edu)}}
 
 
 \begin{document}
@@ -260,16 +261,12 @@ and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure
 children's gaze behavior. Most studies focused on testing familiar
 items, but the database also includes studies with novel pseudowords.
 
-\begin{CodeChunk}
-\begin{figure*}[h]
-
-{\centering \includegraphics{figs/peekbank_item_vis-1} 
-
-}
-
-\caption[Item-level variability in proportion target looking within each dataset (chance=0.5)]{Item-level variability in proportion target looking within each dataset (chance=0.5). Time is centered on the onset of the target label (vertical line). Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines.}\label{fig:peekbank_item_vis}
-\end{figure*}
-\end{CodeChunk}
+\sidecaptionvpos{figure}{c}
+\begin{SCfigure*}[0.2] 
+\includegraphics[width=14cm,height=8.4cm]{../figures/peekbank_item_vis.png}
+\caption{Item-level variability in proportion target looking within each dataset (chance=0.5). Time is centered on the onset of the target label (vertical line). Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines.}
+\label{fig:peekbank_item_vis}
+\end{SCfigure*}
 
 \hypertarget{results}{%
 \section{Results}\label{results}}
@@ -309,24 +306,19 @@ of 300 - 2000ms after the onset of the label for each dataset (Swingley
 \& Aslin, 2000). The number of unique target labels and their associated
 accuracy vary widely across datasets (Figure
 \ref{fig:peekbank_item_vis}). Proportion target looking was generally
-higher for familiar target labels (M = 67.5\%, 95\% CI = {[}66.6\%,
-68.5\%{]}) than for novel target labels learned during the experiment (M
-= 55.1\%, 95\% CI = {[}53.8\%, 56.3\%{]}).
+higher for familiar (M = 67.5\%, 95\% CI = {[}66.6\%, 68.5\%{]}) than
+for novel target labels learned during the experiment (M = 55.1\%, 95\%
+CI = {[}53.8\%, 56.3\%{]}).
 
 \hypertarget{predicting-age-related-changes-while-generalizing-across-items}{%
 \subsection{Predicting Age-Related Changes While Generalizing Across
 Items}\label{predicting-age-related-changes-while-generalizing-across-items}}
 
-\begin{CodeChunk}
-\begin{figure*}[h]
-
-{\centering \includegraphics{figs/age_gca-1} 
-
-}
-
-\caption[Growth curve models of proportion target looking during the critical target window at each age range (in months)]{Growth curve models of proportion target looking during the critical target window at each age range (in months). (A) Mean empirical word recognition fit. (B) Population-level estimates.}\label{fig:age_gca}
-\end{figure*}
-\end{CodeChunk}
+\begin{SCfigure*}[0.2] 
+\includegraphics[width=14cm,height=6cm]{../figures/age_gca.png}
+\caption{Growth curve models of proportion target looking during the critical target window at each age range (in months). (A) Mean empirical word recognition fit. (B) Population-level estimates.}
+\label{fig:age_gca}
+\end{SCfigure*}
 
 Developmental changes in word recognition have been a central issue
 since early investigations of eye-tracking techniques (Fernald, Pinto,
@@ -390,16 +382,11 @@ limitations of individual datasets.
 \hypertarget{time-window-selection}{%
 \subsection{Time Window Selection}\label{time-window-selection}}
 
-\begin{CodeChunk}
-\begin{figure*}[h]
-
-{\centering \includegraphics{figs/time_window-1} 
-
-}
-
-\caption[Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group]{Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid.}\label{fig:time_window}
-\end{figure*}
-\end{CodeChunk}
+\begin{SCfigure*}[0.3] 
+\includegraphics[width=14cm,height=8.75cm]{../figures/interitem_cors_window_analysis.png}
+\caption{Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid.}
+\label{fig:time_window}
+\end{SCfigure*}
 
 In our second analysis, we addressed a common analytic decision facing
 researchers: how to summarize timecourse data into a single measure of

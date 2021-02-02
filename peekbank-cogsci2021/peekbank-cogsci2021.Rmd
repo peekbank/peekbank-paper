@@ -17,6 +17,7 @@ author-information: >
     \AND {\large \bf Jessica Mankewitz (jmankewitz@stanford.edu)}
     \AND {\large \bf Bria Long (bria@stanford.edu)} 
     \AND {\large \bf Benny deMayo (bdemayo@princeton.edu)} 
+    \AND {\large \bf Kyle MacDonald (kylem412@gmail.com)}
     \AND {\large \bf Daniel Yurovsky (yurovsky@stanford.edu)} 
     \AND {\large \bf Annissa N. Saleh (ans638@nyu.edu)} 
     \AND {\large \bf Sarp Uner (sarp.uner@duke.edu)} 
@@ -32,6 +33,8 @@ keywords: >
     word recognition; eye-tracking; database; vocabulary development; looking-while-listening
     
 output: cogsci2016::cogsci_paper
+header-includes:
+  - \usepackage[raggedright]{sidecap}
 #final-submission: \cogscifinalcopy
 ---
 
@@ -146,10 +149,19 @@ The database currently includes `r length(summarize_datasets$dataset_rename)` lo
 The database includes studies using both manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure children's gaze behavior. 
 Most studies focused on testing familiar items, but the database also includes studies with novel pseudowords.
 
+<!--
 ```{r peekbank_item_vis, fig.env = "figure*", fig.pos = "h", fig.width=6.5, fig.height=3.9, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Item-level variability in proportion target looking within each dataset (chance=0.5). Time is centered on the onset of the target label (vertical line). Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines."}
 img <- png::readPNG(here("figures","peekbank_item_vis.png"))
 grid::grid.raster(img)
 ```
+-->
+
+\sidecaptionvpos{figure}{c}
+\begin{SCfigure*}[0.2] 
+\includegraphics[width=14cm,height=8.4cm]{../figures/peekbank_item_vis.png}
+\caption{Item-level variability in proportion target looking within each dataset (chance=0.5). Time is centered on the onset of the target label (vertical line). Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines.}
+\label{fig:peekbank_item_vis}
+\end{SCfigure*}
 
 # Results
 
@@ -192,14 +204,22 @@ overall_novelty <- participant_means_novelty %>%
 In general, participants demonstrated robust, above-chance word recognition in each dataset (with chance being 0.5). 
 Table 2 shows the average proportion of target looking within a standard critical window of 300 - 2000ms after the onset of the label for each dataset [@Swingley2000]. 
 The number of unique target labels and their associated accuracy vary widely across datasets (Figure \ref{fig:peekbank_item_vis}). 
-Proportion target looking was generally higher for familiar target labels (M = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,3)*100`%, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,3)*100`%, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,3)*100`%]) than for novel target labels learned during the experiment (M = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,3)*100`%, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,3)*100`%, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,3)*100`%]). 
+Proportion target looking was generally higher for familiar (M = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,3)*100`%, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,3)*100`%, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,3)*100`%]) than for novel target labels learned during the experiment (M = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,3)*100`%, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,3)*100`%, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,3)*100`%]). 
 
 ## Predicting Age-Related Changes While Generalizing Across Items
 
+<!--
 ```{r age_gca, fig.env = "figure", fig.env = "figure*", fig.pos = "h", fig.width=6.5, fig.height=4.33, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Growth curve models of proportion target looking during the critical target window at each age range (in months). (A) Mean empirical word recognition fit. (B) Population-level estimates."}
 img <- png::readPNG(here("figures","age_gca.png"))
 grid::grid.raster(img)
 ```
+-->
+
+\begin{SCfigure*}[0.2] 
+\includegraphics[width=14cm,height=6cm]{../figures/age_gca.png}
+\caption{Growth curve models of proportion target looking during the critical target window at each age range (in months). (A) Mean empirical word recognition fit. (B) Population-level estimates.}
+\label{fig:age_gca}
+\end{SCfigure*}
 
 Developmental changes in word recognition have been a central issue since early investigations of eye-tracking techniques [@fernald1998]. Children's speed and accuracy of word recognition increases across early childhood, yet measuring these increases presents an item selection puzzle for researchers: Words that are appropriate for an 18-month-old will be too easy for a three-year-old; those that are appropriate for a three-year-old will be difficult the 18-month-old. Failure to choose appropriate test items can even lead to spurious conclusions about development [@peter2019]. 
 
@@ -210,11 +230,17 @@ This issue is familiar in psychometrics: test developers interested in measuring
 Figure \ref{fig:age_gca} depicts the results of this analysis. Panel A shows the mean empirical word recognition curves for four age groups, along with fitted model performance. Although model fits are acceptable, developmental change appears irregular - for example, 12--24 month-olds show slightly earlier recognition than 24--36 month-olds. This pattern is an artifact of averaging across datasets with substantially different items and structures. Panel B shows model predictions for the population level of each random effect -- our best estimates of the latent ability structure. Here we see continuous increases in both speed (point at which the curve rises) and accuracy (asymptote of the curve) across ages, though this developmental trend decelerates [consistent with other work on reaction time development; @frank2016b; @kail1991]. This proof of concept suggests that *Peekbank* can be used to model developmental change over multiple years, overcoming the limitations of individual datasets.
 
 ## Time Window Selection
-
+<!--
 ```{r time_window, fig.env = "figure*", fig.pos = "h", fig.width=6, fig.height=3.75, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid."}
 img <- png::readPNG(here("figures","interitem_cors_window_analysis.png"))
 grid::grid.raster(img)
 ```
+-->
+\begin{SCfigure*}[0.3] 
+\includegraphics[width=14cm,height=8.75cm]{../figures/interitem_cors_window_analysis.png}
+\caption{Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid.}
+\label{fig:time_window}
+\end{SCfigure*}
 
 In our second analysis, we addressed a common analytic decision facing researchers: how to summarize timecourse data into a single measure of accuracy. 
 Taking a similar approach to that of @Peelle2020, we conducted a multiverse-style analysis considering possible time windows researchers might select.

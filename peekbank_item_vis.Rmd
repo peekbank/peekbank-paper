@@ -75,8 +75,8 @@ ggplot(aes(x = t_norm, y = prop_looking,color=english_stimulus_label)) +
   facet_wrap(~dataset_rename,nrow=3)+
   theme(legend.position="none")+
   theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=18))+
-  theme(axis.text.x = element_text(angle = 45, vjust = 0.5))+
+        axis.title=element_text(size=16))+
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5),strip.text.x = element_text(size = 12))+
   scale_x_continuous(breaks=seq(-500,3000,500))
   
   
