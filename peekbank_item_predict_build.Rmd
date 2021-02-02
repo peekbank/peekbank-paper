@@ -186,7 +186,6 @@ Histogram of trial frequency by item - Phew! A few items with a LOT of trials
 ```{r}
 ggplot(by_target_item_means,aes(N))+
   geom_histogram()
-hist(by_target_item_means$N)
 ```
 
 
@@ -266,11 +265,11 @@ acc_mod_freq_aoa <- left_join(acc_mod_freq,
          luce_log = log(inverse_target) / (log(inverse_target) + log(inverse_distractor)))
 ```
 
-## Does item frequency predict target looking? {.tabset}
+## Frequency {.tabset}
 
 First, we're going to explore whether the log word frequency of the relevant items (from CHILDES) predicts proportion target looking. 
 We'll look at just the target word frequency first, and then more complex models that also include distractor label frequency. 
-The crux is that although it appears that there is some signal here (see plots below and model without random item effects), that signal doesn't generalize across items (i.e., once random effects for items are added into the model).
+The crux is that although it appears that there is some signal here (see plots below), that signal doesn't generalize across items (i.e., once random effects for items are added into the model).
 This is probably the result of a few different things coming together:
 
 1. We have vastly different numbers of observations for different items
@@ -363,7 +362,7 @@ anova(m1,m2)
 m_base <- m1
 ```
 
-### Adding by-item random intercepts
+### Adding by-item random intercepts {.tabset}
 
 #### Target label random intercept greatly improves model fit
 
@@ -412,6 +411,8 @@ summary(m7)
 anova(m_base_item,m7)
 ```
 
+## AOA+Frequency {.tabset}
+
 ### AOA+Frequency - Building Base Model {.tabset}
 
 Sequentially build the best non-item driven model (age/ dataset/ participant-based variance only) of proportion-looking to target (this time with the dataset with AOAs joined in)
@@ -448,7 +449,7 @@ anova(m1,m2)
 m_base <- m1
 ```
 
-### Adding by-item random intercepts
+### Adding by-item random intercepts {.tabset}
 
 #### Target label random intercept greatly improves model fit
 
