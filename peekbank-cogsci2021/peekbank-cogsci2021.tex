@@ -184,16 +184,16 @@ analysis -- impacts inter-item reliability.
 The Peekbank data framework consists of three libraries that take in raw
 experimental datasets, populate a relational database, and provide an
 API interface (Fig. \ref{fig:fig_framework_overview}). The
-\texttt{peekds} library (for the R language) helps researchers convert
-and validate existing datasets to use the relational format used by the
-database. The \texttt{peekbank} library (Python) creates a database with
-the relational schema and populates it with the standardized datasets
-produced by \texttt{peekds}. The database is implemented in MySQL, an
-industry standard relational database, which may be accessed by a
-variety of programming languages over the internet. The
-\texttt{peekbankr} library (R) provides an application programming
-interface, or API, that provides high-level abstractions to help
-researchers run common analysis tasks on the database.
+\texttt{peekds} library (for the R language; R Development Core Team,
+2020) helps researchers convert and validate existing datasets to use
+the relational format used by the database. The \texttt{peekbank}
+library (Python) creates a database with the relational schema and
+populates it with the standardized datasets produced by \texttt{peekds}.
+The database is implemented in MySQL, an industry standard relational
+database, which may be accessed by a variety of programming languages
+over the internet. The \texttt{peekbankr} library (R) provides an
+application programming interface, or API, that provides high-level
+abstractions to help researchers run analyses on the database.
 
 \hypertarget{data-format-and-processing}{%
 \subsection{Data Format and
@@ -256,11 +256,10 @@ span a wide age spectrum with participants ranging from 8 to 84 months
 of age, and are balanced in terms of gender (48\% female). The datasets
 vary across a number of dimensions related to design and methodology,
 and include studies using manually coded video recordings and automated
-eye-tracking methods (e.g., Tobii, EyeLink) to measure children's gaze
-behavior. Most studies focused on testing familiar items, but the
-database also includes studies with novel pseudowords. All data (and
-accompanying references) are openly available on the Open Science
-Framework
+eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior.
+Most studies focused on testing familiar items, but the database also
+includes studies with novel pseudowords. All data (and accompanying
+references) are openly available on the Open Science Framework
 (\url{https://osf.io/pr6wu/?view_only=07a3887eb7a24643bdc1b2612f2729de}).
 
 \sidecaptionvpos{figure}{c}
@@ -366,7 +365,8 @@ structure, we included by-item, by-subject, and by-dataset random
 intercepts; though a larger random effect structure could be justified
 by the data, the size of the dataset precluded fitting these. The random
 effect structure allows us to model word recognition while generalizing
-across items and participants.
+across items and participants. The random effect structure allows us to
+model word recognition while generalizing across items and participants.
 
 Figure \ref{fig:age_gca} depicts the results of this analysis. Panel A
 shows the mean empirical word recognition curves for four age groups,
@@ -387,8 +387,8 @@ overcoming the limitations of individual datasets.
 \hypertarget{time-window-selection}{%
 \subsection{Time Window Selection}\label{time-window-selection}}
 
-\begin{SCfigure*}[0.3] 
-\includegraphics[width=14cm,height=8.75cm]{../figures/interitem_cors_window_analysis.png}
+\begin{SCfigure*}[0.25] 
+\includegraphics[width=13.6cm,height=8.5cm]{../figures/interitem_cors_window_analysis.png}
 \caption{Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid.}
 \label{fig:time_window}
 \end{SCfigure*}
@@ -419,8 +419,7 @@ our data into four age bins (12-24, 24-36, 36-48, and 48-60 months).
 While it is an open question what space of possible windows will yield
 the greatest reliability, we expect to see low reliability (i.e.~0) in
 windows that start before target onset and in windows that end within
-300 ms post-target onset, before participants are able to execute a
-response.
+300 ms post-target onset, before participants can execute a response.
 
 Results from this multiverse analysis are shown in Figure
 \ref{fig:time_window}, where each colored pixel represents the mean IIC
@@ -471,43 +470,40 @@ of word recognition across one to five years of age, extending past
 foundational work (e.g., Fernald et al., 1998) by showing that these
 word processing gains generalize across items and are not only
 attributable word-specific gains in processing speed. The second
-analysis demonstrates how Peekbank can be used to make principled,
-data-driven analytic decisions, specifically the choice of time windows
-for analyzing developmental eye-tracking data. In
-looking-while-listening studies, researchers often choose a relatively
-short time window of roughly 300-1800 or 2000 ms (Fernald et al., 2008),
-with the justification that eye movements occurring after this window
-may no longer reflect fixations related to the target label (Swingley \&
+analysis demonstrates how Peekbank can be used to make data-driven
+analytic decisions, focusing on the choice of time windows for analysis.
+In looking-while-listening studies, researchers often choose a
+relatively short time window of roughly 300-1800 or 2000 ms (Fernald et
+al., 2008), with the justification that eye movements occurring after
+this window may no longer be related to the target label (Swingley \&
 Aslin, 2000). Our results recommend that researchers consider increasing
 the size of the time window for analyzing target fixations (at least for
-familiar words) to maximize the consistent signal present in children's
-target fixations.
+familiar words) to maximize the consistent signal in children's target
+fixations.
 
-There are a number of critical limitations surrounding the current scope
-of the database. A key priority in future work will be to expand the
-size of the database. With 11 datasets currently available in the
-dataset, idiosyncrasies of particular designs and condition
-manipulations still have substantial influence on modeling results.
-Expanding the set of distinct datasets will allow us to increase the
-number of observations per item across datasets, allowing for more
-robust generalizations regarding participant- and item-level
-variability. The current database is also limited by the relatively
-homogeneous background of its participants, both with respect to
-language (almost entirely monolingual native English speakers) and
+There are a number of limitations surrounding the current scope of the
+database. A priority in future work will be to expand the size of the
+database. With 11 datasets currently available in the database,
+idiosyncrasies of particular designs and condition manipulations still
+have substantial influence on modeling results. Expanding the set of
+distinct datasets will allow us to increase the number of observations
+per item across datasets, leading to more robust generalizations across
+item-level variability. The current database is also limited by the
+relatively homogeneous background of its participants, both with respect
+to language (almost entirely monolingual native English speakers) and
 cultural background (all but one dataset comes from WEIRD environments;
 Muthukrishna et al., 2020). Increasing the diversity of participant
-backgrounds and languages will increase the scope of the generalizations
+backgrounds and languages will expand the scope of the generalizations
 we can form about child word recognition.
 
-Finally, while the current database is mainly focused on studies of word
+Finally, while the current database is focused on studies of word
 recognition, the tools and infrastructure developed in the project can
-in principle be expanded to accommodate any eye-tracking paradigm used
-with infants and toddlers, opening up new avenues for insights into
-infant development. Infant looking has been at the core of many of the
-key advances in our understanding of infant cognition. Aggregating large
-datasets of infant looking behavior in a single, openly-accessible
-format promises to bring a fuller picture of infant cognitive
-development into view.
+in principle be used to accommodate any eye-tracking paradigm, opening
+up new avenues for insights into infant development. Infant looking has
+been at the core of many of the key advances in our understanding of
+infant cognition. Aggregating large datasets of infant looking behavior
+in a single, openly-accessible format promises to bring a fuller picture
+of infant cognitive development into view.
 
 \hypertarget{acknowledgements}{%
 \section{Acknowledgements}\label{acknowledgements}}
@@ -639,6 +635,11 @@ Peter, M. S., Durrant, S., Jessop, A., Bidgood, A., Pine, J. M., \&
 Rowland, C. F. (2019). Does speed of processing or vocabulary size
 predict later language growth in toddlers? \emph{Cognitive Psychology},
 \emph{115}, 101238.
+
+\leavevmode\hypertarget{ref-RDevelopmentCoreTeam2010}{}%
+R Development Core Team. (2020). R: A language and environment for
+statistical computing. Vienna, Austria: R Foundation for Statistical
+Computing.
 
 \leavevmode\hypertarget{ref-steegenEtAl2016}{}%
 Steegen, S., Tuerlinckx, F., Gelman, A., \& Vanpaemel, W. (2016).

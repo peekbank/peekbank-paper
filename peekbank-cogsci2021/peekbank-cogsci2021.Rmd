@@ -98,10 +98,10 @@ grid::grid.raster(img)
 ```
 
 The Peekbank data framework consists of three libraries that take in raw experimental datasets, populate a relational database, and provide an API interface (Fig. \ref{fig:fig_framework_overview}).
-The \texttt{peekds} library (for the R language) helps researchers convert and validate existing datasets to use the relational format used by the database. 
+The \texttt{peekds} library [for the R language; @RDevelopmentCoreTeam2010] helps researchers convert and validate existing datasets to use the relational format used by the database. 
 The \texttt{peekbank} library (Python) creates a database with the relational schema and populates it with the standardized datasets produced by \texttt{peekds}.
 The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet.
-The \texttt{peekbankr} library (R) provides an application programming interface, or API, that provides high-level abstractions to help researchers run common analysis tasks on the database. 
+The \texttt{peekbankr} library (R) provides an application programming interface, or API, that provides high-level abstractions to help researchers run analyses on the database. 
 <!--
 ```{r fig_schema, fig.env = "figure", fig.align = "center", fig.width=3.5, set.cap.width=T, num.cols.cap=1, fig.cap = "Data schema for the Peekbank database."}
 img <- png::readPNG(here("figures","schema.png"))
@@ -153,7 +153,7 @@ print(tab1, type="latex", comment = F, table.placement = "H",include.rownames=FA
 
 The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising N=`r sum(summarize_datasets$num_subj)` total participants (Table 1).
 Most datasets (10 out of 11 total) consist of data from monolingual native English speakers. They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),2)*100`% female). 
-The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure children's gaze behavior. 
+The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. 
 Most studies focused on testing familiar items, but the database also includes studies with novel pseudowords. All data (and accompanying references) are openly available on the Open Science Framework (https://osf.io/pr6wu/?view_only=07a3887eb7a24643bdc1b2612f2729de).
 
 <!--
@@ -244,8 +244,8 @@ img <- png::readPNG(here("figures","interitem_cors_window_analysis.png"))
 grid::grid.raster(img)
 ```
 -->
-\begin{SCfigure*}[0.3] 
-\includegraphics[width=14cm,height=8.75cm]{../figures/interitem_cors_window_analysis.png}
+\begin{SCfigure*}[0.25] 
+\includegraphics[width=13.6cm,height=8.5cm]{../figures/interitem_cors_window_analysis.png}
 \caption{Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid.}
 \label{fig:time_window}
 \end{SCfigure*}
@@ -257,7 +257,7 @@ The time windows selected by researchers varies substantially in the literature,
 We thus examined a broad range of window start times ranging from 300 ms pre-target onset to 1500 ms post-target onset and window end times ranging from 0 ms to 4000 ms post-target onset. 
 For each combination of window start time and end time with a minimum window duration of 50 ms, we calculated participants’ average inter-item correlation for proportion of looking at familiar targets (mean IIC). 
 Since observations were unevenly distributed across the age range, and because children likely show a varying response to familiar items as they age (often motivating different window choices), we split our data into four age bins (12-24, 24-36, 36-48, and 48-60 months).
-While it is an open question what space of possible windows will yield the greatest reliability, we expect to see low reliability (i.e. 0) in windows that start before target onset and in windows that end within 300 ms post-target onset, before participants are able to execute a response.
+While it is an open question what space of possible windows will yield the greatest reliability, we expect to see low reliability (i.e. 0) in windows that start before target onset and in windows that end within 300 ms post-target onset, before participants can execute a response.
 <!-- We removed the mahr_coartic dataset because it only included times up to 1800 ms post-target onset -->
 
 Results from this multiverse analysis are shown in Figure \ref{fig:time_window}, where each colored pixel represents the mean IIC for proportion of looking to familiar targets for a specific combination of window start and end time. 
@@ -289,16 +289,18 @@ This paper presents an illustration of some of the key theoretical and methodolo
 
 Our first analysis shows that Peekbank can be used to model item-independent changes in the speed and accuracy of word recognition across development. 
 Children showed age-related increases in the speed of word recognition across one to five years of age, extending past foundational work [e.g., @fernald1998] by showing that these word processing gains generalize across items and are not only attributable word-specific gains in processing speed. 
-The second analysis demonstrates how Peekbank can be used to make principled, data-driven analytic decisions, specifically the choice of time windows for analyzing developmental eye-tracking data. 
-In looking-while-listening studies, researchers often choose a relatively short time window of roughly 300-1800 or 2000 ms [@Fernald2008], with the justification that eye movements occurring after this window may no longer reflect fixations related to the target label [@Swingley2000]. 
-Our results recommend that researchers consider increasing the size of the time window for analyzing target fixations (at least for familiar words) to maximize the consistent signal present in children's target fixations.
+The second analysis demonstrates how Peekbank can be used to make data-driven analytic decisions, focusing on the choice of time windows for analysis. 
+In looking-while-listening studies, researchers often choose a relatively short time window of roughly 300-1800 or 2000 ms [@Fernald2008], with the justification that eye movements occurring after this window may no longer be related to the target label [@Swingley2000]. 
+Our results recommend that researchers consider increasing the size of the time window for analyzing target fixations (at least for familiar words) to maximize the consistent signal in children's target fixations.
 
-There are a number of critical limitations surrounding the current scope of the database. A key priority in future work will be to expand the size of the database. 
-With 11 datasets currently available in the dataset, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results. 
-Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, allowing for more robust generalizations regarding participant- and item-level variability.
-The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background [all but one dataset comes from WEIRD environments; @Muthukrishna2020]. Increasing the diversity of participant backgrounds and languages will increase the scope of the generalizations we can form about child word recognition.
+There are a number of limitations surrounding the current scope of the database. 
+A priority in future work will be to expand the size of the database. 
+With 11 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results. 
+Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability.
+The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background [all but one dataset comes from WEIRD environments; @Muthukrishna2020]. 
+Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
 
-Finally, while the current database is mainly focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be expanded to accommodate any eye-tracking paradigm used with infants and toddlers, opening up new avenues for insights into infant development. 
+Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into infant development. 
 Infant looking has been at the core of many of the key advances in our understanding of infant cognition. 
 Aggregating large datasets of infant looking behavior in a single, openly-accessible format promises to bring a fuller picture of infant cognitive development into view.
 
