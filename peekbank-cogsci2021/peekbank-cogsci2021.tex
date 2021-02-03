@@ -57,7 +57,7 @@ large-scale repository for developmental eye-tracking data}
 
 \usepackage[raggedright]{sidecap}
 
-\author{{\large \bf Martin Zettersten (martincz@princeton.edu)} \\ Department of Psychology, South Dr \\ Princeton, NJ 08540 USA \AND {\large \bf Tian Linger Xu (txu@iu.edu)}  \AND {\large \bf Stephan Meylan (smeylan@mit.edu)}  \AND {\large \bf Mika Braginsky (mikabr@mit.edu)}  \AND {\large \bf George Kachergis (kachergis@stanford.edu)}  \AND {\large \bf Molly Lewis (mollyllewis@gmail.com)}  \AND {\large \bf Claire Bergey (cbergey@uchicago.edu)}  \AND {\large \bf Naiti S. Bhatt (nbhatt@hmc.edu)}  \AND {\large \bf Veronica Boyce (vboyce@stanford.edu)}  \AND {\large \bf Jessica Mankewitz (jmankewitz@stanford.edu)} \AND {\large \bf Bria Long (bria@stanford.edu)}  \AND {\large \bf Benny deMayo (bdemayo@princeton.edu)}  \AND {\large \bf Kyle MacDonald (kylem412@gmail.com)} \AND {\large \bf Daniel Yurovsky (yurovsky@stanford.edu)}  \AND {\large \bf Annissa N. Saleh (ans638@nyu.edu)}  \AND {\large \bf Sarp Uner (sarp.uner@duke.edu)}  \AND {\large \bf Alexandra Carstensen (abcarstensen@stanford.edu)}  \AND {\large \bf Rose M. Schneider (roschnei@ucsd.edu)}  \AND {\large \bf Angeline Sin Mei Tsui (astsui@stanford.edu)}   \AND {\large \bf Michael C. Frank (mcfrank@stanford.edu)}}
+\author{{\large \bf Martin Zettersten (martincz@princeton.edu)} \\ Department of Psychology, South Dr \\ Princeton, NJ 08540 USA \AND {\large \bf Claire Bergey (cbergey@uchicago.edu)} \AND {\large \bf Naiti S. Bhatt (nbhatt@hmc.edu)}  \AND {\large \bf Veronica Boyce (vboyce@stanford.edu)} \AND {\large \bf Mika Braginsky (mikabr@mit.edu)} \AND {\large \bf Alexandra Carstensen (abcarstensen@stanford.edu)}  \AND {\large \bf Benny deMayo (bdemayo@princeton.edu)}  \AND {\large \bf George Kachergis (kachergis@stanford.edu)}  \AND {\large \bf Molly Lewis (mollyllewis@gmail.com)} \AND {\large \bf Bria Long (bria@stanford.edu)} \AND {\large \bf Kyle MacDonald (kylem412@gmail.com)} \AND {\large \bf Jessica Mankewitz (jmankewitz@stanford.edu)} \AND {\large \bf Stephan Meylan (smeylan@mit.edu)}  \AND {\large \bf Annissa N. Saleh (ans638@nyu.edu)} \AND {\large \bf Rose M. Schneider (roschnei@ucsd.edu)}  \AND {\large \bf Angeline Sin Mei Tsui (astsui@stanford.edu)}   \AND {\large \bf Sarp Uner (sarp.uner@duke.edu)}  \AND {\large \bf Tian Linger Xu (txu@iu.edu)}  \AND {\large \bf Daniel Yurovsky (yurovsky@stanford.edu)}  \AND {\large \bf Michael C. Frank (mcfrank@stanford.edu)}}
 
 
 \begin{document}
@@ -120,16 +120,18 @@ While the looking-while-listening paradigm has been highly fruitful in
 advancing understanding of early word knowledge, fundamental questions
 remain both about the trajectory of children's word recognition ability
 and the nature of the method itself. One central question is how to
-tease apart variability due to specific items (words) and variability
-due to participants across development. Most studies of infant word
-recognition focus on generalizing performance across participants, and
-are constrained in their ability to provide generalizations across words
-(items). Generalizing behavior on the level of both items and
-participants simultaneously is difficult in the context of a solitary
-study, especially given practical constraints on the number of trials
-(and consequently items) tested within a given infant. One key to
-meeting this challenge is having sufficiently large datasets to account
-for and explain variability in word recognition on the item level.
+measure developmental change in word recognition. Age-related changes
+and individual differences in speed of word recognition are thought to
+support children's language learning (e.g., Marchman \& Fernald, 2008).
+However, measuring increases in speed and accuracy of word recognition
+faces the challenge of distinguishing developmental changes in word
+recognition skill from changes in knowledge of specific words. This
+problem is particularly thorny in child development, since the number of
+items that can be tested within a single session is limited and items
+must be selected in an age-appropriate manner (Peter et al., 2019).
+Measuring developmental change therefore requires large-scale datasets
+with a range of items, in order to generalize age-related changes across
+words.
 
 A second question relates to evaluating methodological best-practices.
 In particular, many fundamental analytic decisions vary substantially
@@ -154,15 +156,14 @@ collects a large set of eye-tracking datasets on children's word
 recognition, (b) introduces a data format and processing tools for
 standardizing eye-tracking data across data sources, and (c) provides an
 API for accessing and analyzing the database. In the current paper, we
-give a brief overview of the key components of the project and some
-initial demonstrations of its utility in advancing theoretical and
-methodological questions in the study of children's early language. We
-report two analyses using the database and associated tools (N=1,233):
-(1) a growth-curve analysis modeling age-related changes in infants'
-word recognition while generalizing across item-level variability and
-(2) a multiverse-style analysis of how a central methodological decision
--- selecting the time window of analysis -- impacts inter-item
-reliability.
+give an overview of the key components of the project and some initial
+demonstrations of its utility in advancing theoretical and
+methodological questions. We report two analyses using the database and
+associated tools (N=1,233): (1) a growth-curve analysis modeling
+age-related changes in infants' word recognition while generalizing
+across item-level variability and (2) a multiverse-style analysis of how
+a central methodological decision -- selecting the time window of
+analysis -- impacts inter-item reliability.
 
 \hypertarget{methods}{%
 \section{Methods}\label{methods}}
@@ -177,13 +178,13 @@ reliability.
 
 }
 
-\caption[Overview of the peekbank data ecosystem]{Overview of the peekbank data ecosystem. Peekbank libraries and tools are highlighted in green.}\label{fig:fig_framework_overview}
+\caption[Overview of the Peekbank data ecosystem]{Overview of the Peekbank data ecosystem. Peekbank libraries and tools are highlighted in green.}\label{fig:fig_framework_overview}
 \end{figure}
 \end{CodeChunk}
 
-The \emph{Peekbank} data framework consists of three libraries that take
-in raw experimental datasets, populate a relational database, and
-provide an API interface (Fig. \ref{fig:fig_framework_overview}). The
+The Peekbank data framework consists of three libraries that take in raw
+experimental datasets, populate a relational database, and provide an
+API interface (Fig. \ref{fig:fig_framework_overview}). The
 \texttt{peekds} library (for the R language) helps researchers convert
 and validate existing datasets to use the relational format used by the
 database. The \texttt{peekbank} library (Python) creates a database with
@@ -200,18 +201,18 @@ researchers run common analysis tasks on the database.
 Processing}\label{data-format-and-processing}}
 
 One of the main challenges in compiling a large-scale eye-tracking
-dataset is the lack of a shared re-usable data format among labs
-conducting individual experiments. Researcher conventions for exporting
-and structuring data vary, as do the technical specifications of
-different devices, rendering the task of integrating datasets from
-different labs and data sources difficult. We developed a common, tidy
-format for the eye-tracking data in \emph{Peekbank} to ease the process
-of conducting cross-dataset analyses (Wickham et al., 2019). The schema
-of the database is sufficiently general to handle heterogeneous
-datasets, including both manually coded and automated eye-tracking data.
+dataset is the lack of a shared re-usable data format among individual
+experiments. Researcher conventions for structuring data vary, as do the
+technical specifications of different devices, rendering the task of
+integrating datasets from different labs and data sources difficult. We
+developed a common, tidy format for the eye-tracking data in Peekbank to
+ease the process of conducting cross-dataset analyses (Wickham et al.,
+2019). The schema of the database is sufficiently general to handle
+heterogeneous datasets, including both manually coded and automated
+eye-tracking data.
 
 During data import, raw eye-tracking datasets are processed to conform
-to the \emph{Peekbank} data schema. The centerpiece of the schema is the
+to the Peekbank data schema. The centerpiece of the schema is the
 aoi\_timepoints table (Fig. \ref{fig:fig_framework_overview}), which
 records whether participants looked to the target or the distracter
 stimulus at each timepoint of a given trial. Additional tables track
@@ -260,6 +261,8 @@ The database includes studies using both manually coded video recordings
 and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure
 children's gaze behavior. Most studies focused on testing familiar
 items, but the database also includes studies with novel pseudowords.
+All data is openly available on the Open Science Framework
+(\url{https://osf.io/pr6wu/?view_only=07a3887eb7a24643bdc1b2612f2729de}).
 
 \sidecaptionvpos{figure}{c}
 \begin{SCfigure*}[0.2] 
@@ -314,6 +317,7 @@ CI = {[}53.8\%, 56.3\%{]}).
 \subsection{Predicting Age-Related Changes While Generalizing Across
 Items}\label{predicting-age-related-changes-while-generalizing-across-items}}
 
+\sidecaptionvpos{figure}{c}
 \begin{SCfigure*}[0.2] 
 \includegraphics[width=14cm,height=6cm]{../figures/age_gca.png}
 \caption{Growth curve models of proportion target looking during the critical target window at each age range (in months). (A) Mean empirical word recognition fit. (B) Population-level estimates.}
@@ -341,7 +345,7 @@ different test versions appropriate for different ability ranges
 estimates of developmental change that are independent of individual
 tests and their particular items.
 
-\emph{Peekbank} provides the appropriate data for estimating these
+Peekbank provides the appropriate data for estimating these
 item-independent developmental changes and designing age-appropriate
 tests in the future. Here we show a proof of concept by providing an
 estimate of the item-independent growth of word recognition accuracy
@@ -375,8 +379,8 @@ structure. Here we see continuous increases in both speed (point at
 which the curve rises) and accuracy (asymptote of the curve) across
 ages, though this developmental trend decelerates (consistent with other
 work on reaction time development; Frank, Lewis, \& MacDonald, 2016;
-Kail, 1991). This proof of concept suggests that \emph{Peekbank} can be
-used to model developmental change over multiple years, overcoming the
+Kail, 1991). This proof of concept suggests that Peekbank can be used to
+model developmental change over multiple years, overcoming the
 limitations of individual datasets.
 
 \hypertarget{time-window-selection}{%
@@ -599,6 +603,11 @@ childhood and adolescence. \emph{Psychological Bulletin}, \emph{109}(3),
 Lew-Williams, C., \& Fernald, A. (2007). Young children learning Spanish
 make rapid use of grammatical gender in spoken word recognition.
 \emph{Psychological Science}, \emph{18}(3), 193--198.
+
+\leavevmode\hypertarget{ref-Marchman2008}{}%
+Marchman, V. A., \& Fernald, A. (2008). Speed of word recognition and
+vocabulary knowledge in infancy predict cognitive and language outcomes
+in later childhood. \emph{Developmental Science}, \emph{11}(3), F9--16.
 
 \leavevmode\hypertarget{ref-Marchman2018}{}%
 Marchman, V. A., Loi, E. C., Adams, K. A., Ashland, M., Fernald, A., \&
