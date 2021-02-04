@@ -27,7 +27,7 @@ author-information: >
     \AND {\large \bf Michael C. Frank (mcfrank@stanford.edu)}}
 
 abstract: >
-    The ability to rapidly recognize words and link them to referents in context is central to children's early language development. This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants' fixation of a target object (vs. a distractor) after hearing a target label. We present a large-scale, open database of infant and toddler eye-tracking data from looking-while-listening tasks. The goal of this effort is to address theoretical and methodological challenges in measuring infant vocabulary development. We present two analyses of the current database (N=1,233): (1) capturing age-related changes in infants' word recognition while generalizing across item-level variability and (2) assessing how a central methodological decision -- selecting the time window of analysis -- impacts the reliability of measurement. Future efforts will expand the scope of the current database to advance our understanding of participant-level and item-level variation in children's vocabulary development.
+    The ability to rapidly recognize words and link them to referents in context is central to children's early language development. This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants' fixation on a target object (vs. a distractor) after hearing a target label. We present a large-scale, open database of infant and toddler eye-tracking data from looking-while-listening tasks. The goal of this effort is to address theoretical and methodological challenges in measuring vocabulary development. We present two analyses of the current database (N=1,233): (1) capturing age-related changes in infants' word recognition while generalizing across item-level variability and (2) assessing how a central methodological decision -- selecting the time window of analysis -- impacts the reliability of measurement. Future efforts will expand the scope of the current database to advance our understanding of participant-level and item-level variation in children's vocabulary development.
     
 keywords: >
     word recognition; eye-tracking; vocabulary development; looking-while-listening
@@ -70,7 +70,7 @@ Studies using this design have contributed to our understanding of a wide range 
 
 While the looking-while-listening paradigm has been highly fruitful in advancing understanding of early word knowledge, fundamental questions remain both about the trajectory of children's word recognition ability and the nature of the method itself. 
 One central question is how to measure developmental change in word recognition. 
-Age-related changes and individual differences in speed of word recognition are thought to support children's subsequent language learning [e.g., @Marchman2008].
+Age-related changes and individual differences in speed of word recognition are thought to support children's subsequent language learning and predict later cognitive outcomes [e.g., @Marchman2008].
 However, measuring increases in the speed and accuracy of word recognition faces the challenge of distinguishing developmental changes in word recognition skill from changes in knowledge of specific words. 
 This problem is particularly thorny in child development, since the number of items that can be tested within a single session is limited and items must be selected in an age-appropriate manner [@peter2019]. 
 Measuring developmental change therefore requires large-scale datasets with a range of items, in order to generalize age-related changes across words.
@@ -86,7 +86,7 @@ What these two questions share is that they are difficult to answer at the scale
 To address this challenge, we introduce *Peekbank*, a flexible and reproducible interface to an open database of developmental eye-tracking studies.
 The Peekbank project (a) collects a large set of eye-tracking datasets on children’s word recognition, (b) introduces a data format and processing tools for standardizing eye-tracking data across data sources, and (c) provides an interface for accessing and analyzing the database. 
 In the current paper, we give an overview of the key components of the project and some initial demonstrations of its utility in advancing theoretical and methodological insights. 
-We report two analyses using the database and associated tools (N=1,233): (1) a growth-curve analysis modeling age-related changes in infants' word recognition while generalizing across item-level variability; and (2) a multiverse-style analysis of how a central methodological decision -- selecting the time window of analysis -- impacts inter-item reliability.
+We report two analyses using the database and associated tools (N=1,233): (1) a growth curve analysis modeling age-related changes in infants' word recognition while generalizing across item-level variability; and (2) a multiverse-style analysis of how a central methodological decision -- selecting the time window of analysis -- impacts inter-item reliability.
 
 # Methods
 
@@ -97,11 +97,11 @@ img <- png::readPNG(here("figures","peekbankflowchartv6.png"))
 grid::grid.raster(img)
 ```
 
-The Peekbank data framework consists of three libraries that take in raw experimental datasets, populate a relational database, and provide an API interface (Fig. \ref{fig:fig_framework_overview}).
-The \texttt{peekds} library [for the R language; @RDevelopmentCoreTeam2010] helps researchers convert and validate existing datasets to use the relational format used by the database. 
-The \texttt{peekbank} library (Python) creates a database with the relational schema and populates it with the standardized datasets produced by \texttt{peekds}.
+The Peekbank data framework consists of three components: (1) processing raw experimental datasets; (2) populating a relational database; and (3) providing an interface to the database (Fig. \ref{fig:fig_framework_overview}).
+The \texttt{peekds} library [for the R language; @RDevelopmentCoreTeam2010] helps researchers convert and validate existing datasets to use the relational format of the database. 
+The \texttt{peekbank} module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by \texttt{peekds}.
 The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet.
-The \texttt{peekbankr} library (R) provides an application programming interface, or API, that provides high-level abstractions to help researchers run analyses on the database. 
+The \texttt{peekbankr} library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank. 
 <!--
 ```{r fig_schema, fig.env = "figure", fig.align = "center", fig.width=3.5, set.cap.width=T, num.cols.cap=1, fig.cap = "Data schema for the Peekbank database."}
 img <- png::readPNG(here("figures","schema.png"))
@@ -114,7 +114,7 @@ grid::grid.raster(img)
 
 One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared re-usable data format across individual experiments. Researcher conventions for structuring data vary, as do the technical specifications of different devices, rendering the task of integrating datasets from different labs and data sources difficult. We developed a common, tidy format for the eye-tracking data in Peekbank to ease the process of conducting cross-dataset analyses [@Wickham2019]. The schema of the database <!--(Fig. \ref{fig:fig_schema})--> is sufficiently general to handle heterogeneous datasets, including both manually coded and automated eye-tracking data.
 
-During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. The centerpiece of the schema is the \texttt{aoi_timepoints} table (Fig. \ref{fig:fig_framework_overview}), which records whether participants looked to the target or the distractor stimulus at each timepoint of a given trial. Additional tables track information about data sources, participant characteristics, trial characteristics, stimuli, and raw eye-tracking data. In addition to unifying the data format, we conduct several additional pre-processing steps to facilitate analyses across datasets, including resampling observations to a common sampling rate (40 Hz) and normalizing time relative to the onset of the target label.
+During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. The centerpiece of the schema is the \texttt{aoi\textunderscore timepoints} table (Fig. \ref{fig:fig_framework_overview}), which records whether participants looked to the target or the distractor stimulus at each timepoint of a given trial. Additional tables track information about data sources, participant characteristics, trial characteristics, stimuli, and raw eye-tracking data. In addition to unifying the data format, we conduct several additional pre-processing steps to facilitate analyses across datasets, including resampling observations to a common sampling rate (40 Hz) and normalizing time relative to the onset of the target label.
 
 ## Current Data Sources
 
@@ -146,7 +146,7 @@ summarize_datasets <- dataset_info %>%
 tab1 <- xtable::xtable(summarize_datasets, digits=c(1), 
                        caption = "Overview over the datasets in the current database.")
 
-names(tab1) <- c("Dataset Name", "N","Mean Age", "Method")
+names(tab1) <- c("Dataset Name", "N","Mean Age (mos.)", "Method")
 
 print(tab1, type="latex", comment = F, table.placement = "H",include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont")
 ```
@@ -210,8 +210,8 @@ overall_novelty <- participant_means_novelty %>%
 ```
 
 In general, participants demonstrated robust, above-chance word recognition in each dataset (with chance being 0.5). 
-Table 2 shows the average proportion of target looking within a standard critical window of 300 -- 2000ms after the onset of the label for each dataset [@Swingley2000]. 
-The number of unique target labels and their associated accuracy varies widely across datasets (Figure \ref{fig:peekbank_item_vis}). 
+Table 2 shows the average proportion of target looking within a standard critical window of 300-2000ms after the onset of the label for each dataset [@Swingley2000]. 
+The number of unique target labels and their associated accuracy vary widely across datasets (Figure \ref{fig:peekbank_item_vis}). 
 Proportion target looking was generally higher for familiar words (M = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,3)*100`%, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,3)*100`%, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,3)*100`%]) than for novel words learned during the experiment (M = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,3)*100`%, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,3)*100`%, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,3)*100`%]). 
 
 ## Predicting Age-Related Changes While Generalizing Across Items
@@ -233,9 +233,9 @@ Developmental changes in word recognition have been a central issue since early 
 
 This issue is familiar in psychometrics: test developers interested in measuring across a wide range of a particular latent ability must choose items appropriate for different abilities. One solution is to use data from a bank of questions that have been taken by test-takers of a range of abilities, and then use item-response theory models to create different test versions appropriate for different ability ranges [@embretson2000]. Such tests can then be used to extract estimates of developmental change that are independent of individual tests and their particular items. 
 
-Peekbank provides the appropriate large-scale database for estimating these item-independent developmental changes and designing age-appropriate tests in the future. Here we show a proof of concept by providing an estimate of the item-independent growth of word recognition accuracy across development. We take advantage of the equivalence between item response theory and linear mixed effects models [LMMs; @de-boeck2011], using LMMs to model the trajectory of word recognition across age. We follow the approach of Mirman [-@Mirman2014] and use growth curve LMMs to predict the time course of recognition. Specifically, we predicted children's proportion of target looking during an early window of time (0-1500ms, chosen to avoid modeling declines in looking later in the trial), using an empirical logit transform on the proportion of target looking to allow the use of linear (rather than logistic) regression models. Our predictors were time after word onset and age, and we additionally included polynomial functions of time (up to fourth order) and quadratic effects of age, as well as their interactions. We subtracted all intercepts to force fits to start at a baseline of 0 (chance performance) at time zero. As a random effect structure, we included by-item, by-subject, and by-dataset random intercepts; though a larger random effect structure could be justified by the data, the size of the dataset precluded fitting these. The random effect structure allows us to model word recognition while generalizing across items and participants.
+Peekbank provides the appropriate large-scale database for estimating these item-independent developmental changes and designing age-appropriate tests in the future. Here we show a proof of concept by providing an estimate of the item-independent growth of word recognition accuracy across development. We take advantage of the equivalence between item response theory and linear mixed-effects models [LMMs; @de-boeck2011], using LMMs to model the trajectory of word recognition across age. We follow the approach of Mirman [-@Mirman2014] and use growth curve LMMs to predict the time course of recognition. Specifically, we predicted children's proportion of target looking during an early window of time (0-1500ms, chosen to avoid modeling declines in looking later in the trial), using an empirical logit transform on the proportion of target looking to allow the use of linear (rather than logistic) regression models. Our predictors were time after word onset and age, and we additionally included polynomial functions of time (up to fourth order) and quadratic effects of age, as well as their interactions. We subtracted all intercepts to force fits to start at a baseline of 0 (chance performance) at time zero. As a random effect structure, we included by-item, by-subject, and by-dataset random intercepts; though a larger random effect structure could be justified by the data, the size of the dataset precluded fitting these. The random effect structure allows us to model word recognition while generalizing across items and participants.
 
-Figure \ref{fig:age_gca} depicts the results of this analysis. Panel A shows the mean empirical word recognition curves for four age groups, along with fitted model performance. Although model fits are acceptable, developmental change appears irregular -- for example, 12-24 month-olds show slightly earlier recognition than 24-36 month-olds. This pattern is likely an artifact of averaging across datasets with substantially different items and structures. Panel B shows model predictions for the population level of each random effect -- our best estimates of the latent ability structure. Here we see continuous increases in both speed (point at which the curve rises) and accuracy (asymptote of the curve) across ages, though this developmental trend decelerates [consistent with other work on reaction time development; @frank2016b; @kail1991]. This proof of concept suggests that Peekbank can be used to model developmental change over multiple years, overcoming the limitations of individual datasets.
+Figure \ref{fig:age_gca} depicts the results of this analysis. Panel A shows the mean empirical word recognition curves for four age groups, along with fitted model performance. Although model fits are acceptable, developmental change appears irregular -- for example, 12- to 24-month-olds show slightly earlier recognition than 24- to 36-month-olds. This pattern is likely an artifact of averaging across datasets with substantially different items and structures. Panel B shows model predictions for the population level of each random effect -- our best estimates of the latent ability structure. Here we see continuous increases in both speed (point at which the curve rises) and accuracy (asymptote of the curve) across ages, though this developmental trend decelerates [consistent with other work on reaction time development; @frank2016b; @kail1991]. This proof of concept suggests that Peekbank can be used to model developmental change over multiple years, overcoming the limitations of individual datasets.
 
 ## Time Window Selection
 <!--
@@ -283,12 +283,12 @@ Thus, researchers interested in better measurement of individual variation or co
 # Discussion
 
 Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive. 
-Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science [@Bergmann2018; @TheManyBabiesConsortium2020]. 
-The Peekbank project expands these efforts by building an infrastructure for aggregating eye-tracking data across studies, with a specific focus on the looking-while-listening paradigm. 
+Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science [@Bergmann2018; @Frank2016; @TheManyBabiesConsortium2020]. 
+The Peekbank project expands on these efforts by building an infrastructure for aggregating eye-tracking data across studies, with a specific focus on the looking-while-listening paradigm. 
 This paper presents an illustration of some of the key theoretical and methodological questions that can be addressed using Peekbank: generalizing across item-level variability in children's word recognition and providing data-driven guidance on methodological choices.
 
 Our first analysis shows that Peekbank can be used to model item-independent changes in the speed and accuracy of word recognition across development. 
-Children showed age-related increases in the speed of word recognition across one to five years of age, extending past foundational work [e.g., @fernald1998] by showing that these word processing gains generalize across items and are not only attributable word-specific gains in processing speed. 
+Children showed age-related increases in the speed of word recognition across one to five years of age, extending past foundational work [e.g., @fernald1998] by showing that these word processing gains generalize across items and are not only attributable to word-specific gains in processing speed. 
 The second analysis demonstrates how Peekbank can be used to make data-driven analytic decisions, focusing on the choice of time windows for analysis. 
 In looking-while-listening studies, researchers often choose a relatively short time window of roughly 300-1800 or 2000ms [@Fernald2008], with the justification that eye movements occurring after this window may no longer be related to the target label [@Swingley2000]. 
 Our results recommend that researchers consider increasing the size of the time window for analyzing target fixations (at least for familiar words) to maximize the consistent signal in children's target fixations.
@@ -300,8 +300,8 @@ Expanding the set of distinct datasets will allow us to increase the number of o
 The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background [all but one dataset comes from WEIRD populations; @Muthukrishna2020]. 
 Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
 
-Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into infant development. 
-Infant looking has been at the core of many of the key advances in our understanding of infant cognition. 
+Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development. 
+Gaze behavior has been at the core of many of the key advances in our understanding of infant cognition. 
 Aggregating large datasets of infant looking behavior in a single, openly-accessible format promises to bring a fuller picture of infant cognitive development into view.
 
 # Acknowledgements
