@@ -580,6 +580,6 @@ p2 <- ggplot(elogit_jl_fits,
 
 p <- cowplot::plot_grid(p1, p2, labels = c("A","B"))
 p
-ggsave(p, filename = here("figures/age_gca.png"),
+ggsave(p, filename = here("figures/age_gca.pdf"),
        width = 7, height = 3)
 ```

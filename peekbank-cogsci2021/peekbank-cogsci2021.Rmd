@@ -93,7 +93,7 @@ We report two analyses using the database and associated tools (N=1,233): (1) a 
 ## Database Framework
 
 ```{r fig_framework_overview, fig.env = "figure", fig.align = "center", fig.height=4.5, set.cap.width=T, num.cols.cap=1, fig.cap = "Overview of the Peekbank data ecosystem. Peekbank libraries and tools are highlighted in green."}
-img <- png::readPNG(here("figures","peekbankflowchartv5.png"))
+img <- png::readPNG(here("figures/peekbankflowchartv5.png"))
 grid::grid.raster(img)
 ```
 
