@@ -22,7 +22,9 @@ knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
 load(file = "data/aoi_data_joined.Rds")
 ```
 
-# Reaction time analysis
+# Reaction time computation
+
+For kicks we tried out test-driven development.
 
 ```{r}
 get_rt <- function (rle_data, SAMPLING_RATE = 40) {
@@ -101,7 +103,7 @@ assert_that(is.na(get_rt(start_on_missing)$rt))
 assert_that(get_rt(start_on_missing)$shift_type == "other")
 ```
 
-
+Now process the RTs and join back in the relevant data. 
 
 ```{r}
 rt_data <- aoi_data_joined %>%
@@ -127,8 +129,9 @@ rts <- left_join(rts,
 ```
 
 
-
 Shift statistics. Why are there more D-T than T-D?  Looks like that's true across several datasets (perhaps some with novel words)? 
+
+Also looks like lots of "other" in the eye-tracking datasets? 
 
 ```{r}
 ggplot(rts, aes(x = shift_type)) + 
@@ -147,6 +150,7 @@ corr_fam_rts <- rts %>%
   # filter(rt_value < max(rt_value)-100, !is.na(rt_value)) # note sloppy exclusion of bad RTs (no shift trials)
 ```
 
+# Descriptives
 
 Descriptive histograms. 
 
@@ -234,7 +238,14 @@ corr_fam_rts %>%
   facet_wrap(~dataset_name)
 ```
 
-
+```{r}
+corr_fam_rts %>%
+  filter(age > 6, age < 66) %>%
+  mutate(age_binned = cut(age, seq(6,66,12))) %>%
+  group_by(age_binned) %>%
+  ggplot(aes(x = age_binned, y = rt)) + 
+  stat_summary(fun.data = "mean_cl_boot") 
+```
 
 Overall RT curve across trial order 
 
@@ -272,4 +283,87 @@ ggplot(rt_subs,
   theme_mikabr()
 ```
 
+# Models
 
+```{r}
+mod_data <- corr_fam_rts %>%
+  filter(!is.na(age), age < 66)
+mod_data$log_rt <- log(mod_data$rt)
+mod_data$age_centered <- scale(mod_data$age, scale = FALSE)
+mod_data$age_binned <- as.numeric(as.character(cut(mod_data$age, 
+                                      breaks = seq(6,66,12), 
+                                      labels = seq(12, 60, 12))))
+```
+
+
+FWIW, no obvious big contributions for polynomials degree > 2. Adding age slopes decreases convergence and doesn't seem to capture that much variance? 
+
+```{r}
+mod <- lmer(log_rt ~ poly(age_centered, 2) + 
+              (1 | dataset_name) + 
+              (1 | english_stimulus_label) +
+              (1 | administration_id),
+  data = mod_data)
+
+summary(mod)
+
+mod_data$fitted <- fitted(mod)
+
+ggplot(mod_data, 
+       aes(x = age_binned, y = log_rt)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(aes(y = fitted), fun = mean, geom = "line") +
+  xlab("Age (months)") +
+  ylab("Reaction time (ms)") 
+```
+Just for kicks, let's look at the linear version. 
+
+```{r}
+mod_linear <- lmer(rt ~ poly(age_centered, 2) + 
+              (1 | dataset_name) + 
+              (1 | english_stimulus_label) +
+              (1 | administration_id),
+  data = mod_data)
+
+summary(mod)
+
+mod_data$fitted_linear <- fitted(mod_linear)
+
+ggplot(mod_data, 
+       aes(x = age_binned, y = rt)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(aes(y = fitted_linear), fun = mean, geom = "line") +
+  xlab("Age (months)") +
+  ylab("Reaction time (ms)") 
+```
+
+Previously, we had this issue that the random effects are very substantial so the fitted pattern looks kind of odd. Let's plot the model predictions...
+
+```{r}
+uncentering_factor <- mean(mod_data$age)
+newdata <- tibble(age_centered = c(12, 24, 36, 48, 60) - uncentering_factor)
+
+newdata$pred <- predict(mod, newdata = newdata, re.form = NA)
+
+ggplot(newdata, 
+       aes(x = age_centered + uncentering_factor, y = pred)) + 
+    stat_summary(data = mod_data, 
+                 aes(x = age_binned, y = log_rt), 
+                 fun.data = mean_se, geom = "pointrange") +
+  geom_line(lty = 2)
+```
+
+Again, show in linear space:
+
+```{r}
+newdata$pred_linear <- predict(mod_linear, newdata = newdata, re.form = NA)
+
+ggplot(newdata, 
+       aes(x = age_centered + uncentering_factor, y = pred_linear)) + 
+    stat_summary(data = mod_data, 
+                 aes(x = age_binned, y = rt), 
+                 fun.data = mean_se, geom = "pointrange") +
+  geom_line(lty = 2)
+```
+
+Seems like the data seemingly *under-estimate* developmental change in RTs because of item selection and dataset/method differences...
