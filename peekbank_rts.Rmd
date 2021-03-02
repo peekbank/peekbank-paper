@@ -15,40 +15,118 @@ library(lmerTest)
 library(tictoc)
 library(langcog)
 library(here)
+library(assertthat)
 
 t_range <- c(-1000,3000)
 knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
-
 load(file = "data/aoi_data_joined.Rds")
-
 ```
 
 # Reaction time analysis
 
 ```{r}
-SAMPLING_RATE <- 40
+get_rt <- function (rle_data, SAMPLING_RATE = 40) {
+  # end if no data
+  if (is.null(rle_data$values) | is.null(rle_data$lengths)) {
+    return(tibble(rt = NA, 
+                  shift_type = NA))
+  }
+  
+  onset_aoi <- rle_data$values[1] # zero point AOI
+  
+  # end if missing for start
+  if (!(onset_aoi %in% c("target","distractor"))) {
+    return(tibble(rt = NA, 
+                  shift_type = "other"))
+  }
 
+  first_landing <- rle_data$values[rle_data$values != onset_aoi &
+                                    rle_data$values %in% c("target","distractor")][1]
+
+  # end if no shift
+  if (is.na(first_landing)) {
+    return(tibble(rt = NA, 
+                  shift_type = "no shift"))
+  }
+  
+  shift_type <- case_when(onset_aoi == "distractor" &
+                           first_landing == "target" ~ "D-T",
+                         onset_aoi == "target" &
+                           first_landing == "distractor" ~ "T-D",
+                         TRUE ~ "other")
+
+  first_landing_idx <- which(rle_data$values == first_landing)[1]
+  
+  values_before_first_landing <- rle_data$lengths[1:(first_landing_idx-1)]
+
+  # rt is the number of samples happening before arrival + 1 
+  # (first sample of arrival)
+  # times the length of a sample
+  rt <- (sum(values_before_first_landing) + 1) * (1000/SAMPLING_RATE)
+
+  return(tibble(rt = rt, 
+                shift_type = shift_type))
+}
+
+
+#### tests #### 
+# friendly case: RT
+friendly <- tibble(lengths = c(10,1,10),
+                   values =  c("target","missing","distractor"))
+assert_that(get_rt(friendly)$rt == 300)
+assert_that(get_rt(friendly)$shift_type == "T-D")
+
+# RT of missing is NA
+no_data <- tibble(lengths = NULL,
+                  values = NULL)
+assert_that(is.na(get_rt(no_data)$rt))
+assert_that(is.na(get_rt(no_data)$shift_type))
+
+# RT of something with no shift is NA
+no_shift <- tibble(lengths = 100,
+                   values =  "target")
+assert_that(is.na(get_rt(no_shift)$rt))
+assert_that(get_rt(no_shift)$shift_type == "no shift")
+
+# RT of something with no landing is NA
+no_landing <- tibble(lengths = c(10,10),
+                     values =  c("target", "missing"))
+assert_that(is.na(get_rt(no_landing)$rt))
+assert_that(get_rt(no_landing)$shift_type == "no shift")
+
+# RT where we start on missing is NA, shift_type is "no"
+start_on_missing <- tibble(lengths = c(1, 10, 10),
+                           values =  c("missing","target","distractor"))
+assert_that(is.na(get_rt(start_on_missing)$rt))
+assert_that(get_rt(start_on_missing)$shift_type == "other")
+```
+
+
+
+```{r}
 rt_data <- aoi_data_joined %>%
+  filter(any(t_norm == 0), # must have data at 0
+         t_norm >= 0) %>% # only pass data after 0
   group_by(administration_id, trial_id) %>%
-  filter(!all(aoi == "missing"), # can't be all missing
-         t_norm >= 0, # data after 0
-         any(t_norm == 0)) %>% # must have a zero point
-  filter(aoi[t_norm == 0] %in% c("target","distractor")) # must have a D/T at 0. 
+  summarise(lengths = rle(aoi)$lengths, 
+            values = rle(aoi)$values) 
 
 rts <- rt_data %>%
-  summarise(lengths = rle(aoi)$lengths, 
-            values = rle(aoi)$values) %>%
   group_by(administration_id, trial_id) %>%
-  summarise(onset_aoi = values[1],
-         first_landing = values[values != onset_aoi & values %in% c("target","distractor")][1], 
-         shift_type = case_when(
-           onset_aoi == "distractor" & first_landing == "target" ~ "D-T",
-           onset_aoi == "target" & first_landing == "distractor" ~ "T-D",
-           TRUE ~ "other"),
-         rt = lengths[values == first_landing][1] * SAMPLING_RATE) %>%
-  select(-onset_aoi, -first_landing) %>%
-  filter(shift_type!="other")
+  nest() %>%
+  mutate(data = lapply(data, get_rt)) %>%
+  unnest(cols = c(data)) 
+
+rts <- left_join(rts, 
+                 aoi_data_joined %>%
+                   select(administration_id, trial_id, 
+                          age, dataset_name, 
+                          english_stimulus_label, 
+                          stimulus_novelty, trial_order) %>%
+                   distinct())
 ```
+
+
 
 Shift statistics. Why are there more D-T than T-D?  Looks like that's true across several datasets (perhaps some with novel words)? 
 
@@ -59,24 +137,21 @@ ggplot(rts, aes(x = shift_type)) +
 ```
 
 ```{r}
-rts <- left_join(rts, 
-                 aoi_data_joined %>%
-                   select(administration_id, trial_id, 
-                          dataset_name, age, english_stimulus_label, 
-                          stimulus_novelty, trial_order) %>% 
-                   distinct()) %>%
-  filter(stimulus_novelty == "familiar")
-corr_rts <- filter(rts, shift_type == "D-T")
+corr_fam_rts <- rts %>%
+  filter(stimulus_novelty == "familiar",
+         shift_type == "D-T", 
+         !is.na(rt))
+  
 
  # group_by(dataset_name) %>%
   # filter(rt_value < max(rt_value)-100, !is.na(rt_value)) # note sloppy exclusion of bad RTs (no shift trials)
 ```
 
 
-Descriptive histograms. I'm a bit worried about these late bumps...
+Descriptive histograms. 
 
 ```{r}
-ggplot(corr_rts, 
+ggplot(corr_fam_rts, 
        aes(x = rt)) + 
   geom_histogram() + 
   facet_wrap(~dataset_name, scales = "free_y") 
@@ -85,7 +160,7 @@ ggplot(corr_rts,
 Logs? This is cool as it suggests that the < 300 ms RTs really are junk. 
 
 ```{r}
-ggplot(corr_rts, 
+ggplot(corr_fam_rts, 
        aes(x = rt)) + 
   geom_histogram() + 
   scale_x_log10() + 
@@ -96,13 +171,13 @@ So let's get rid of them.
 
 ```{r}
 rts <- filter(rts, rt > 300)
-corr_rts <- filter(corr_rts, rt > 300)
+corr_fam_rts <- filter(corr_fam_rts, rt > 300)
 ```
 
 RT by item? 
 
 ```{r}
-rt_means <- rts %>%
+rt_means <- corr_fam_rts %>%
   filter(age > 6, age < 66) %>%
   mutate(age_binned = cut(age, seq(6,66,12))) %>%
   group_by(administration_id, trial_id, english_stimulus_label, age_binned, shift_type) %>%
@@ -132,7 +207,7 @@ ggplot(rt_means,
 Overall RT curve across age. 
 
 ```{r}
-rt_subs <- corr_rts %>%
+rt_subs <- corr_fam_rts %>%
   filter(stimulus_novelty == "familiar", rt > 300, rt < 3000) %>%
   group_by(administration_id, trial_id, english_stimulus_label, age) %>%
   summarise(sub_mean_rt = mean(rt)) 
@@ -150,7 +225,7 @@ ggplot(rt_subs,
 Summary RT curves across age
 
 ```{r}
-rts %>%
+corr_fam_rts %>%
   filter(age > 6, age < 66) %>%
   mutate(age_binned = cut(age, seq(6,66,12))) %>%
   group_by(age_binned) %>%
@@ -164,8 +239,7 @@ rts %>%
 Overall RT curve across trial order 
 
 ```{r}
-rt_subs <- rts %>%
-  filter(stimulus_novelty == "familiar", rt > 300, rt < 3000) %>%
+rt_subs <- corr_fam_rts %>%
   group_by(administration_id, trial_id, english_stimulus_label, dataset_name, 
            trial_order) %>%
   summarise(sub_mean_rt = mean(rt)) 
@@ -182,9 +256,9 @@ ggplot(rt_subs,
 
 
 ```{r}
-rt_subs <- rts %>%
-  filter(stimulus_novelty == "familiar", rt > 300, rt < 3000) %>%
-  group_by(administration_id, trial_id, english_stimulus_label, age, dataset_name) %>%
+rt_subs <- corr_fam_rts %>%
+  group_by(administration_id, trial_id, 
+           english_stimulus_label, age, dataset_name) %>%
   summarise(sub_mean_rt = mean(rt)) %>%
   group_by(english_stimulus_label) %>%
   filter(n() > 100) 
