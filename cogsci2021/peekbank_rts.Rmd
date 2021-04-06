@@ -1,0 +1,369 @@
+---
+title: "Peekbank DDM"
+author: "Mike"
+date: "2/23/2021"
+output: html_document
+---
+
+# Preliminaries and data loading
+
+```{r}
+library(peekbankr)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(tictoc)
+library(langcog)
+library(here)
+library(assertthat)
+
+t_range <- c(-1000,3000)
+knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
+load(file = "data/aoi_data_joined.Rds")
+```
+
+# Reaction time computation
+
+For kicks we tried out test-driven development.
+
+```{r}
+get_rt <- function (rle_data, SAMPLING_RATE = 40) {
+  # end if no data
+  if (is.null(rle_data$values) | is.null(rle_data$lengths)) {
+    return(tibble(rt = NA, 
+                  shift_type = NA))
+  }
+  
+  onset_aoi <- rle_data$values[1] # zero point AOI
+  
+  # end if missing for start
+  if (!(onset_aoi %in% c("target","distractor"))) {
+    return(tibble(rt = NA, 
+                  shift_type = "other"))
+  }
+
+  first_landing <- rle_data$values[rle_data$values != onset_aoi &
+                                    rle_data$values %in% c("target","distractor")][1]
+
+  # end if no shift
+  if (is.na(first_landing)) {
+    return(tibble(rt = NA, 
+                  shift_type = "no shift"))
+  }
+  
+  shift_type <- case_when(onset_aoi == "distractor" &
+                           first_landing == "target" ~ "D-T",
+                         onset_aoi == "target" &
+                           first_landing == "distractor" ~ "T-D",
+                         TRUE ~ "other")
+
+  first_landing_idx <- which(rle_data$values == first_landing)[1]
+  
+  values_before_first_landing <- rle_data$lengths[1:(first_landing_idx-1)]
+
+  # rt is the number of samples happening before arrival + 1 
+  # (first sample of arrival)
+  # times the length of a sample
+  rt <- (sum(values_before_first_landing) + 1) * (1000/SAMPLING_RATE)
+
+  return(tibble(rt = rt, 
+                shift_type = shift_type))
+}
+
+
+#### tests #### 
+# friendly case: RT
+friendly <- tibble(lengths = c(10,1,10),
+                   values =  c("target","missing","distractor"))
+assert_that(get_rt(friendly)$rt == 300)
+assert_that(get_rt(friendly)$shift_type == "T-D")
+
+# RT of missing is NA
+no_data <- tibble(lengths = NULL,
+                  values = NULL)
+assert_that(is.na(get_rt(no_data)$rt))
+assert_that(is.na(get_rt(no_data)$shift_type))
+
+# RT of something with no shift is NA
+no_shift <- tibble(lengths = 100,
+                   values =  "target")
+assert_that(is.na(get_rt(no_shift)$rt))
+assert_that(get_rt(no_shift)$shift_type == "no shift")
+
+# RT of something with no landing is NA
+no_landing <- tibble(lengths = c(10,10),
+                     values =  c("target", "missing"))
+assert_that(is.na(get_rt(no_landing)$rt))
+assert_that(get_rt(no_landing)$shift_type == "no shift")
+
+# RT where we start on missing is NA, shift_type is "no"
+start_on_missing <- tibble(lengths = c(1, 10, 10),
+                           values =  c("missing","target","distractor"))
+assert_that(is.na(get_rt(start_on_missing)$rt))
+assert_that(get_rt(start_on_missing)$shift_type == "other")
+```
+
+Now process the RTs and join back in the relevant data. 
+
+```{r}
+rt_data <- aoi_data_joined %>%
+  filter(any(t_norm == 0), # must have data at 0
+         t_norm >= 0) %>% # only pass data after 0
+  group_by(administration_id, trial_id) %>%
+  summarise(lengths = rle(aoi)$lengths, 
+            values = rle(aoi)$values) 
+
+rts <- rt_data %>%
+  group_by(administration_id, trial_id) %>%
+  nest() %>%
+  mutate(data = lapply(data, get_rt)) %>%
+  unnest(cols = c(data)) 
+
+rts <- left_join(rts, 
+                 aoi_data_joined %>%
+                   select(administration_id, trial_id, 
+                          age, dataset_name, 
+                          english_stimulus_label, 
+                          stimulus_novelty, trial_order) %>%
+                   distinct())
+```
+
+
+Shift statistics. Why are there more D-T than T-D?  Looks like that's true across several datasets (perhaps some with novel words)? 
+
+Also looks like lots of "other" in the eye-tracking datasets? 
+
+```{r}
+ggplot(rts, aes(x = shift_type)) + 
+  geom_histogram(stat = "count") + 
+  facet_wrap(~dataset_name)
+```
+
+```{r}
+corr_fam_rts <- rts %>%
+  filter(stimulus_novelty == "familiar",
+         shift_type == "D-T", 
+         !is.na(rt))
+  
+
+ # group_by(dataset_name) %>%
+  # filter(rt_value < max(rt_value)-100, !is.na(rt_value)) # note sloppy exclusion of bad RTs (no shift trials)
+```
+
+# Descriptives
+
+Descriptive histograms. 
+
+```{r}
+ggplot(corr_fam_rts, 
+       aes(x = rt)) + 
+  geom_histogram() + 
+  facet_wrap(~dataset_name, scales = "free_y") 
+```
+
+Logs? This is cool as it suggests that the < 300 ms RTs really are junk. 
+
+```{r}
+ggplot(corr_fam_rts, 
+       aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~dataset_name, scales = "free_y") 
+```
+
+So let's get rid of them. 
+
+```{r}
+rts <- filter(rts, rt > 300)
+corr_fam_rts <- filter(corr_fam_rts, rt > 300)
+```
+
+RT by item? 
+
+```{r}
+rt_means <- corr_fam_rts %>%
+  filter(age > 6, age < 66) %>%
+  mutate(age_binned = cut(age, seq(6,66,12))) %>%
+  group_by(administration_id, trial_id, english_stimulus_label, age_binned, shift_type) %>%
+  summarise(sub_mean_rt = mean(rt)) %>%
+  group_by(english_stimulus_label, age_binned, shift_type) %>%
+  summarise(mean_rt = mean(sub_mean_rt), 
+            sd_rt = sd(sub_mean_rt), 
+            n = n(),
+            ci = 1.96 * sd_rt / sqrt(n)) %>%
+  filter(n > 10) %>%
+  mutate(significant = (mean_rt - ci > .5 & mean_rt + ci > .5) |
+           (mean_rt - ci < .5 & mean_rt + ci < .5)) %>%
+  # group_by(age_binned) %>%
+  mutate(sorted_stimulus_label = fct_reorder(as.factor(english_stimulus_label), 
+                                             mean_rt, mean))
+
+ggplot(rt_means, 
+       aes(y = sorted_stimulus_label, x = mean_rt)) + 
+  ggstance::geom_linerangeh(aes(xmin = mean_rt - ci, xmax = mean_rt + ci)) + 
+  geom_point(aes(col = age_binned), size = 2) + 
+  scale_shape_manual(values = c(1, 20)) + 
+  geom_vline(xintercept = .5, lty = 2) + 
+  facet_wrap(~shift_type) + 
+  theme_mikabr()
+```
+
+Overall RT curve across age. 
+
+```{r}
+rt_subs <- corr_fam_rts %>%
+  filter(stimulus_novelty == "familiar", rt > 300, rt < 3000) %>%
+  group_by(administration_id, trial_id, english_stimulus_label, age) %>%
+  summarise(sub_mean_rt = mean(rt)) 
+
+
+ggplot(rt_subs, 
+       aes(x = age, y = sub_mean_rt)) + 
+  geom_jitter(alpha = .03, width = .3, height = 0) +
+  geom_smooth(method = "lm") + 
+  scale_y_log10() +
+  xlim(12,60) + 
+  theme_mikabr() 
+```
+
+Summary RT curves across age
+
+```{r}
+corr_fam_rts %>%
+  filter(age > 6, age < 66) %>%
+  mutate(age_binned = cut(age, seq(6,66,12))) %>%
+  group_by(age_binned) %>%
+  ggplot(aes(x = age_binned, y = rt)) + 
+  stat_summary(fun.data = "mean_cl_boot") +
+  facet_wrap(~dataset_name)
+```
+
+```{r}
+corr_fam_rts %>%
+  filter(age > 6, age < 66) %>%
+  mutate(age_binned = cut(age, seq(6,66,12))) %>%
+  group_by(age_binned) %>%
+  ggplot(aes(x = age_binned, y = rt)) + 
+  stat_summary(fun.data = "mean_cl_boot") 
+```
+
+Overall RT curve across trial order 
+
+```{r}
+rt_subs <- corr_fam_rts %>%
+  group_by(administration_id, trial_id, english_stimulus_label, dataset_name, 
+           trial_order) %>%
+  summarise(sub_mean_rt = mean(rt)) 
+
+
+ggplot(rt_subs, 
+       aes(x = trial_order, y = sub_mean_rt)) + 
+  geom_point(alpha = .1) +
+  geom_smooth(method = "lm") + 
+  scale_y_log10() + 
+  xlim(12,60) + 
+  theme_mikabr() 
+```
+
+
+```{r}
+rt_subs <- corr_fam_rts %>%
+  group_by(administration_id, trial_id, 
+           english_stimulus_label, age, dataset_name) %>%
+  summarise(sub_mean_rt = mean(rt)) %>%
+  group_by(english_stimulus_label) %>%
+  filter(n() > 100) 
+
+ggplot(rt_subs, 
+       aes(x = age, y = sub_mean_rt, col = dataset_name)) + 
+  geom_point(alpha = .1) +
+  geom_smooth(method = "lm", formula = y ~ x) + 
+  facet_wrap(~english_stimulus_label) + 
+  ylim(0,4000) +
+  theme_mikabr()
+```
+
+# Models
+
+```{r}
+mod_data <- corr_fam_rts %>%
+  filter(!is.na(age), age < 66)
+mod_data$log_rt <- log(mod_data$rt)
+mod_data$age_centered <- scale(mod_data$age, scale = FALSE)
+mod_data$age_binned <- as.numeric(as.character(cut(mod_data$age, 
+                                      breaks = seq(6,66,12), 
+                                      labels = seq(12, 60, 12))))
+```
+
+
+FWIW, no obvious big contributions for polynomials degree > 2. Adding age slopes decreases convergence and doesn't seem to capture that much variance? 
+
+```{r}
+mod <- lmer(log_rt ~ poly(age_centered, 2) + 
+              (1 | dataset_name) + 
+              (1 | english_stimulus_label) +
+              (1 | administration_id),
+  data = mod_data)
+
+summary(mod)
+
+mod_data$fitted <- fitted(mod)
+
+ggplot(mod_data, 
+       aes(x = age_binned, y = log_rt)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(aes(y = fitted), fun = mean, geom = "line") +
+  xlab("Age (months)") +
+  ylab("Reaction time (ms)") 
+```
+Just for kicks, let's look at the linear version. 
+
+```{r}
+mod_linear <- lmer(rt ~ poly(age_centered, 2) + 
+              (1 | dataset_name) + 
+              (1 | english_stimulus_label) +
+              (1 | administration_id),
+  data = mod_data)
+
+summary(mod)
+
+mod_data$fitted_linear <- fitted(mod_linear)
+
+ggplot(mod_data, 
+       aes(x = age_binned, y = rt)) + 
+  stat_summary(fun.data = mean_se, geom = "pointrange") +
+  stat_summary(aes(y = fitted_linear), fun = mean, geom = "line") +
+  xlab("Age (months)") +
+  ylab("Reaction time (ms)") 
+```
+
+Previously, we had this issue that the random effects are very substantial so the fitted pattern looks kind of odd. Let's plot the model predictions...
+
+```{r}
+uncentering_factor <- mean(mod_data$age)
+newdata <- tibble(age_centered = c(12, 24, 36, 48, 60) - uncentering_factor)
+
+newdata$pred <- predict(mod, newdata = newdata, re.form = NA)
+
+ggplot(newdata, 
+       aes(x = age_centered + uncentering_factor, y = pred)) + 
+    stat_summary(data = mod_data, 
+                 aes(x = age_binned, y = log_rt), 
+                 fun.data = mean_se, geom = "pointrange") +
+  geom_line(lty = 2)
+```
+
+Again, show in linear space:
+
+```{r}
+newdata$pred_linear <- predict(mod_linear, newdata = newdata, re.form = NA)
+
+ggplot(newdata, 
+       aes(x = age_centered + uncentering_factor, y = pred_linear)) + 
+    stat_summary(data = mod_data, 
+                 aes(x = age_binned, y = rt), 
+                 fun.data = mean_se, geom = "pointrange") +
+  geom_line(lty = 2)
+```
+
+Seems like the data seemingly *under-estimate* developmental change in RTs because of item selection and dataset/method differences...
