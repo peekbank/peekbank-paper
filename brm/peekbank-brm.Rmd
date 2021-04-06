@@ -29,26 +29,18 @@ authornote: |
   Enter author note here.
 
 abstract: |
-  One or two sentences providing a **basic introduction** to the field,  comprehensible to a scientist in any discipline.
-  
-  Two to three sentences of **more detailed background**, comprehensible  to scientists in related disciplines.
-  
-  One sentence clearly stating the **general problem** being addressed by  this particular study.
-  
-  One sentence summarizing the main result (with the words "**here we show**" or their equivalent).
-  
-  Two or three sentences explaining what the **main result** reveals in direct comparison to what was thought to be the case previously, or how the  main result adds to previous knowledge.
-  
-  One or two sentences to put the results into a more **general context**.
-  
-  Two or three sentences to provide a **broader perspective**, readily comprehensible to a scientist in any discipline.
+  The ability to rapidly recognize words and link them to referents in context is central to children’s early language development. 
+  This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants’ fixation on a target object (vs. a distractor) after hearing a target label. 
+  We present a large-scale, open database of infant and toddler eye-tracking data from looking-while-listening tasks. 
+  The goal of this effort is to address theoretical and methodological challenges in measuring vocabulary development. 
+  [tools; processing; analysis/ usage examples]
   
   <!-- https://tinyurl.com/ybremelq -->
   
 keywords          : "keywords"
 wordcount         : "X"
 
-bibliography      : ["r-references.bib"]
+bibliography      : ["peekbank.bib"]
 
 floatsintext      : no
 figurelist        : no
@@ -65,7 +57,7 @@ output            : papaja::apa6_pdf
 
 ```{r setup, include = FALSE}
 library("papaja")
-r_refs("r-references.bib")
+r_refs("peekbank.bib")
 ```
 
 ```{r analysis-preferences}
@@ -75,6 +67,9 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
 
 
+Across their first years of life, children learn words in their native tongues at a rapid pace (Frank, Braginsky, Yurovsky, & Marchman, 2021). 
+A key part of the word learning process is children’s ability to rapidly process words and link them to relevant meanings – often referred to as word recognition. 
+Developing word recognition skills builds a foundation for children’s language development and is predictive of later linguistic and general cognitive outcomes (Bleses, Makransky, Dale, Højen, & Ari, 2016; Marchman et al., 2018).
 
 # Methods
 We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study. <!-- 21-word solution (Simmons, Nelson & Simonsohn, 2012; retrieved from http://ssrn.com/abstract=2160588) -->
@@ -86,7 +81,7 @@ We report how we determined our sample size, all data exclusions (if any), all m
 ## Procedure
 
 ## Data analysis
-We used `r cite_r("r-references.bib")` for all our analyses.
+We used `r cite_r("peekbank.bib")` for all our analyses.
 
 
 # Results
