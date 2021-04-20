@@ -153,23 +153,33 @@ We provide two potential use-cases for Peekbank data. In each case, we provide s
 
 
 ```{r get_am}
-aoi_timepoints <- peekbankr::get_aoi_timepoints(dataset_name = "adams_marchman_2018", 
+
+aoi_timepoints <- peekbankr::get_aoi_timepoints(dataset_name = "swingley_aslin_2002", 
+                                                
                                          rle=FALSE)
-administrations <- peekbankr::get_administrations(dataset_name = "adams_marchman_2018")
+administrations <- peekbankr::get_administrations(dataset_name = "swingley_aslin_2002")
+
+stimuli <- peekbankr::get_stimuli(dataset_name = "swingley_aslin_2002")
+trial_types <- peekbankr::get_trial_types(dataset_name = "swingley_aslin_2002")
+trials <- peekbankr::get_trials(dataset_name = "swingley_aslin_2002")
 ```
 
 ```{r}
 accs <- aoi_timepoints %>%
   left_join(administrations) %>%
-  mutate(age_group = ifelse(age < mean(age), "13-17", "17-20")) %>%
-  group_by(t_norm, administration_id, age_group) %>% 
+  left_join(trials) %>%
+  left_join(trial_types) %>%
+  filter(condition != "filler") %>%
+  mutate(condition = ifelse(condition == "cp", "Correct","Mispronunciation")) %>%
+  # mutate(age_group = ifelse(age < mean(age), "13-17", "17-20")) %>%
+  group_by(t_norm, administration_id, condition) %>% 
   summarise(correct = mean(aoi == "target") / 
               mean(aoi %in% c("target","distractor"))) %>%
-  group_by(t_norm, age_group) %>% 
+  group_by(t_norm, condition) %>% 
   summarise(ci = 1.96 * sd(correct) / sqrt(length(correct)), 
             correct = mean(correct))
 
-ggplot(accs, aes(x = t_norm, y = correct, col = age_group)) + 
+ggplot(accs, aes(x = t_norm, y = correct, col = condition)) + 
   geom_pointrange(aes(ymin = correct - ci, 
                       ymax = correct + ci)) +
   geom_hline(yintercept = .5, lty = 2, col = "black") + 
@@ -200,12 +210,27 @@ aoi_data_joined <- all_aoi_timepoints %>%
   right_join(all_stimuli) 
 ```
 
+```{r eval=FALSE}
+item_counts <- aoi_data_joined %>%
+  group_by(administration_id, english_stimulus_label) %>%
+  count() %>%
+  group_by(english_stimulus_label) %>%
+  count() %>%
+  mutate(english_stimulus_label = fct_reorder(english_stimulus_label, n))
+
+ggplot(filter(item_counts, n > 80), 
+       aes(x= english_stimulus_label, y = n)) + 
+  geom_bar(stat = "identity")+ 
+  coord_flip()
+```
+
+
 ```{r}
-target_words <- c("book","dog","ball","shoe")
+target_words <- c("book","dog","car","frog","apple")
 
 target_word_data <- aoi_data_joined %>%
   filter(english_stimulus_label %in% target_words) %>%
-  mutate(age_group = cut(age, breaks = seq(12,36,6))) %>%
+  mutate(age_group = cut(age, breaks = seq(12,48,6))) %>%
   filter(!is.na(age_group)) %>%
   group_by(t_norm, administration_id, age_group, english_stimulus_label) %>% 
   summarise(correct = mean(aoi == "target") / 
@@ -218,11 +243,13 @@ target_word_data <- aoi_data_joined %>%
 ggplot(filter(target_word_data, n > 60), 
        aes(x = t_norm, y = correct, col = age_group)) + 
   geom_line() + 
-  ylim(.4,.9) + 
+  geom_linerange(aes(ymin = correct - ci, ymax = correct + ci), 
+                 alpha = .2) + 
+  ylim(.35,1) + 
   facet_wrap(~english_stimulus_label) + 
   geom_hline(yintercept = .5, lty = 2, col = "black") + 
   langcog::theme_mikabr() + 
-  langcog::scale_color_solarized(name = "Age Group") + 
+  langcog::scale_color_solarized(name = "Age Group (months)") + 
   xlim(0, 2000) + 
   xlab("Time from target word onset (msec)") + 
   ylab("Proportion correct") + 
