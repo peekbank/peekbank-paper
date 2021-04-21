@@ -32,7 +32,7 @@ For our analysis, we will restrict ourselves to familiar words, and will model a
 
 ```{r load-data, eval=RUN_MODELS}
 # get local copy by running peekbank_explore.Rmd
-load("data/aoi_data_joined.Rds") 
+load(here("cogsci2021/data/aoi_data_joined.Rds"))
 
 fam_data <- aoi_data_joined %>%
   filter(age > 12, age <= 60, 
@@ -85,7 +85,7 @@ param.grid <- expand_grid(startTs, endTs) %>%
    rename(startTimes = startTs, endTimes = endTs) %>%
    filter((endTimes - startTimes) > 25)
 
-do_interitem_analysis <- function(startTime, endTime) {
+do_interitem_analysis <- function(startTime, endTime, fam_data) {
    print(paste(startTime, endTime))
       fam_data %>% filter(t_norm > startTime, 
                           t_norm < endTime) %>%
@@ -109,7 +109,9 @@ do_interitem_analysis <- function(startTime, endTime) {
 
 
 mout <- map2_dfr(param.grid$startTimes, param.grid$endTimes, 
-             do_interitem_analysis)
+             do_interitem_analysis, fam_data)
+# `summarise()` regrouping output by 'dataset_name', 'age_binned', 'administration_id' (override with `.groups` argument)
+# `summarise()` ungrouping output (override with `.groups` argument)
 
 # this should also work, but does not
 #mout <- param.grid %>% map2_dfr(startTimes, endTimes, 
@@ -117,16 +119,33 @@ mout <- map2_dfr(param.grid$startTimes, param.grid$endTimes,
 # Error in as_mapper(.f, ...) : object 'endTimes' not found
 
 
-write.table(mout, file="data/time-window-results.csv")             
+write.table(mout, file=here("cogsci2021/data/time-window-results.csv"))           
 
 ```
+
+
+### Cross-validation
+
+Leave one dataset out, evaluate correlation
+
+
+```{r cross-validation, eval=RUN_MODELS}
+cv_results <- list()
+for(dset in datasets$dataset_name) {
+   dat <- fam_data %>% filter(dataset_name != dset)
+   cv_results[[dset]] <- map2_dfr(param.grid$startTimes, param.grid$endTimes, 
+             do_interitem_analysis, dat)
+}
+
+```
+
 
 
 ## Visualization 
 
 ```{r load-model-results, echo=F}
 # all data
-mout <- read.table(file="data/time-window-results.csv")
+mout <- read.table(file=here("cogsci2021/data/time-window-results.csv"))
 
 
 plot_interitem <- function(dat, title) {
