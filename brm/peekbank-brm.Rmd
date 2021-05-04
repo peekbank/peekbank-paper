@@ -72,9 +72,16 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 # Introduction
 
-Across their first years of life, children learn words in their native tongues at a rapid pace (Frank, Braginsky, Yurovsky, & Marchman, 2021). 
-A key part of the word learning process is children’s ability to rapidly process words and link them to relevant meanings – often referred to as word recognition. 
-Developing word recognition skills builds a foundation for children’s language development and is predictive of later linguistic and general cognitive outcomes (Bleses, Makransky, Dale, Højen, & Ari, 2016; Marchman et al., 2018).
+Across their first years of life, children learn words in their native tongues at a rapid pace (Frank, Braginsky, Yurovsky, & Marchman, 2021).
+[notes about the size/ pace]
+A key part of the word learning process is children’s emerging ability to rapidly process words and link them to relevant meanings – often referred to as word recognition. 
+Measuring early word recognition offers insight into children's early word representations and the processes supporting early language comprehension (Bergelson, 2020).
+Word recognition skills are also thought to build a foundation for children’s subsequent language development. 
+Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes (Bleses, Makransky, Dale, Højen, & Ari, 2016; Marchman et al., 2018).
+While word recognition is a central part of children's language development, mapping the trajectory of word recognition skills has remained elusive. 
+Studies investigating children's word recognition are typically limited in scope to experiments in individual labs involving small samples tested on a limited set of items.
+This limitation in scale makes it difficult to understand developmental changes in children's word knowledge at a broad scale.
+Peekbank provides an openly accessible database of eye-tracking data of children's word recognition, with the primary goal of facilitating the study of developmental changes in children's word knowledge and recognition speed.
 
 ## The “Looking-While-Listening” Paradigm
 Word recognition is traditionally studied in the “looking-while-listening” paradigm (alternatively referred to as the intermodal preferential looking procedure; Fernald, Zangl, Portillo, & Marchman, 2008; Hirsh-Pasek, Cauley, Golinkoff, & Gordon, 1987). 
