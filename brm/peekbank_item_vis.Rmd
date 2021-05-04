@@ -1,0 +1,124 @@
+---
+title: "Peekbank Item Visualization"
+author: "Martin"
+date: "4/28/2021"
+output: html_document
+---
+
+Visualize item-specific trajectories
+
+```{r}
+library(peekbankr)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(tictoc)
+library(langcog)
+library(here)
+
+figure_path <- here("brm","figures")
+
+FIRST_TIME = FALSE # set to true first time to download data from DB
+
+t_range <- c(-1000,3000)
+knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
+```
+
+Get data
+
+```{r, eval = FIRST_TIME}
+con <- connect_to_peekbank()
+datasets <- get_datasets(connection = con) %>% collect()
+administrations <- get_administrations(connection = con) %>% collect()
+subjects <- get_subjects(connection = con) %>% collect()
+tic()
+aoi_timepoints <- get_aoi_timepoints(connection = con) %>% collect()
+toc()
+stimuli <- get_stimuli(connection = con) %>% collect()
+trial_types <- get_trial_types(connection = con) %>% collect()
+trials <- get_trials(connection = con)  %>% collect()
+
+dataset_info <- administrations %>%
+  right_join(datasets) %>%
+  right_join(subjects) 
+
+aoi_data_joined <- aoi_timepoints %>%
+  right_join(administrations) %>%
+  right_join(trials) %>%
+  right_join(trial_types) %>%
+  right_join(datasets) %>%
+  mutate(stimulus_id = target_id) %>%
+  right_join(stimuli) %>%
+  filter(t_norm > t_range[1],
+         t_norm < t_range[2])
+
+save(file = here("brm/data/aoi_data_joined.Rds"), aoi_data_joined)
+save(file = here("brm/data/dataset_info.Rds"), dataset_info)
+```
+
+
+
+Load data
+
+```{r}
+load(file = here("brm", "data","aoi_data_joined.Rds"))
+dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
+```
+
+
+Time series - Item
+
+```{r}
+aoi_data_joined <- aoi_data_joined %>%
+  left_join(dataset_name_mapping)
+
+
+means_items <- aoi_data_joined %>%
+  filter(age > 12, age <= 60) %>%
+  #mutate(age_binned = cut(age, seq(0,60,12))) %>%
+  #group_by(t_norm, dataset_name, age_binned, stimulus_novelty) %>%
+  group_by(t_norm, dataset_rename, english_stimulus_label) %>%
+  summarise(n = sum(aoi %in% c("target","distractor"), na.rm = TRUE), 
+            p = sum(aoi == "target", na.rm = TRUE),
+            prop_looking = p / n, 
+            ci_lower = binom::binom.confint(p, n, method = "bayes")$lower,
+            ci_upper = binom::binom.confint(p, n, method = "bayes")$upper) 
+
+average_across_items <- means_items %>%
+  group_by(t_norm, dataset_rename) %>%
+  summarize(
+    N=n(),
+    avg_prop_looking=mean(prop_looking,na.rm=T),
+    sd = sd(prop_looking,na.rm=T),
+    ci=qt(0.975, N-1)*sd/sqrt(N),
+    ci_lower=avg_prop_looking-ci,
+    ci_upper=avg_prop_looking+ci
+  )
+
+means_items %>%
+  filter(n>=12) %>%
+  filter(dataset_rename != "yoursmy") %>% #temporarily removing yoursmy until resampling issue fixed
+ggplot(aes(x = t_norm, y = prop_looking,color=english_stimulus_label)) + 
+  geom_line(alpha=0.5) + 
+  # geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, 
+  #                 fill = dataset_name), alpha = .5) +
+  # geom_smooth(data=average_across_items,
+  #             aes(y=avg_prop_looking,ymin = ci_lower, ymax = ci_upper),color="black",stat="identity")+
+  geom_smooth(color="black",se=F,method="gam")+
+  geom_hline(yintercept = .5, lty = 2) + 
+  geom_vline(xintercept = 0, lty = "solid") +
+  ylab("Proportion Target Looking") +
+  xlab("Time (msec)") +
+  theme_classic() +
+  scale_color_solarized() +
+  scale_fill_solarized() +
+  facet_wrap(~dataset_rename,nrow=3)+
+  theme(legend.position="none")+
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=16))+
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5),strip.text.x = element_text(size = 12))+
+  scale_x_continuous(breaks=seq(-500,3000,500))
+  
+  
+ggsave(here(figure_path,"peekbank_item_vis.png"),width=10,height=6,dpi=600)
+```

@@ -7,6 +7,7 @@ output: html_document
 
 Visualize item-specific trajectories
 
+
 ```{r, message=FALSE}
 library(peekbankr)
 library(tidyverse)
@@ -128,8 +129,7 @@ trial_missingness %>%
   summarize(
     percent_zoner_trials=mean(zoner_trial,na.rm=TRUE),
     percent_target_zoner=mean(accuracy==1,na.rm=TRUE),
-    percent_distracter_zoner=mean(accuracy==0,na.rm=TRUE),
-  ) %>%
+    percent_distracter_zoner=mean(accuracy==0,na.rm=TRUE)) %>%
   DT::datatable()
   
 ```
