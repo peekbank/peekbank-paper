@@ -1,12 +1,9 @@
 ---
-title: "Peekbank Exclusions Exploration"
+title: "Peekbank Missingness and Zoning Exploration"
 author: "Martin"
 date: "5/2/2021"
 output: html_document
 ---
-
-Visualize item-specific trajectories
-
 
 ```{r, message=FALSE}
 library(peekbankr)
@@ -147,7 +144,7 @@ trial_accuracy %>%
 
 ## Relationship between percent missing and zoners to age
 
-Upshot: Percent missing decreases, zoners stay about the same.
+Upshot: Percent missing and zoning across the entire trial tends to decrease across age.
 
 Percent missing across age
 
@@ -172,18 +169,10 @@ trial_accuracy %>%
 
 ```
 
-Distribution of zoners across age
+Distribution of zoners across age - "zoning" tends to decrease with age
 
 ```{r}
 trial_missingness %>%
-  ggplot(aes(x=age,y=zoner_trial)) +
-  geom_point(alpha=0.2)+
-  geom_smooth(method="lm")+
-  facet_wrap(~dataset_rename,nrow=3)
-
-#by zoner type
-trial_missingness %>%
-  filter(zoner_type!="distracter") %>%
   ggplot(aes(x=age,y=zoner_trial)) +
   geom_point(alpha=0.2)+
   geom_smooth(method="lm")+
@@ -225,17 +214,6 @@ subj_accuracy <- subj_accuracy %>%
 
 #Plot relationship between percent zoner trials and accuracy
 ggplot(subj_accuracy,aes(percent_zoner_trials, mean_accuracy,color=dataset_rename))+
-  geom_point(alpha=0.2)+
-  geom_smooth(method="lm",se=FALSE)
-```
-
-## How does "zoning" relate to age?
-
-The "weighted age" is just a hacky workaround right now, will compute this more carefully. No particularly strong relationship though.
-
-```{r}
-#Plot relationship between percent zoner trials and accuracy
-ggplot(subj_accuracy,aes(weighted_age,percent_zoner_trials, mean_accuracy,color=dataset_rename))+
   geom_point(alpha=0.2)+
   geom_smooth(method="lm",se=FALSE)
 ```
