@@ -1,0 +1,247 @@
+---
+title: "Peekbank Exclusions Exploration"
+author: "Martin"
+date: "5/2/2021"
+output: html_document
+---
+
+Visualize item-specific trajectories
+
+```{r, message=FALSE}
+library(peekbankr)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(tictoc)
+library(langcog)
+library(here)
+library(DT)
+
+figure_path <- here("vignettes","figures")
+
+FIRST_TIME = FALSE # set to true first time to download data from DB
+
+knitr::opts_chunk$set(cache = TRUE, warn = FALSE,warning=FALSE, message = FALSE,cache.lazy = FALSE)
+```
+
+## Get data
+
+```{r, eval = FIRST_TIME}
+con <- connect_to_peekbank()
+datasets <- get_datasets(connection = con) %>% collect()
+administrations <- get_administrations(connection = con) %>% collect()
+subjects <- get_subjects(connection = con) %>% collect()
+tic()
+aoi_timepoints <- get_aoi_timepoints(connection = con) %>% collect()
+toc()
+stimuli <- get_stimuli(connection = con) %>% collect()
+trial_types <- get_trial_types(connection = con) %>% collect()
+trials <- get_trials(connection = con)  %>% collect()
+
+dataset_info <- administrations %>%
+  right_join(datasets) %>%
+  right_join(subjects) 
+
+aoi_data_joined <- aoi_timepoints %>%
+  right_join(administrations) %>%
+  right_join(trials) %>%
+  right_join(trial_types) %>%
+  right_join(datasets) %>%
+  mutate(stimulus_id = target_id) %>%
+  right_join(stimuli) %>%
+  filter(t_norm > t_range[1],
+         t_norm < t_range[2])
+
+save(file = here("brm/data/aoi_data_joined.Rds"), aoi_data_joined)
+save(file = here("brm/data/dataset_info.Rds"), dataset_info)
+```
+
+## Load data
+
+```{r}
+load(file = here("vignettes", "data","aoi_data_joined.Rds"))
+dataset_name_mapping <- read_csv(here("vignettes","data","dataset_name_mapping.csv"))
+aoi_data_joined <- aoi_data_joined %>%
+  left_join(dataset_name_mapping)
+```
+
+## Compute missingness on trial level
+
+We're summarizing missingness information on the trial level here for two windows:
+1. the entire trial window
+2. a crtical test window (here, a traditional 300-2000ms window - could be varied)
+
+```{r}
+#overall trial missingness and stickiness patterns
+trial_missingness <- aoi_data_joined %>% group_by(dataset_name,dataset_rename,administration_id, subject_id,age, trial_id,trial_type_id) %>%
+  summarize(
+    num_obs=n(),
+    window_size=max(t_norm)-min(t_norm),
+    accuracy=case_when(
+      sum(aoi %in% c("target","distractor"))==0 ~ NA_real_,
+      TRUE ~ sum(aoi=="target")/(sum(aoi %in% c("target","distractor")))),
+    percent_missing=sum(aoi %in% c("missing","other"))/num_obs,
+    total_looking=sum(aoi %in% c("target","distractor")),
+    percent_looking=total_looking/num_obs,
+    zoner_trial=ifelse(accuracy ==0 | accuracy==1,1,0),
+    zoner_type=case_when(
+      accuracy==1 ~ "target",
+      accuracy==0 ~ "distracter",
+      TRUE ~ "none"
+    )
+  )
+
+
+window_start <- 300
+window_end <- 2000
+
+#mean accuracy per trial
+trial_accuracy <- aoi_data_joined %>% group_by(dataset_name,dataset_rename,administration_id, subject_id,age, trial_id,trial_type_id) %>%
+  filter(t_norm>=window_start & t_norm <=window_end) %>%
+  summarize(
+    num_obs=n(),
+    accuracy=case_when(
+      sum(aoi %in% c("target","distractor"))==0 ~ NA_real_,
+      TRUE ~ sum(aoi=="target")/(sum(aoi %in% c("target","distractor")))),
+    percent_missing=sum(aoi %in% c("missing","other"))/num_obs,
+    total_looking=sum(aoi %in% c("target","distractor")),
+    percent_looking=total_looking/num_obs,
+    zoner_trial=ifelse(accuracy ==0 | accuracy==1,1,0),
+    zoner_type=case_when(
+      accuracy==1 ~ "target",
+      accuracy==0 ~ "distracter",
+      TRUE ~ "none"
+    )
+  )
+
+
+```
+
+## What percentage of trials are missing & zoners, across dataset?
+
+Percent zoners (either looking exclusively at target or distractor throughout entire trial).
+
+```{r}
+
+trial_missingness %>%
+  group_by(dataset_rename) %>%
+  summarize(
+    percent_zoner_trials=mean(zoner_trial,na.rm=TRUE),
+    percent_target_zoner=mean(accuracy==1,na.rm=TRUE),
+    percent_distracter_zoner=mean(accuracy==0,na.rm=TRUE),
+  ) %>%
+  DT::datatable()
+  
+```
+
+Distribution of percent missing within the critical test window.
+
+```{r}
+trial_accuracy %>%
+  filter(dataset_rename!="yoursmy") %>% #ignore yoursmy until it is updated
+  ggplot(aes(x=percent_missing)) +
+  geom_density() +
+  facet_wrap(~dataset_rename,nrow=3)
+```
+
+
+## Relationship between percent missing and zoners to age
+
+Upshot: Percent missing decreases, zoners stay about the same.
+
+Percent missing across age
+
+```{r}
+#Percent missing
+trial_accuracy %>%
+  ggplot(aes(x=age,y=percent_missing)) +
+  geom_point(alpha=0.2)+
+  geom_smooth(method="lm")+
+  facet_wrap(~dataset_rename,nrow=3)
+
+m <- lmer(percent_missing ~ age + (1|subject_id)+(1|dataset_rename)+(1|trial_type_id),data=trial_accuracy)
+summary(m)
+```
+Nice example that it's important to account for data set non-independence. If we ignore it, it looks like percent missing actually *increases* with age.
+
+```{r}
+trial_accuracy %>%
+  ggplot(aes(x=age,y=percent_missing)) +
+  geom_point(alpha=0.2)+
+  geom_smooth(method="lm")
+
+```
+
+Distribution of zoners across age
+
+```{r}
+trial_missingness %>%
+  ggplot(aes(x=age,y=zoner_trial)) +
+  geom_point(alpha=0.2)+
+  geom_smooth(method="lm")+
+  facet_wrap(~dataset_rename,nrow=3)
+
+#by zoner type
+trial_missingness %>%
+  filter(zoner_type!="distracter") %>%
+  ggplot(aes(x=age,y=zoner_trial)) +
+  geom_point(alpha=0.2)+
+  geom_smooth(method="lm")+
+  facet_wrap(~dataset_rename,nrow=3)
+
+#zoners
+m <- glmer(zoner_trial ~ age + (1|subject_id)+(1|dataset_rename)+(1|trial_type_id),data=trial_accuracy,family=binomial)
+summary(m)
+```
+
+## Relationship between "Zoning" (subjects) and accuracy
+
+It appears that having a higher percentage of zoning trials in general is related to slightly lower accuracy
+
+```{r}
+#compute percent zoner trials for each participant
+subj_zoners <- trial_missingness %>%
+  group_by(dataset_name,dataset_rename, subject_id) %>%
+  summarize(
+    num_trials=n(),
+    num_zoner_trials=sum(zoner_trial,na.rm=TRUE),
+    percent_zoner_trials=num_zoner_trials/num_trials
+  )
+#compute accuracy for a 300-2000 target window
+subj_accuracy <- trial_accuracy %>%
+  group_by(dataset_name,dataset_rename,subject_id) %>%
+  mutate(
+    weighted_age=mean(age,na.rm=TRUE)
+  ) %>%
+  group_by(dataset_name,dataset_rename,subject_id,weighted_age) %>%
+  summarize(
+    num_trials=n(),
+    mean_accuracy=mean(accuracy,na.rm=TRUE)
+  )  
+
+#combine
+subj_accuracy <- subj_accuracy %>%
+  left_join(subj_zoners, by=c("dataset_rename","subject_id"))
+
+#Plot relationship between percent zoner trials and accuracy
+ggplot(subj_accuracy,aes(percent_zoner_trials, mean_accuracy,color=dataset_rename))+
+  geom_point(alpha=0.2)+
+  geom_smooth(method="lm",se=FALSE)
+```
+
+## How does "zoning" relate to age?
+
+The "weighted age" is just a hacky workaround right now, will compute this more carefully. No particularly strong relationship though.
+
+```{r}
+#Plot relationship between percent zoner trials and accuracy
+ggplot(subj_accuracy,aes(weighted_age,percent_zoner_trials, mean_accuracy,color=dataset_rename))+
+  geom_point(alpha=0.2)+
+  geom_smooth(method="lm",se=FALSE)
+```
+
+
+Number of trials and relation to reliability?
+
+TO DO
+
