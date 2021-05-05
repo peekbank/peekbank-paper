@@ -35,7 +35,7 @@ keywords: >
 output: cogsci2016::cogsci_paper
 header-includes:
   - \usepackage[raggedright]{sidecap}
-#final-submission: \cogscifinalcopy
+final-submission: \cogscifinalcopy
 ---
 
 ```{r global_options, include=FALSE}
@@ -55,7 +55,7 @@ library(here)
 ```
 
 ```{r}
-#load(file = here("data","aoi_data_joined.Rds"))
+load(file = here("data","aoi_data_joined.Rds"))
 ```
 
 
@@ -114,9 +114,18 @@ grid::grid.raster(img)
 
 ## Data Format and Processing
 
-One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared re-usable data format across individual experiments. Researcher conventions for structuring data vary, as do the technical specifications of different devices, rendering the task of integrating datasets from different labs and data sources difficult. We developed a common, tidy format for the eye-tracking data in Peekbank to ease the process of conducting cross-dataset analyses [@Wickham2019]. The schema of the database <!--(Fig. \ref{fig:fig_schema})--> is sufficiently general to handle heterogeneous datasets, including both manually coded and automated eye-tracking data.
+One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared re-usable data format across individual experiments. 
+Researcher conventions for structuring data vary, as do the technical specifications of different devices, rendering the task of integrating datasets from different labs and data sources difficult. 
+We developed a common, tidy format for the eye-tracking data in Peekbank to ease the process of conducting cross-dataset analyses [@Wickham2019]. 
+The schema of the database <!--(Fig. \ref{fig:fig_schema})--> is sufficiently general to handle heterogeneous datasets, including both manually coded and automated eye-tracking data.
 
-During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. The centerpiece of the schema is the \texttt{aoi\textunderscore timepoints} table (Fig. \ref{fig:fig_framework_overview}), which records whether participants looked to the target or the distractor stimulus at each timepoint of a given trial. Additional tables track information about data sources, participant characteristics, trial characteristics, stimuli, and raw eye-tracking data. In addition to unifying the data format, we conduct several additional pre-processing steps to facilitate analyses across datasets, including resampling observations to a common sampling rate (40 Hz) and normalizing time relative to the onset of the target label.
+During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. 
+The centerpiece of the schema is the \texttt{aoi\textunderscore timepoints} table (Fig. \ref{fig:fig_framework_overview}), which records whether participants looked to the target or the distractor stimulus at each timepoint of a given trial. 
+Additional tables track information about data sources, participant characteristics, trial characteristics, stimuli, and raw eye-tracking data. 
+In addition to unifying the data format, we conduct several additional pre-processing steps to facilitate analyses across datasets. 
+First, we normalize time relative to the onset of the target label, since the main goal is to assess participants' fixation of the target image in response to hearing iits corresponding label. 
+Second, we resample observations to a common sampling rate (40 Hz), in order to ease data visualization and analysis. 
+Where necessary (e.g., if the original data was sampled at 30 Hz), observations are interpolated by selecting the look location at the nearest time point in the original data.
 
 ## Current Data Sources
 
