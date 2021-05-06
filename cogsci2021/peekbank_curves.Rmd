@@ -18,21 +18,22 @@ library(cowplot)
 library(JuliaCall)
 library(glue)
 library(broom)
-source(here("misc/jglmm_helper.R"))
+library(magrittr)
+source(here("cogsci2021/misc/jglmm_helper.R"))
 
 
 theme_set(theme_bw() + 
             theme(strip.background = element_blank(), 
                   panel.grid = element_blank()))
 
-knitr::opts_chunk$set(cache = FALSE, warn = FALSE, message = FALSE)
+knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
 ```
 
 
 Goal is to make developmental curves by using the growth modeling approach advocated by Mirman (2014).  
 
 ```{r}
-load(file = "data/aoi_data_joined.Rds")
+load(file = here("data/aoi_data_joined.Rds"))
 ```
 
 # Data

@@ -1,7 +1,7 @@
 ---
-title: "Peekbank DDM"
+title: "Peekbank RT explorations"
 author: "Mike"
-date: "2/23/2021"
+date: "5/4/2021"
 output: html_document
 ---
 
@@ -19,7 +19,7 @@ library(assertthat)
 
 t_range <- c(-1000,3000)
 knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
-load(file = "data/aoi_data_joined.Rds")
+load(file = here("data/aoi_data_joined.Rds"))
 ```
 
 # Reaction time computation
@@ -129,28 +129,73 @@ rts <- left_join(rts,
 ```
 
 
+
+# Exploration of RT decision-making
+
+```{r}
+fam_rts <- filter(rts, stimulus_novelty == "familiar")
+```
+
 Shift statistics. Why are there more D-T than T-D?  Looks like that's true across several datasets (perhaps some with novel words)? 
 
 Also looks like lots of "other" in the eye-tracking datasets? 
 
 ```{r}
-ggplot(rts, aes(x = shift_type)) + 
+ggplot(fam_rts, 
+       aes(x = shift_type, fill = shift_type)) + 
   geom_histogram(stat = "count") + 
-  facet_wrap(~dataset_name)
+  facet_wrap(~dataset_name, scales = "free_x") + 
+  coord_flip() + 
+  scale_x_discrete(limits = c("no shift","other", "T-D","D-T")) +
+  langcog::theme_mikabr() 
 ```
+RT histograms
+
+```{r}
+ggplot(filter(fam_rts, shift_type %in% c("T-D", "D-T")), 
+       aes(x = rt, fill = shift_type)) + 
+  # geom_histogram() + 
+  geom_density(alpha = .5) + 
+  facet_wrap(~dataset_name) + 
+  # facet_grid(dataset_name~shift_type, scales = "free_y") + 
+  langcog::theme_mikabr()
+```
+
+
+```{r}
+ggplot(filter(fam_rts, shift_type %in% c("T-D", "D-T")), 
+       aes(x = rt, fill = shift_type)) + 
+  geom_histogram() +
+  # geom_density(alpha = .5) + 
+  facet_wrap(~shift_type) +
+  scale_x_log10() + 
+  # facet_grid(dataset_name~shift_type, scales = "free_y") + 
+  langcog::theme_mikabr()
+```
+
+```{r}
+ggplot(fam_rts %>%
+         mutate(age_binned = cut(age, seq(6,66,12))), 
+       aes(x = rt, fill = shift_type)) + 
+  # geom_histogram() + 
+  geom_density(alpha = .5) +
+  scale_x_log10() + 
+  facet_grid(age_binned~dataset_name, scales = "free_y") +
+  langcog::theme_mikabr()
+```
+
+# Descriptives
+
 
 ```{r}
 corr_fam_rts <- rts %>%
   filter(stimulus_novelty == "familiar",
          shift_type == "D-T", 
-         !is.na(rt))
-  
-
- # group_by(dataset_name) %>%
-  # filter(rt_value < max(rt_value)-100, !is.na(rt_value)) # note sloppy exclusion of bad RTs (no shift trials)
+         !is.na(rt)) %>%
+         filter(age > 6, age < 66) %>%
+         mutate(age_binned = cut(age, seq(6,66,12)))
 ```
 
-# Descriptives
 
 Descriptive histograms. 
 
@@ -158,7 +203,8 @@ Descriptive histograms.
 ggplot(corr_fam_rts, 
        aes(x = rt)) + 
   geom_histogram() + 
-  facet_wrap(~dataset_name, scales = "free_y") 
+  facet_wrap(~dataset_name, scales = "free_y") +
+  langcog::theme_mikabr()
 ```
 
 Logs? This is cool as it suggests that the < 300 ms RTs really are junk. 
@@ -168,10 +214,13 @@ ggplot(corr_fam_rts,
        aes(x = rt)) + 
   geom_histogram() + 
   scale_x_log10() + 
-  facet_wrap(~dataset_name, scales = "free_y") 
+  facet_wrap(~dataset_name, scales = "free_y") +
+  langcog::theme_mikabr()
 ```
 
-So let's get rid of them. 
+
+
+So let's get rid of the <300ms RTs.
 
 ```{r}
 rts <- filter(rts, rt > 300)

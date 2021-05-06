@@ -245,7 +245,7 @@ target_word_data <- aoi_data_joined %>%
             correct = mean(correct, na.rm=TRUE), 
             n = n()) 
 
-ggplot(filter(target_word_data, n > 60), 
+p <- ggplot(filter(target_word_data, n > 60), 
        aes(x = t_norm, y = correct, col = age_group)) + 
   geom_line() + 
   geom_linerange(aes(ymin = correct - ci, ymax = correct + ci), 
@@ -255,10 +255,11 @@ ggplot(filter(target_word_data, n > 60),
   geom_hline(yintercept = .5, lty = 2, col = "black") + 
   langcog::theme_mikabr() + 
   langcog::scale_color_solarized(name = "Age Group (months)") + 
-  xlim(0, 2000) + 
+  xlim(0, 4000) + 
   xlab("Time from target word onset (msec)") + 
   ylab("Proportion correct") + 
-  theme(legend.position = "bottom") 
+  theme(legend.position = "bottom")
+
 ```
 ## Links to parent report vocabulary data
 
