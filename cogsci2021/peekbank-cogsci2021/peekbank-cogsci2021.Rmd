@@ -5,26 +5,26 @@ csl: apa6.csl
 document-params: "10pt, letterpaper"
 
 author-information: > 
-    \author{{\large \bf Martin Zettersten (martincz@princeton.edu)} \\ Department of Psychology, South Dr \\ Princeton, NJ 08540 USA
-    \AND {\large \bf Claire Bergey (cbergey@uchicago.edu)}
-    \AND {\large \bf Naiti S. Bhatt (naitibhatt@gmail.com)} 
-    \AND {\large \bf Veronica Boyce (vboyce@stanford.edu)}
-    \AND {\large \bf Mika Braginsky (mikabr@mit.edu)}
-    \AND {\large \bf Alexandra Carstensen (abcarstensen@stanford.edu)} 
-    \AND {\large \bf Benny deMayo (bdemayo@princeton.edu)} 
-    \AND {\large \bf George Kachergis (kachergis@stanford.edu)} 
-    \AND {\large \bf Molly Lewis (mollyllewis@gmail.com)}
-    \AND {\large \bf Bria Long (bria@stanford.edu)}
-    \AND {\large \bf Kyle MacDonald (kylem412@gmail.com)}
-    \AND {\large \bf Jessica Mankewitz (jmankewitz@stanford.edu)}
-    \AND {\large \bf Stephan Meylan (smeylan@mit.edu)} 
-    \AND {\large \bf Annissa N. Saleh (ans638@nyu.edu)}
-    \AND {\large \bf Rose M. Schneider (roschnei@ucsd.edu)} 
-    \AND {\large \bf Angeline Sin Mei Tsui (astsui@stanford.edu)}  
-    \AND {\large \bf Sarp Uner (sarp.uner@duke.edu)} 
-    \AND {\large \bf Tian Linger Xu (txu@iu.edu)} 
-    \AND {\large \bf Daniel Yurovsky (yurovsky@stanford.edu)} 
-    \AND {\large \bf Michael C. Frank (mcfrank@stanford.edu)}}
+    \author{{\large \bf Martin Zettersten (martincz@princeton.edu)} \\ Department of Psychology, Princeton University
+    \And {\large \bf Claire Bergey (cbergey@uchicago.edu)} \\ Department of Psychology, The University of Chicago
+    \AND {\large \bf Naiti S. Bhatt (naitibhatt@gmail.com)} \\ Scripps College
+    \And {\large \bf Veronica Boyce (vboyce@stanford.edu)} \\ Department of Psychology, Stanford University
+    \AND {\large \bf Mika Braginsky (mikabr@mit.edu)} \\ Brain and Cognitive Sciences, MIT
+    \And {\large \bf Alexandra Carstensen (abcarstensen@stanford.edu)} \\ Department of Psychology, Stanford University
+    \AND {\large \bf Benny deMayo (bdemayo@princeton.edu)} \\ Department of Psychology, Princeton University
+    \And {\large \bf George Kachergis (kachergis@stanford.edu)} \\ Department of Psychology, Stanford University
+    \AND {\large \bf Molly Lewis (mollyllewis@gmail.com)} \\ Department of Psychology, Carnegie Mellon University
+    \And {\large \bf Bria Long (bria@stanford.edu)} \\ Department of Psychology, Stanford University
+    \AND {\large \bf Kyle MacDonald (kylem412@gmail.com)} \\ Core Technology, McD Tech Labs
+    \And {\large \bf Jessica Mankewitz (jmankewitz@stanford.edu)} \\ Department of Psychology, Stanford University
+    \AND {\large \bf Stephan Meylan (smeylan@mit.edu)} \\ Brain and Cognitive Sciences, MIT \\ Psychology and Neuroscience, Duke University
+    \And {\large \bf Annissa N. Saleh (ans638@nyu.edu)} \\ Department of Psychology, NYU
+    \AND {\large \bf Rose M. Schneider (roschnei@ucsd.edu)} \\ Department of Psychology, UCSD
+    \And {\large \bf Angeline Sin Mei Tsui (astsui@stanford.edu)} \\ Department of Psychology, Stanford University
+    \AND {\large \bf Sarp Uner (sarp.uner@duke.edu)} \\ Psychology and Neuroscience, Duke University 
+    \And {\large \bf Tian Linger Xu (txu@iu.edu)} \\ Psychological and Brain Sciences, Indiana University
+    \AND {\large \bf Daniel Yurovsky (yurovsky@cmu.edu)} \\ Department of Psychology, Carnegie Mellon University
+    \And {\large \bf Michael C. Frank (mcfrank@stanford.edu)} \\ Department of Psychology, Stanford University}
 
 abstract: >
     The ability to rapidly recognize words and link them to referents in context is central to children's early language development. This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants' fixation on a target object (vs. a distractor) after hearing a target label. We present a large-scale, open database of infant and toddler eye-tracking data from looking-while-listening tasks. The goal of this effort is to address theoretical and methodological challenges in measuring vocabulary development. We present two analyses of the current database (N=1,233): (1) capturing age-related changes in infants' word recognition while generalizing across item-level variability and (2) assessing how a central methodological decision -- selecting the time window of analysis -- impacts the reliability of measurement. Future efforts will expand the scope of the current database to advance our understanding of participant-level and item-level variation in children's vocabulary development.
@@ -70,7 +70,9 @@ Studies using this design have contributed to our understanding of a wide range 
 
 While the looking-while-listening paradigm has been highly fruitful in advancing understanding of early word knowledge, fundamental questions remain both about the trajectory of children's word recognition ability and the nature of the method itself. 
 One central question is how to measure developmental change in word recognition. 
-Age-related changes and individual differences in speed of word recognition are thought to support children's subsequent language learning and predict later cognitive outcomes [e.g., @Marchman2008].
+A key idea in the language learning literature is that processing speed - the ability to quickly link a word with its referent - supports language learning.
+Age-related changes in speed of processing are thought to accelerate infants' subsequent language learning: the faster infants are able to process incoming speech input, the better able they become to learn from their language environment.
+Similarly, longitudinal analyses have found that individual differences in word recognition speed predict linguistic and cognitive outcomes later in childhood [e.g., Marchman & Fernald, 2008]. 
 However, measuring increases in the speed and accuracy of word recognition faces the challenge of distinguishing developmental changes in word recognition skill from changes in knowledge of specific words. 
 This problem is particularly thorny in child development, since the number of items that can be tested within a single session is limited and items must be selected in an age-appropriate manner [@peter2019]. 
 Measuring developmental change therefore requires large-scale datasets with a range of items, in order to generalize age-related changes across words.
@@ -296,7 +298,8 @@ Thus, researchers interested in better measurement of individual variation or co
 Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive. 
 Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science [@Bergmann2018; @Frank2016; @TheManyBabiesConsortium2020]. 
 The Peekbank project expands on these efforts by building an infrastructure for aggregating eye-tracking data across studies, with a specific focus on the looking-while-listening paradigm. 
-This paper presents an illustration of some of the key theoretical and methodological questions that can be addressed using Peekbank: generalizing across item-level variability in children's word recognition and providing data-driven guidance on methodological choices.
+The goals of the database are to ask theory-driven questions about the development of word knowledge and to establish methodological best-practices in infant eye-tracking methods.
+This paper presents an illustration of some of the key theoretical and methodological questions that can be addressed using Peekbank: generalizing across item-level variability in children's word recognition and providing data-driven guidance on choosing windows of analysis.
 
 Our first analysis shows that Peekbank can be used to model item-independent changes in the speed and accuracy of word recognition across development. 
 Children showed age-related increases in the speed of word recognition across one to five years of age, extending past foundational work [e.g., @fernald1998] by showing that these word processing gains generalize across items and are not only attributable to word-specific gains in processing speed. 
@@ -306,7 +309,7 @@ Our results recommend that researchers consider increasing the size of the time 
 
 There are a number of limitations surrounding the current scope of the database. 
 A priority in future work will be to expand the size of the database. 
-With 11 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results. 
+With 15 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results. 
 Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability.
 The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background [all but one dataset comes from WEIRD populations; @Muthukrishna2020]. 
 Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
