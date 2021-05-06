@@ -19,7 +19,7 @@ library(here)
 figure_path <- here("figures")
 
 t_range <- c(-1000,3000)
-knitr::opts_chunk$set(cache = TRUE, warn = FALSE, message = FALSE)
+knitr::opts_chunk$set(cache = TRUE, warn = FALSE, warning = FALSE, message = FALSE,cache.lazy = FALSE)
 
 load(file = "data/aoi_data_joined.Rds")
 dataset_name_mapping <- read_csv(here("data","dataset_name_mapping.csv"))

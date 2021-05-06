@@ -1,0 +1,246 @@
+---
+title: "Peekbank Onset Location Exploration"
+author: "Martin"
+date: "5/2/2021"
+output: html_document
+---
+
+```{r, message=FALSE}
+library(peekbankr)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(tictoc)
+library(langcog)
+library(here)
+
+figure_path <- here("vignettes","figures")
+
+FIRST_TIME = FALSE # set to true first time to download data from DB
+
+knitr::opts_chunk$set(cache = TRUE, warn = FALSE,warning=FALSE, message = FALSE,cache.lazy = FALSE)
+```
+
+## Get data 
+
+(only on first time loading)
+
+```{r, eval = FIRST_TIME}
+con <- connect_to_peekbank()
+datasets <- get_datasets(connection = con) %>% collect()
+administrations <- get_administrations(connection = con) %>% collect()
+subjects <- get_subjects(connection = con) %>% collect()
+tic()
+aoi_timepoints <- get_aoi_timepoints(connection = con) %>% collect()
+toc()
+stimuli <- get_stimuli(connection = con) %>% collect()
+trial_types <- get_trial_types(connection = con) %>% collect()
+trials <- get_trials(connection = con)  %>% collect()
+
+dataset_info <- administrations %>%
+  right_join(datasets) %>%
+  right_join(subjects) 
+
+aoi_data_joined <- aoi_timepoints %>%
+  right_join(administrations) %>%
+  right_join(trials) %>%
+  right_join(trial_types) %>%
+  right_join(datasets) %>%
+  mutate(stimulus_id = target_id) %>%
+  right_join(stimuli) %>%
+  filter(t_norm > t_range[1],
+         t_norm < t_range[2])
+
+save(file = here("brm/data/aoi_data_joined.Rds"), aoi_data_joined)
+save(file = here("brm/data/dataset_info.Rds"), dataset_info)
+```
+
+## Load data
+
+```{r}
+load(file = here("vignettes", "data","aoi_data_joined.Rds"))
+dataset_name_mapping <- read_csv(here("vignettes","data","dataset_name_mapping.csv"))
+aoi_data_joined <- aoi_data_joined %>%
+  left_join(dataset_name_mapping)
+```
+
+## Onset Location
+
+Add the onset location (t_norm=0) for each trial
+
+```{r}
+#determine onset location for each trial
+onset_locations <- aoi_data_joined %>%
+  filter(t_norm==0) %>%
+  select(administration_id, subject_id, trial_id,trial_type_id,aoi) %>%
+  rename(onset_location=aoi)
+
+#rejoin with aoi_data_joined
+aoi_data_joined <- aoi_data_joined %>%
+  right_join(onset_locations)
+```
+
+## Compute trial-by-trial accuracy
+
+We're computing accuracy (percent target looking) over a 300-2000 window here, could check alternate windows. 
+
+```{r}
+window_start=300
+window_end=2000
+
+#mean accuracy per trial
+trial_accuracy <- aoi_data_joined %>%
+  mutate(
+    onset_location_tdm=case_when(
+      onset_location=="other" ~ "missing",
+      TRUE ~ onset_location
+    )
+  ) %>%
+  group_by(dataset_name,dataset_rename,administration_id, subject_id,age, trial_id,trial_type_id,onset_location_tdm) %>%
+  filter(t_norm>=window_start & t_norm <=window_end) %>%
+  summarize(
+    num_obs=n(),
+    accuracy=case_when(
+      sum(aoi %in% c("target","distractor"))==0 ~ NA_real_,
+      TRUE ~ sum(aoi=="target")/(sum(aoi %in% c("target","distractor")))),
+    percent_missing=sum(aoi %in% c("missing","other"))/num_obs,
+    total_looking=sum(aoi %in% c("target","distractor")),
+    percent_looking=total_looking/num_obs,
+  )
+```
+
+## Plotting relationship between onset location, accuracy and age
+
+We're plotting the difference in accuracy depending on where you are looking at the onset of the label (target, distracter, or somewhere else/ missing), and its relationship across age. The plot suggests an interaction between age and target onset location: if you are looking at the target at the onset of the label, you are generally more accurate than otherwise, but this difference is attenuated across age (with also generally increasing accuracy scores).
+
+We're plotting this first for all trials, and then after filtering based on a relatively strict missingness criterion (if more than 33% of the window is missing gaze data, the trial is excluded).
+
+``` {r}
+#Plot relationship between start location and accuracy (and age)
+##all data points
+ggplot(trial_accuracy,aes(age,accuracy,color=onset_location_tdm,group=onset_location_tdm)) +
+  geom_point(alpha=0.2)+
+  geom_smooth(method="lm")+
+  scale_color_brewer(
+    name="Onset Location",
+    type="qual",
+    palette="Set3"
+  )
+ggsave(here(figure_path,"peekbank_item_onset_location_alldata.png"),width=10,height=6,dpi=600)
+
+#Histogram of percent missing
+hist(trial_accuracy$percent_missing)
+
+#exclusions >33% missing
+mean(trial_accuracy$percent_missing==0) # ~17% of trials are completely missing (no looks to target or distractor)
+mean(trial_accuracy$percent_missing>1/3) # excludes about 30% of total trials, so an additional ~13%
+
+trial_accuracy %>%
+  filter(percent_missing>1/3) %>%
+  ggplot(aes(age,accuracy,color=onset_location_tdm,group=onset_location_tdm)) +
+  geom_point(alpha=0.2)+
+  geom_smooth(method="lm")+
+  scale_color_brewer(
+    name="Onset Location",
+    type="qual",
+    palette="Set3"
+  )
+
+ggsave(here(figure_path,"peekbank_item_onset_location_33perc_exclusion.png"),width=10,height=6,dpi=600)
+
+```
+
+## Effect across datasets
+
+The above plot does not take variation across datasets into account. We can try to see whether we see similar difference in accuracy depending on onset locationn across datasets.
+
+TO DO: look at the interaction with age.
+
+```{r}
+#summarize subject accuracy and dataset
+subj_accuracy_dataset <- trial_accuracy %>%
+  filter(percent_missing>1/3) %>%
+  group_by(dataset_name,dataset_rename,subject_id) %>%
+  mutate(
+    weighted_age=mean(age,na.rm=TRUE)
+  ) %>%
+  group_by(dataset_name,dataset_rename,subject_id,weighted_age,onset_location_tdm) %>%
+  summarize(
+    num_trials=n(),
+    mean_accuracy=mean(accuracy,na.rm=TRUE)
+  ) 
+
+
+subj_accuracy_dataset %>%
+  ggplot(aes(onset_location_tdm,mean_accuracy,color=onset_location_tdm)) +
+  geom_boxplot()+
+  scale_color_brewer(
+    name="Onset Location",
+    type="qual",
+    palette="Set3"
+  )+
+  facet_wrap(~dataset_rename)
+ggsave(here(figure_path,"peekbank_item_onset_location_33perc_exclusion_bydataset.png"),width=10,height=6,dpi=600)
+```
+
+## Is this modulated by the size of the window?
+
+Checking here whether a similar pattern holds for different windows. Here, adding an extra 1000ms to the end of the window (we do see similar patterns).
+
+```{r}
+window_start=300
+window_end=3000
+
+#mean accuracy per trial
+trial_accuracy <- aoi_data_joined %>%
+  mutate(
+    onset_location_tdm=case_when(
+      onset_location=="other" ~ "missing",
+      TRUE ~ onset_location
+    )
+  ) %>%
+  group_by(dataset_name,dataset_rename,administration_id, subject_id,age, trial_id,trial_type_id,onset_location_tdm) %>%
+  filter(t_norm>=window_start & t_norm <=window_end) %>%
+  summarize(
+    num_obs=n(),
+    accuracy=case_when(
+      sum(aoi %in% c("target","distractor"))==0 ~ NA_real_,
+      TRUE ~ sum(aoi=="target")/(sum(aoi %in% c("target","distractor")))),
+    percent_missing=sum(aoi %in% c("missing","other"))/num_obs,
+    total_looking=sum(aoi %in% c("target","distractor")),
+    percent_looking=total_looking/num_obs,
+  )
+
+#Plot relationship between start location and accuracy (and age)
+##all data points
+ggplot(trial_accuracy,aes(age,accuracy,color=onset_location_tdm,group=onset_location_tdm)) +
+  geom_point(alpha=0.2)+
+  geom_smooth(method="lm")+
+  scale_color_brewer(
+    name="Onset Location",
+    type="qual",
+    palette="Set3"
+  )
+ggsave(here(figure_path,"peekbank_item_onset_location_alldata_3000end.png"),width=10,height=6,dpi=600)
+
+#Histogram of percent missing
+hist(trial_accuracy$percent_missing)
+
+#exclusions >33% missing
+mean(trial_accuracy$percent_missing==0) # ~17% of trials are completely missing (no looks to target or distractor)
+mean(trial_accuracy$percent_missing>1/3) # excludes about 30% of total trials, so an additional ~13%
+
+trial_accuracy %>%
+  filter(percent_missing>1/3) %>%
+  ggplot(aes(age,accuracy,color=onset_location_tdm,group=onset_location_tdm)) +
+  geom_point(alpha=0.2)+
+  geom_smooth(method="lm")+
+  scale_color_brewer(
+    name="Onset Location",
+    type="qual",
+    palette="Set3"
+  )
+
+ggsave(here(figure_path,"peekbank_item_onset_location_33perc_exclusion_3000end.png"),width=10,height=6,dpi=600)
+```
+

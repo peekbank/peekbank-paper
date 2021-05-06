@@ -23,7 +23,7 @@ theme_set(theme_cowplot())
 figure_path <- here("figures")
 
 load(file = "data/aoi_data_joined.Rds")
-knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE,cache.lazy = FALSE)
 dataset_name_mapping <- read_csv(here("data","dataset_name_mapping.csv"))
 
 con <- connect_to_peekbank()

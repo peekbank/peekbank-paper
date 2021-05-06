@@ -19,7 +19,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(tictoc)
 library(langcog)
-library(here)
 library(doParallel)
 library(foreach)
 library(ggpubr)
@@ -32,7 +31,7 @@ For our analysis, we will restrict ourselves to familiar words, and will model a
 
 ```{r load-data, eval=RUN_MODELS}
 # get local copy by running peekbank_explore.Rmd
-load(here("cogsci2021/data/aoi_data_joined.Rds"))
+load("data/aoi_data_joined.Rds")
 
 fam_data <- aoi_data_joined %>%
   filter(age > 12, age <= 60, 
@@ -119,7 +118,7 @@ mout <- map2_dfr(param.grid$startTimes, param.grid$endTimes,
 # Error in as_mapper(.f, ...) : object 'endTimes' not found
 
 
-write.table(mout, file=here("cogsci2021/data/time-window-results.csv"))           
+write.table(mout, file="data/time-window-results.csv")      
 
 ```
 
@@ -129,7 +128,7 @@ write.table(mout, file=here("cogsci2021/data/time-window-results.csv"))
 Leave one dataset out, evaluate correlation
 
 
-```{r cross-validation, eval=RUN_MODELS}
+```{r cross-validation, eval=RUN_MODELS, message=F}
 cv_results <- list()
 for(dset in datasets$dataset_name) {
    dat <- fam_data %>% filter(dataset_name != dset)
@@ -137,6 +136,53 @@ for(dset in datasets$dataset_name) {
              do_interitem_analysis, dat)
 }
 
+save(cv_results, file="data/time_window_cv.Rdata")
+```
+
+```{r eval-cv-results, eval=RUN_MODELS}
+# correlate ICCs with each left-out dataset with each other left-out dataset
+# (maybe we really just want total ICCs vs. with each dataset left out)
+cor_mat <- matrix(NA, nrow=length(cv_results), ncol=length(cv_results))
+colnames(cor_mat) = names(cv_results)
+rownames(cor_mat) = names(cv_results)
+
+for(i in names(cv_results)) {
+   for(j in names(cv_results)) {
+      if(i!=j) cor_mat[i,j] = cor(cv_results[[i]]$mean, cv_results[[j]]$mean)
+   }
+}
+
+cor_mat %>% kableExtra::kable(digits=2)
+```
+
+
+Below we show the correlations and sum of squared error between the ICCs from the full dataset vs. with each dataset held out. 
+Holding out attword has the largest influence, and holding out reflook_v4 also shows some deviation.
+We will visualize the ICCs with each of these datasets held out and try to characterize their influence.
+
+```{r, echo=F}
+# all data
+mout <- read.table("data/time-window-results.csv")
+#mout <- read.csv("cogsci2021/data/time-window-results.csv", sep=' ')
+```
+
+```{r, echo=F}
+load("data/time_window_cv.Rdata")
+cors = rep(NA, length(names(cv_results)))
+mses = rep(NA, length(names(cv_results)))
+
+
+for(i in 1:length(cv_results)) {
+   cors[i] = cor(cv_results[[i]]$mean, mout$mean)
+   mses[i] = sum((cv_results[[i]]$mean - mout$mean)^2) # / nrow(mout)
+}
+
+cv_dat <- data.frame(held_out_data = names(cv_results),
+                     r = cors,
+                     SSE = mses)
+
+cv_dat %>% arrange(desc(SSE)) %>%
+   kableExtra::kable(digits=3)
 ```
 
 
@@ -144,9 +190,6 @@ for(dset in datasets$dataset_name) {
 ## Visualization 
 
 ```{r load-model-results, echo=F}
-# all data
-mout <- read.table(file=here("cogsci2021/data/time-window-results.csv"))
-
 
 plot_interitem <- function(dat, title) {
   dat %>% 
@@ -173,7 +216,25 @@ Visualize inter-item correlation (per-subject, dataset, and age-bin) as a functi
 plot_interitem(mout, "Inter-item Correlations")
 ```
 
-Maybe annotate the region that we recommend?
+### ICCs without attword
+
+```{r visualize-start-window-length-attword, fig.width=8, fig.height=5, echo=F}
+plot_interitem(cv_results$attword_processed, "Inter-item Correlations")
+```
+
+Without attword, the strongest ICCs (in 48-60 month-olds at short, early time windows) generally disappear, and ICCs increase at later end times for this oldest age group.
+
+### ICCs without reflook_v4
+
+```{r visualize-start-window-length-reflook, fig.width=8, fig.height=5, echo=F}
+plot_interitem(cv_results$reflook_v4, "Inter-item Correlations")
+```
+
+Without reflook_v4, again the changes are mostly in the oldest age group: early start times and late end times (upper left of bottom right panel) show ICCs close to 0 (instead of positive).
+
+
+
+*Maybe annotate the region that we recommend?*
 
 ## Additional analyses
 
@@ -200,7 +261,7 @@ The correlations of IIC with start time, end time, and window length are shown a
 
 ### Recommendations
 
-Where do we get bad ICCs? (<.01 -- should we consider a higher threshold? e.g. median IIC = .048)
+Where do we get bad ICCs? (<.01 -- should we consider a higher threshold? e.g. median IIC)
 
 ```{r}
 #require(GGally)

@@ -13,7 +13,7 @@ editor_options:
 # for now, need to downgrade dbplyr to <2.0:
 # devtools::install_version("dbplyr", version = "1.4.4")
 
-FIRST_TIME = FALSE # set to true first time to download data from DB
+FIRST_TIME = TRUE # set to true first time to download data from DB
 
 library(peekbankr)
 library(tidyverse)
