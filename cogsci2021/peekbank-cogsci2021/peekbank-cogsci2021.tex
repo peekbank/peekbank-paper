@@ -202,6 +202,34 @@ variety of programming languages over the internet. The
 interface, or API, that offers high-level abstractions for accessing
 data in Peekbank.
 
+\begin{table*}[ht]
+\centering
+\begingroup\fontsize{9pt}{10pt}\selectfont
+\begin{tabular}{lrlrlll}
+  \hline
+Dataset Name & N & Percent Female & Mean Age (mos.) & Age Range (mos.) & Method & Language \\ 
+  \hline
+attword & 288 & 41\% & 25.5 & 13 - 59 & eye-tracking & English \\ 
+  canine & 36 & 50\% & 23.8 & 21 - 27 & manual coding & English \\ 
+  coartic & 29 &  & 20.8 & 18 - 24 & eye-tracking & English \\ 
+  cowpig & 45 & 51\% & 20.5 & 19 - 22 & manual coding & English \\ 
+  ft\_pt & 69 & 47\% & 17.1 & 13 - 20 & manual coding & English \\ 
+  mispron & 50 & 48\% & 15.1 & 14 - 16 & manual coding & English \\ 
+  mix & 48 & 48\% & 20.1 & 19 - 21 & eye-tracking & English, French \\ 
+  reflook\_socword & 435 & 50\% & 33.6 & 12 - 70 & eye-tracking & English \\ 
+  reflook\_v4 & 45 & 39\% & 34.2 & 11 - 60 & eye-tracking & English \\ 
+  remix & 44 & 64\% & 22.6 & 18 - 29 & manual coding & Spanish, English \\ 
+  salientme & 44 & 52\% & 40.1 & 38 - 43 & manual coding & English \\ 
+  switchingCues & 60 & 55\% & 44.3 & 41 - 47 & manual coding & English \\ 
+  tablet & 69 & 41\% & 35.5 & 12 - 60 & eye-tracking & English \\ 
+  tseltal & 23 & 61\% & 31.3 & 9 - 48 & manual coding & Tseltal \\ 
+  yoursmy & 35 & 49\% & 14.5 & 12 - 18 & eye-tracking & English \\ 
+   \hline
+\end{tabular}
+\endgroup
+\caption{Overview over the datasets in the current database.} 
+\end{table*}
+
 \hypertarget{data-format-and-processing}{%
 \subsection{Data Format and
 Processing}\label{data-format-and-processing}}
@@ -237,34 +265,6 @@ data.
 
 \hypertarget{current-data-sources}{%
 \subsection{Current Data Sources}\label{current-data-sources}}
-
-\begin{table}[H]
-\centering
-\begingroup\fontsize{9pt}{10pt}\selectfont
-\begin{tabular}{lrrl}
-  \hline
-Dataset Name & N & Mean Age (mos.) & Method \\ 
-  \hline
-attword & 288 & 25.5 & preprocessed eyetracking \\ 
-  canine & 36 & 23.8 & manual coding \\ 
-  coartic & 29 & 20.8 & eye-tracking \\ 
-  cowpig & 45 & 20.5 & manual coding \\ 
-  ft\_pt & 69 & 17.1 & manual coding \\ 
-  mispron & 50 & 15.1 & manual coding \\ 
-  mix & 48 & 20.1 & eye-tracking \\ 
-  reflook\_socword & 435 & 33.6 & eye-tracking \\ 
-  reflook\_v4 & 45 & 34.2 & eye-tracking \\ 
-  remix & 44 & 22.6 & manual coding \\ 
-  salientme & 44 & 40.1 & manual coding \\ 
-  switchingCues & 60 & 44.3 & manual coding \\ 
-  tablet & 69 & 35.5 & eye-tracking \\ 
-  tseltal & 23 & 31.3 & manual coding \\ 
-  yoursmy & 35 & 14.5 & eye-tracking \\ 
-   \hline
-\end{tabular}
-\endgroup
-\caption{Overview over the datasets in the current database.} 
-\end{table}
 
 The database currently includes 15 looking-while-listening datasets
 comprising N=1320 total participants (Table 1). Most datasets (10 out of
@@ -336,13 +336,6 @@ than for novel words learned during the experiment (M = 59.3\%, 95\% CI
 \subsection{Predicting Age-Related Changes While Generalizing Across
 Items}\label{predicting-age-related-changes-while-generalizing-across-items}}
 
-\sidecaptionvpos{figure}{c}
-\begin{SCfigure*}[0.2] 
-\includegraphics[width=14cm,height=6cm]{../figures/age_gca.png}
-\caption{Growth curve models of proportion target looking during the critical target window at each age range (in months). (A) Mean empirical word recognition fit. (B) Population-level estimates.}
-\label{fig:age_gca}
-\end{SCfigure*}
-
 Developmental changes in word recognition have been a central issue
 since early investigations of eye-tracking techniques (Fernald, Pinto,
 Swingley, Weinberg, \& McRoberts, 1998). Children's speed and accuracy
@@ -404,6 +397,13 @@ development; Frank, Lewis, \& MacDonald, 2016; Kail, 1991). This proof
 of concept suggests that Peekbank can be used to model developmental
 change over multiple years, overcoming the limitations of individual
 datasets.
+
+\sidecaptionvpos{figure}{c}
+\begin{SCfigure*}[0.2] 
+\includegraphics[width=14cm,height=6cm]{../figures/age_gca.png}
+\caption{Growth curve models of proportion target looking during the critical target window at each age range (in months). (A) Mean empirical word recognition fit. (B) Population-level estimates.}
+\label{fig:age_gca}
+\end{SCfigure*}
 
 \hypertarget{time-window-selection}{%
 \subsection{Time Window Selection}\label{time-window-selection}}

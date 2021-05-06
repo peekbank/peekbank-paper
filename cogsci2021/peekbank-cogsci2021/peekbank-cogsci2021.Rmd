@@ -114,6 +114,78 @@ grid::grid.raster(img)
 ```
 -->
 
+```{r xtable, num.cols.cap=1, results="asis"}
+load(file = here("data","dataset_info.Rds"))
+
+dataset_name_mapping <- read_csv(here("data","dataset_name_mapping.csv"))
+iso_codes <- read_csv(here("data","iso_language_codes.csv"))
+
+dataset_unique_subj <- dataset_info %>%
+  distinct(subject_id,sex)
+
+summarize_datasets <- dataset_info %>%
+  left_join(dataset_name_mapping) %>%
+  group_by(dataset_rename) %>%
+  summarize(
+    #num_admin=length(unique(administration_id)),
+    num_subj=length(unique(subject_id)),
+    percent_female=round(sum(sex=="female")/sum(sex %in% c("female","male")),2),
+    avg_age=mean(age,na.rm=T),
+    min_age_months = round(min(age, na.rm = TRUE),0), 
+    max_age_months = round(max(age, na.rm = TRUE),0),
+    method=unique(coding_method)[1],
+    native_language = names(which.max(table(native_language)))) %>%
+  mutate(
+    percent_female = case_when(
+      is.nan(percent_female) ~ NA_character_,
+      TRUE ~ paste0(percent_female*100,"%"))
+  ) %>%
+  mutate(
+    method=case_when(
+      method=="manual gaze coding" ~ "manual coding",
+      method=="eyetracking" ~ "eye-tracking",
+      method=="preprocessed eyetracking" ~ "eye-tracking",
+      TRUE ~ method)
+  ) %>%
+    #split language into multiple columns (only two expected; expand if dataset acquires more)
+  separate(native_language,into=c("native_language_1","native_language_2"),sep=", ") %>%
+  #join based on ISO standard
+  left_join(iso_codes,by=c("native_language_1"="iso_code")) %>%
+  left_join(iso_codes,by=c("native_language_2"="iso_code")) %>%
+  rename(
+    language_name_1 = language_name.x,
+    language_name_2 = language_name.y
+  ) %>%
+  #clean up some naming issues
+  mutate(
+    language_name_1 = case_when(
+      language_name_1 == "Spanish; Castilian" ~ "Spanish",
+      TRUE ~ language_name_1
+    )) %>%
+  #unite names
+  mutate(
+    language = case_when(
+      !is.na(language_name_2) ~ paste(language_name_1,language_name_2,sep=", "),
+      TRUE ~ language_name_1)) %>%
+  # native language special cases
+  mutate(
+    language = case_when(
+      dataset_rename == "tseltal" ~ "Tseltal",
+      TRUE ~ language)) %>%
+  #convert age range into one column
+  mutate(age_range_months= paste(min_age_months,max_age_months,sep=" - ")) %>%
+  select(dataset_rename, num_subj,percent_female,avg_age,age_range_months,method,language) %>%
+  arrange(dataset_rename)
+
+tab1 <- xtable::xtable(summarize_datasets, digits=c(1), 
+                       caption = "Overview over the datasets in the current database.")
+
+names(tab1) <- c("Dataset Name", "N","Percent Female","Mean Age (mos.)","Age Range (mos.)", "Method", "Language")
+
+
+print(tab1, type="latex", comment = F,include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont", floating = TRUE,floating.environment = "table*")
+```
+
 ## Data Format and Processing
 
 One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared re-usable data format across individual experiments. 
@@ -130,39 +202,6 @@ Second, we resample observations to a common sampling rate (40 Hz), in order to 
 Where necessary (e.g., if the original data was sampled at 30 Hz), observations are interpolated by selecting the look location at the nearest time point in the original data.
 
 ## Current Data Sources
-
-```{r xtable, num.cols.cap=1, results="asis"}
-load(file = here("data","dataset_info.Rds"))
-
-dataset_name_mapping <- read_csv(here("data","dataset_name_mapping.csv"))
-
-dataset_unique_subj <- dataset_info %>%
-  distinct(subject_id,sex)
-
-summarize_datasets <- dataset_info %>%
-  left_join(dataset_name_mapping) %>%
-  group_by(dataset_rename) %>%
-  summarize(
-    #num_admin=length(unique(administration_id)),
-    num_subj=length(unique(subject_id)),
-    avg_age=mean(age,na.rm=T),
-    method=unique(coding_method)[1]
-  ) %>%
-  mutate(
-    method=case_when(
-      method=="manual gaze coding" ~ "manual coding",
-      method=="eyetracking" ~ "eye-tracking",
-      TRUE ~ method)
-  ) %>%
-  arrange(dataset_rename)
-
-tab1 <- xtable::xtable(summarize_datasets, digits=c(1), 
-                       caption = "Overview over the datasets in the current database.")
-
-names(tab1) <- c("Dataset Name", "N","Mean Age (mos.)", "Method")
-
-print(tab1, type="latex", comment = F, table.placement = "H",include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont")
-```
 
 The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising N=`r sum(summarize_datasets$num_subj)` total participants (Table 1).
 Most datasets (10 out of 11 total) consist of data from monolingual native English speakers. They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),2)*100`% female). 
@@ -229,6 +268,15 @@ Proportion target looking was generally higher for familiar words (M = `r round(
 
 ## Predicting Age-Related Changes While Generalizing Across Items
 
+Developmental changes in word recognition have been a central issue since early investigations of eye-tracking techniques [@fernald1998]. Children's speed and accuracy of word recognition increases across early childhood, yet measuring these increases presents an item selection puzzle for researchers: Words that are appropriate for an 18-month-old will be too easy for a three-year-old; those that are appropriate for a three-year-old will be difficult for the 18-month-old. Failure to choose appropriate test items can even lead to spurious conclusions about development [@peter2019]. 
+
+This issue is familiar in psychometrics: test developers interested in measuring across a wide range of a particular latent ability must choose items appropriate for different abilities. One solution is to use data from a bank of questions that have been taken by test-takers of a range of abilities, and then use item-response theory models to create different test versions appropriate for different ability ranges [@embretson2000]. Such tests can then be used to extract estimates of developmental change that are independent of individual tests and their particular items. 
+
+Peekbank provides the appropriate large-scale database for estimating these item-independent developmental changes and designing age-appropriate tests in the future. Here we show a proof of concept by providing an estimate of the item-independent growth of word recognition accuracy across development. We take advantage of the equivalence between item response theory and linear mixed-effects models [LMMs; @de-boeck2011], using LMMs to model the trajectory of word recognition across age. We follow the approach of Mirman [-@Mirman2014] and use growth curve LMMs to predict the time course of recognition. Specifically, we predicted children's proportion of target looking during an early window of time (0-1500ms, chosen to avoid modeling declines in looking later in the trial), using an empirical logit transform on the proportion of target looking to allow the use of linear (rather than logistic) regression models. Our predictors were time after word onset and age, and we additionally included polynomial functions of time (up to fourth order) and quadratic effects of age, as well as their interactions. We subtracted all intercepts to force fits to start at a baseline of 0 (chance performance) at time zero. As a random effect structure, we included by-item, by-subject, and by-dataset random intercepts; though a larger random effect structure could be justified by the data, the size of the dataset precluded fitting these. The random effect structure allows us to model word recognition while generalizing across items and participants.
+
+Figure \ref{fig:age_gca} depicts the results of this analysis. Panel A shows the mean empirical word recognition curves for four age groups, along with fitted model performance. Although model fits are acceptable, developmental change appears irregular -- for example, 12- to 24-month-olds show slightly earlier recognition than 24- to 36-month-olds. This pattern is likely an artifact of averaging across datasets with substantially different items and structures. Panel B shows model predictions for the population level of each random effect -- our best estimates of the latent ability structure. Here we see continuous increases in both speed (point at which the curve rises) and accuracy (asymptote of the curve) across ages, though this developmental trend decelerates [consistent with other work on reaction time development; @frank2016b; @kail1991]. This proof of concept suggests that Peekbank can be used to model developmental change over multiple years, overcoming the limitations of individual datasets.
+
+
 <!--
 ```{r age_gca, fig.env = "figure", fig.env = "figure*", fig.pos = "h", fig.width=6.5, fig.height=4.33, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Growth curve models of proportion target looking during the critical target window at each age range (in months). (A) Mean empirical word recognition fit. (B) Population-level estimates."}
 img <- png::readPNG(here("figures","age_gca.png"))
@@ -241,14 +289,6 @@ grid::grid.raster(img)
 \caption{Growth curve models of proportion target looking during the critical target window at each age range (in months). (A) Mean empirical word recognition fit. (B) Population-level estimates.}
 \label{fig:age_gca}
 \end{SCfigure*}
-
-Developmental changes in word recognition have been a central issue since early investigations of eye-tracking techniques [@fernald1998]. Children's speed and accuracy of word recognition increases across early childhood, yet measuring these increases presents an item selection puzzle for researchers: Words that are appropriate for an 18-month-old will be too easy for a three-year-old; those that are appropriate for a three-year-old will be difficult for the 18-month-old. Failure to choose appropriate test items can even lead to spurious conclusions about development [@peter2019]. 
-
-This issue is familiar in psychometrics: test developers interested in measuring across a wide range of a particular latent ability must choose items appropriate for different abilities. One solution is to use data from a bank of questions that have been taken by test-takers of a range of abilities, and then use item-response theory models to create different test versions appropriate for different ability ranges [@embretson2000]. Such tests can then be used to extract estimates of developmental change that are independent of individual tests and their particular items. 
-
-Peekbank provides the appropriate large-scale database for estimating these item-independent developmental changes and designing age-appropriate tests in the future. Here we show a proof of concept by providing an estimate of the item-independent growth of word recognition accuracy across development. We take advantage of the equivalence between item response theory and linear mixed-effects models [LMMs; @de-boeck2011], using LMMs to model the trajectory of word recognition across age. We follow the approach of Mirman [-@Mirman2014] and use growth curve LMMs to predict the time course of recognition. Specifically, we predicted children's proportion of target looking during an early window of time (0-1500ms, chosen to avoid modeling declines in looking later in the trial), using an empirical logit transform on the proportion of target looking to allow the use of linear (rather than logistic) regression models. Our predictors were time after word onset and age, and we additionally included polynomial functions of time (up to fourth order) and quadratic effects of age, as well as their interactions. We subtracted all intercepts to force fits to start at a baseline of 0 (chance performance) at time zero. As a random effect structure, we included by-item, by-subject, and by-dataset random intercepts; though a larger random effect structure could be justified by the data, the size of the dataset precluded fitting these. The random effect structure allows us to model word recognition while generalizing across items and participants.
-
-Figure \ref{fig:age_gca} depicts the results of this analysis. Panel A shows the mean empirical word recognition curves for four age groups, along with fitted model performance. Although model fits are acceptable, developmental change appears irregular -- for example, 12- to 24-month-olds show slightly earlier recognition than 24- to 36-month-olds. This pattern is likely an artifact of averaging across datasets with substantially different items and structures. Panel B shows model predictions for the population level of each random effect -- our best estimates of the latent ability structure. Here we see continuous increases in both speed (point at which the curve rises) and accuracy (asymptote of the curve) across ages, though this developmental trend decelerates [consistent with other work on reaction time development; @frank2016b; @kail1991]. This proof of concept suggests that Peekbank can be used to model developmental change over multiple years, overcoming the limitations of individual datasets.
 
 ## Time Window Selection
 <!--
