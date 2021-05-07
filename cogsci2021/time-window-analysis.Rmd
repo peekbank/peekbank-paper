@@ -214,6 +214,7 @@ Visualize inter-item correlation (per-subject, dataset, and age-bin) as a functi
 
 ```{r visualize-start-window-length, fig.width=8, fig.height=5, echo=F}
 plot_interitem(mout, "Inter-item Correlations")
+ggsave(file="figures/interitem_cors_window_analysis.png", width=8, height=5)
 ```
 
 ### ICCs without attword
