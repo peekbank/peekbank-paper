@@ -186,6 +186,20 @@ summarize_datasets <- dataset_info %>%
   select(dataset_rename,apa_cite, num_subj,avg_age,age_range_months,method,language) %>%
   arrange(dataset_rename)
 
+summarize_dataset_by_age_bin <- dataset_info %>%
+  left_join(dataset_name_mapping) %>%
+  mutate(
+    age_bin = case_when(
+      age <= 24 ~ "(12,24]",
+      age <=36 ~ "(24,36]",
+      age <=48 ~ "(36,48]",
+      age<=60 ~ "(48,60]"
+    )
+  ) %>%
+  group_by(dataset_rename,age_bin) %>%
+  summarize(
+    num_subj=length(unique(subject_id)))
+
 tab1 <- xtable::xtable(summarize_datasets, digits=c(1), 
                        caption = "Overview over the datasets in the current database.")
 
