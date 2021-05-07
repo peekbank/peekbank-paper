@@ -57,7 +57,7 @@ large-scale repository for developmental eye-tracking data}
 
 \usepackage[raggedright]{sidecap}
 
-\author{{\large \bf Martin Zettersten (martincz@princeton.edu)} \\ Department of Psychology, Princeton University \And {\large \bf Claire Bergey (cbergey@uchicago.edu)} \\ Department of Psychology, The University of Chicago \AND {\large \bf Naiti S. Bhatt (naitibhatt@gmail.com)} \\ Scripps College \And {\large \bf Veronica Boyce (vboyce@stanford.edu)} \\ Department of Psychology, Stanford University \AND {\large \bf Mika Braginsky (mikabr@mit.edu)} \\ Brain and Cognitive Sciences, MIT \And {\large \bf Alexandra Carstensen (abcarstensen@stanford.edu)} \\ Department of Psychology, Stanford University \AND {\large \bf Benny deMayo (bdemayo@princeton.edu)} \\ Department of Psychology, Princeton University \And {\large \bf George Kachergis (kachergis@stanford.edu)} \\ Department of Psychology, Stanford University \AND {\large \bf Molly Lewis (mollyllewis@gmail.com)} \\ Department of Psychology, Carnegie Mellon University \And {\large \bf Bria Long (bria@stanford.edu)} \\ Department of Psychology, Stanford University \AND {\large \bf Kyle MacDonald (kylem412@gmail.com)} \\ Core Technology, McD Tech Labs \And {\large \bf Jessica Mankewitz (jmankewitz@stanford.edu)} \\ Department of Psychology, Stanford University \AND {\large \bf Stephan Meylan (smeylan@mit.edu)} \\ Brain and Cognitive Sciences, MIT \\ Psychology and Neuroscience, Duke University \And {\large \bf Annissa N. Saleh (ans638@nyu.edu)} \\ Department of Psychology, NYU \AND {\large \bf Rose M. Schneider (roschnei@ucsd.edu)} \\ Department of Psychology, UCSD \And {\large \bf Angeline Sin Mei Tsui (astsui@stanford.edu)} \\ Department of Psychology, Stanford University \AND {\large \bf Sarp Uner (sarp.uner@duke.edu)} \\ Psychology and Neuroscience, Duke University  \And {\large \bf Tian Linger Xu (txu@iu.edu)} \\ Psychological and Brain Sciences, Indiana University \AND {\large \bf Daniel Yurovsky (yurovsky@cmu.edu)} \\ Department of Psychology, Carnegie Mellon University \And {\large \bf Michael C. Frank (mcfrank@stanford.edu)} \\ Department of Psychology, Stanford University}
+\author{{\large \bf Martin Zettersten (martincz@princeton.edu)\textsuperscript{1}}, {\large \bf Claire Bergey\textsuperscript{2}}, {\large \bf Naiti S. Bhatt\textsuperscript{3}}, {\large \bf Veronica Boyce\textsuperscript{4}},  \\ {\large \bf Mika Braginsky\textsuperscript{5}}, {\large \bf Alexandra Carstensen\textsuperscript{4}}, {\large \bf Benny deMayo\textsuperscript{1}}, {\large \bf George Kachergis\textsuperscript{4}},  \\ {\large \bf Molly Lewis\textsuperscript{6}}, {\large \bf Bria Long\textsuperscript{4}}, {\large \bf Kyle MacDonald\textsuperscript{7}}, {\large \bf Jessica Mankewitz\textsuperscript{4}},  \\ {\large \bf Stephan Meylan\textsuperscript{5,8}}, {\large \bf Annissa N. Saleh\textsuperscript{9}}, {\large \bf Rose M. Schneider\textsuperscript{10}}, {\large \bf Angeline Sin Mei Tsui\textsuperscript{4}},  \\ {\large \bf Sarp Uner\textsuperscript{8}}, {\large \bf Tian Linger Xu\textsuperscript{11}}, {\large \bf Daniel Yurovsky\textsuperscript{6}}, {\large \bf Michael C. Frank (mcfrank@stanford.edu)\textsuperscript{4}}  \\ {\textsuperscript{1}}Department of Psychology, Princeton University, {\textsuperscript{2}}Department of Psychology, The University of Chicago,  \\ {\textsuperscript{3}}Scripps College, {\textsuperscript{4}}Department of Psychology, Stanford University, {\textsuperscript{5}}Department of Brain and Cognitive Sciences, MIT,  \\ {\textsuperscript{6}}Department of Psychology, Carnegie Mellon University, {\textsuperscript{7}}Core Technology, McD Tech Labs,  \\ {\textsuperscript{8}}Department of Psychology and Neuroscience, Duke University, {\textsuperscript{9}}Department of Psychology, UT Austin \\ {\textsuperscript{10}}Department of Psychology, UC San Diego, {\textsuperscript{11}}Department of Psychological and Brain Sciences, Indiana University}
 
 
 \begin{document}
@@ -74,7 +74,7 @@ hearing a target label. We present a large-scale, open database of
 infant and toddler eye-tracking data from looking-while-listening tasks.
 The goal of this effort is to address theoretical and methodological
 challenges in measuring vocabulary development. We present two analyses
-of the current database (N=1,233): (1) capturing age-related changes in
+of the current database (N=1,320): (1) capturing age-related changes in
 infants' word recognition while generalizing across item-level
 variability and (2) assessing how a central methodological decision --
 selecting the time window of analysis -- impacts the reliability of
@@ -92,12 +92,13 @@ looking-while-listening
 
 Across their first years of life, children learn words in their native
 tongues at a rapid pace (Frank, Braginsky, Yurovsky, \& Marchman, 2021).
-A key part of the word learning process is children's ability to rapidly
-process words and link them to relevant meanings -- often referred to as
-word recognition. Developing word recognition skills builds a foundation
-for children's language development and is predictive of later
-linguistic and general cognitive outcomes (Bleses, Makransky, Dale,
-Højen, \& Ari, 2016; Marchman et al., 2018).
+A key facet of children's growing word knowledge is their ability
+rapidly process words and link them to relevant meanings -- often
+referred to as word recognition. Developing word recognition skills
+builds a foundation for children's language development; for example,
+the speed and accuracy with which infants as young as 18 months of age
+process words is predictive of later linguistic and general cognitive
+outcomes (Marchman \& Fernald, 2008; Marchman et al., 2018).
 
 Word recognition is traditionally studied in the
 ``looking-while-listening'' paradigm (alternatively referred to as the
@@ -123,21 +124,22 @@ and the nature of the method itself. One central question is how to
 measure developmental change in word recognition. A key idea in the
 language learning literature is that processing speed - the ability to
 quickly link a word with its referent - supports language learning.
-Age-related changes in speed of processing are thought to accelerate
+Age-related changes in speed of processing is argued to accelerate
 infants' subsequent language learning: the faster infants are able to
 process incoming speech input, the better able they become to learn from
-their language environment. Similarly, longitudinal analyses have found
-that individual differences in word recognition speed predict linguistic
-and cognitive outcomes later in childhood {[}e.g., Marchman \& Fernald,
-2008{]}. However, measuring increases in the speed and accuracy of word
-recognition faces the challenge of distinguishing developmental changes
-in word recognition skill from changes in knowledge of specific words.
-This problem is particularly thorny in child development, since the
+their language environment (Fernald \& Marchman, 2012). Consistent with
+this hypothesis, longitudinal analyses have found that individual
+differences in word recognition speed predict linguistic and cognitive
+outcomes later in childhood (e.g., Marchman \& Fernald, 2008). However,
+measuring increases in the speed and accuracy of word recognition faces
+the challenge of distinguishing developmental changes in word
+recognition skill from changes in knowledge of specific words. This
+problem is particularly thorny in child development research, since the
 number of items that can be tested within a single session is limited
-and items must be selected in an age-appropriate manner (Peter et al.,
-2019). Measuring developmental change therefore requires large-scale
-datasets with a range of items, in order to generalize age-related
-changes across words.
+given that testing sessions with infants and items must be selected in
+an age-appropriate manner (Peter et al., 2019). Measuring developmental
+change therefore requires large-scale datasets with a range of items, in
+order to generalize age-related changes across words.
 
 A second question relates to evaluating methodological best practices.
 In particular, many fundamental analytic decisions vary substantially
@@ -161,12 +163,16 @@ studies. The Peekbank project (a) collects a large set of eye-tracking
 datasets on children's word recognition, (b) introduces a data format
 and processing tools for standardizing eye-tracking data across data
 sources, and (c) provides an interface for accessing and analyzing the
-database. In the current paper, we give an overview of the key
-components of the project and some initial demonstrations of its utility
-in advancing theoretical and methodological insights. We report two
-analyses using the database and associated tools (N=1,233): (1) a growth
-curve analysis modeling age-related changes in infants' word recognition
-while generalizing across item-level variability; and (2) a
+database. In aggregating a large database of children's early word
+recognition, the project pursues two main goals: providing data-driven
+evidence that can inform methodological decisions in word recognition
+research and answering theoretical questions about the development of
+children's word knowledge. In the current paper, we give an overview of
+the key components of the project and some initial demonstrations of its
+utility in advancing theoretical and methodological insights. We report
+two analyses using the database and associated tools (N=1,320): (1) a
+growth curve analysis modeling age-related changes in infants' word
+recognition while generalizing across item-level variability; and (2) a
 multiverse-style analysis of how a central methodological decision --
 selecting the time window of analysis -- impacts inter-item reliability.
 
@@ -205,13 +211,13 @@ data in Peekbank.
 \begin{table*}[ht]
 \centering
 \begingroup\fontsize{9pt}{10pt}\selectfont
-\begin{tabular}{lrlrlll}
+\begin{tabular}{lrrrrrr}
   \hline
 Dataset Name & N & Percent Female & Mean Age (mos.) & Age Range (mos.) & Method & Language \\ 
   \hline
 attword & 288 & 41\% & 25.5 & 13 - 59 & eye-tracking & English \\ 
   canine & 36 & 50\% & 23.8 & 21 - 27 & manual coding & English \\ 
-  coartic & 29 &  & 20.8 & 18 - 24 & eye-tracking & English \\ 
+  coartic & 29 & N/A & 20.8 & 18 - 24 & eye-tracking & English \\ 
   cowpig & 45 & 51\% & 20.5 & 19 - 22 & manual coding & English \\ 
   ft\_pt & 69 & 47\% & 17.1 & 13 - 20 & manual coding & English \\ 
   mispron & 50 & 48\% & 15.1 & 14 - 16 & manual coding & English \\ 
@@ -267,17 +273,21 @@ data.
 \subsection{Current Data Sources}\label{current-data-sources}}
 
 The database currently includes 15 looking-while-listening datasets
-comprising N=1320 total participants (Table 1). Most datasets (10 out of
-11 total) consist of data from monolingual native English speakers. They
+comprising N=1320 total participants (Table 1). Most datasets (12 out of
+15 total) consist of data from monolingual native English speakers. They
 span a wide age spectrum with participants ranging from 9 to 70 months
 of age, and are balanced in terms of gender (46\% female). The datasets
 vary across a number of dimensions related to design and methodology,
 and include studies using manually coded video recordings and automated
 eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior.
-Most studies focused on testing familiar items, but the database also
-includes studies with novel pseudowords. All data (and accompanying
-references) are openly available on the Open Science Framework
-(\url{https://osf.io/pr6wu/}).
+All studies tested familiar items, but the database also includes 0
+datasets that tested novel pseudo-words in addition to familiar words.
+All data, including corresponding references for each dataset, are
+openly available on the Open Science Framework
+(\url{https://osf.io/pr6wu/}). An up-to-date list of current datasets
+and their sources can also be viewed on the contributors page of the
+Peekbank website
+(\url{https://peekbank.stanford.edu/docs/contributors/}).
 
 \sidecaptionvpos{figure}{c}
 \begin{SCfigure*}[0.2] 
@@ -292,6 +302,17 @@ references) are openly available on the Open Science Framework
 \hypertarget{general-descriptives-and-item-variability}{%
 \subsection{General descriptives and item
 variability}\label{general-descriptives-and-item-variability}}
+
+In general, participants demonstrated robust, above-chance word
+recognition in each dataset (with chance being 0.5). Table 2 shows the
+average proportion of target looking within a standard critical window
+of 300-2000ms after the onset of the label for each dataset (Swingley \&
+Aslin, 2000). The number of unique target labels and their associated
+accuracy vary widely across datasets (Figure
+\ref{fig:peekbank_item_vis}). Proportion target looking was generally
+higher for familiar words (M = 65.9\%, 95\% CI = {[}65\%, 66.7\%{]}, N =
+1269 than for novel words learned during the experiment (M = 59.3\%,
+95\% CI = {[}57.8\%, 60.8\%{]}, 1269).
 
 \begin{table}[H]
 \centering
@@ -320,17 +341,6 @@ attword & 6 & 0.63 & [0.61, 0.64] \\
 \endgroup
 \caption{Average proportion target looking in each dataset.} 
 \end{table}
-
-In general, participants demonstrated robust, above-chance word
-recognition in each dataset (with chance being 0.5). Table 2 shows the
-average proportion of target looking within a standard critical window
-of 300-2000ms after the onset of the label for each dataset (Swingley \&
-Aslin, 2000). The number of unique target labels and their associated
-accuracy vary widely across datasets (Figure
-\ref{fig:peekbank_item_vis}). Proportion target looking was generally
-higher for familiar words (M = 65.9\%, 95\% CI = {[}65\%, 66.7\%{]})
-than for novel words learned during the experiment (M = 59.3\%, 95\% CI
-= {[}57.8\%, 60.8\%{]}).
 
 \hypertarget{predicting-age-related-changes-while-generalizing-across-items}{%
 \subsection{Predicting Age-Related Changes While Generalizing Across
@@ -408,12 +418,6 @@ datasets.
 \hypertarget{time-window-selection}{%
 \subsection{Time Window Selection}\label{time-window-selection}}
 
-\begin{SCfigure*}[0.25] 
-\includegraphics[width=13.6cm,height=8.5cm]{../figures/interitem_cors_window_analysis.png}
-\caption{Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid.}
-\label{fig:time_window}
-\end{SCfigure*}
-
 In our second analysis, we address a common analytic decision facing
 researchers: how to summarize time course data into a single measure of
 accuracy. Taking a similar approach to that of Peelle \& Van Engen
@@ -466,6 +470,12 @@ perspective -- averaging more timepoints (even if some contain limited
 signal) increases reliability and reduces variation. Thus, researchers
 interested in better measurement of individual variation or condition
 differences should consider using longer windows by default.
+
+\begin{SCfigure*}[0.25] 
+\includegraphics[width=13.6cm,height=8.5cm]{../figures/interitem_cors_window_analysis.png}
+\caption{Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid.}
+\label{fig:time_window}
+\end{SCfigure*}
 
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
@@ -556,11 +566,6 @@ developmental research through meta-analyses: Insights from language
 acquisition research. \emph{Child Development}, \emph{89}(6),
 1996--2009.
 
-\leavevmode\hypertarget{ref-Bleses2016}{}%
-Bleses, D., Makransky, G., Dale, P. S., Højen, A., \& Ari, B. A. (2016).
-Early productive vocabulary predicts academic achievement 10 years
-later. \emph{Applied Psycholinguistics}, \emph{37}(6), 1461--1476.
-
 \leavevmode\hypertarget{ref-Csibra2016}{}%
 Csibra, G., Hernik, M., Mascaro, O., Tatone, D., \& Lengyel, M. (2016).
 Statistical treatment of looking-time data. \emph{Developmental
@@ -575,6 +580,12 @@ of Statistical Software}, \emph{39}(12), 1--28.
 \leavevmode\hypertarget{ref-embretson2000}{}%
 Embretson, S. E., \& Reise, S. P. (2000). \emph{Item response theory for
 psychologists}. Mahwah, NJ: Lawrence Erlbaum.
+
+\leavevmode\hypertarget{ref-Fernald2012a}{}%
+Fernald, A., \& Marchman, V. A. (2012). Individual differences in
+lexical processing at 18 months predict vocabulary growth in typically
+developing and late-talking toddlers. \emph{Child Development},
+\emph{83}(1), 203--22.
 
 \leavevmode\hypertarget{ref-fernald1998}{}%
 Fernald, A., Pinto, J. P., Swingley, D., Weinberg, A., \& McRoberts, G.
@@ -630,6 +641,11 @@ childhood and adolescence. \emph{Psychological Bulletin}, \emph{109}(3),
 Lew-Williams, C., \& Fernald, A. (2007). Young children learning Spanish
 make rapid use of grammatical gender in spoken word recognition.
 \emph{Psychological Science}, \emph{18}(3), 193--198.
+
+\leavevmode\hypertarget{ref-Marchman2008}{}%
+Marchman, V. A., \& Fernald, A. (2008). Speed of word recognition and
+vocabulary knowledge in infancy predict cognitive and language outcomes
+in later childhood. \emph{Developmental Science}, \emph{11}(3), F9--16.
 
 \leavevmode\hypertarget{ref-Marchman2018}{}%
 Marchman, V. A., Loi, E. C., Adams, K. A., Ashland, M., Fernald, A., \&
