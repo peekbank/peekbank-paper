@@ -129,21 +129,21 @@ summarize_novel_familiar <- aoi_data_joined %>%
 
 summarize_datasets <- dataset_info %>%
   left_join(dataset_name_mapping) %>%
-  group_by(dataset_rename) %>%
+  group_by(dataset_rename, apa_cite) %>%
   summarize(
     #num_admin=length(unique(administration_id)),
     num_subj=length(unique(subject_id)),
-    percent_female=round(sum(sex=="female")/sum(sex %in% c("female","male")),2),
+    #percent_female=round(sum(sex=="female")/sum(sex %in% c("female","male")),2),
     avg_age=mean(age,na.rm=T),
     min_age_months = round(min(age, na.rm = TRUE),0), 
     max_age_months = round(max(age, na.rm = TRUE),0),
     method=unique(coding_method)[1],
     native_language = names(which.max(table(native_language)))) %>%
-  mutate(
-    percent_female = case_when(
-      is.nan(percent_female) ~ "N/A",
-      TRUE ~ paste0(percent_female*100,"%"))
-  ) %>%
+  # mutate(
+  #   percent_female = case_when(
+  #     is.nan(percent_female) ~ "N/A",
+  #     TRUE ~ paste0(percent_female*100,"%"))
+  # ) %>%
   mutate(
     method=case_when(
       method=="manual gaze coding" ~ "manual coding",
@@ -178,13 +178,18 @@ summarize_datasets <- dataset_info %>%
       TRUE ~ language)) %>%
   #convert age range into one column
   mutate(age_range_months= paste(min_age_months,max_age_months,sep=" - ")) %>%
-  select(dataset_rename, num_subj,percent_female,avg_age,age_range_months,method,language) %>%
+  mutate(
+   apa_cite=case_when(
+      is.na(apa_cite) ~ "unpublished",
+      TRUE ~ apa_cite
+  )) %>%
+  select(dataset_rename,apa_cite, num_subj,avg_age,age_range_months,method,language) %>%
   arrange(dataset_rename)
 
 tab1 <- xtable::xtable(summarize_datasets, digits=c(1), 
                        caption = "Overview over the datasets in the current database.")
 
-names(tab1) <- c("Dataset Name", "N","Percent Female","Mean Age (mos.)","Age Range (mos.)", "Method", "Language")
+names(tab1) <- c("Dataset Name", "Citation","N","Mean Age (mos.)","Age Range (mos.)", "Method", "Language")
 
 align(tab1) <- c("llrrrrrr")
 
@@ -208,12 +213,11 @@ Where necessary (e.g., if the original data was sampled at 30 Hz), observations 
 
 ## Current Data Sources
 
-The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising N=`r sum(summarize_datasets$num_subj)` total participants (Table 1).
+The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising N=`r sum(summarize_datasets$num_subj)` total participants [Table 1; @Pomper2016; @Yurovsky2013; @Byers-Heinlein2017; @Frank2016; @Casillas2017; @Adams2018; @Potter2019; @Mahr2015; @Pomper2019; @Garrison2020; @Perry2017; @Swingley2002].
 Most datasets (`r sum(summarize_datasets$language=="English")` out of `r length(summarize_datasets$language)` total) consist of data from monolingual native English speakers. 
 They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),2)*100`% female). 
 The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. 
-All studies tested familiar items, but the database also includes `r sum(summarize_novel_familiar$novel)` datasets that tested novel pseudo-words in addition to familiar words. All data, including corresponding references for each dataset, are openly available on the Open Science Framework (https://osf.io/pr6wu/). 
-An up-to-date list of current datasets and their sources can also be viewed on the contributors page of the Peekbank website (https://peekbank.stanford.edu/docs/contributors/).
+All studies tested familiar items, but the database also includes `r sum(summarize_novel_familiar$novel)` datasets that tested novel pseudo-words in addition to familiar words. All data, including an up-to-date list of current datasets and corresponding references, are openly available on the Open Science Framework (https://osf.io/pr6wu/).
 
 <!--
 ```{r peekbank_item_vis, fig.env = "figure*", fig.pos = "h", fig.width=6.5, fig.height=3.9, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Item-level variability in proportion target looking within each dataset (chance=0.5). Time is centered on the onset of the target label (vertical line). Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines."}
@@ -270,7 +274,7 @@ overall_novelty <- participant_means_novelty %>%
 In general, participants demonstrated robust, above-chance word recognition in each dataset (with chance being 0.5). 
 Table 2 shows the average proportion of target looking within a standard critical window of 300-2000ms after the onset of the label for each dataset [@Swingley2000]. 
 The number of unique target labels and their associated accuracy vary widely across datasets (Figure \ref{fig:peekbank_item_vis}). 
-Proportion target looking was generally higher for familiar words (M = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,3)*100`%, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,3)*100`%, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,3)*100`%], N = `r filter(overall_novelty,stimulus_novelty=="familiar")$N`) than for novel words learned during the experiment (M = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,3)*100`%, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,3)*100`%, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,3)*100`%], `r filter(overall_novelty,stimulus_novelty=="familiar")$N`). 
+Proportion target looking was generally higher for familiar words (M = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,3)*100`%, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,3)*100`%, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,3)*100`%], n = `r filter(overall_novelty,stimulus_novelty=="familiar")$N`) than for novel words learned during the experiment (M = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,3)*100`%, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,3)*100`%, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,3)*100`%], n = `r filter(overall_novelty,stimulus_novelty=="novel")$N`). 
 
 ```{r xtable2, num.cols.cap=1, results="asis"}
 print(tab2, type="latex", comment = F, table.placement = "H",include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont")
@@ -317,11 +321,11 @@ The analysis shows that IIC is positive (red) under a wide range of sensible win
 IIC is relatively low however, especially for the youngest age group, suggesting that individual items carry only limited shared signal regarding children's underlying ability. 
 It may be the case that even averaging many such trials does not yield highly reliable measures of individual differences, although some multi-trial paradigms are exceptions to this generalization [@Fernald2008].
 
-Intriguingly, however, late end times and long overall window lengths show the greatest reliability. 
-Shorter windows (e.g., 300-2000ms, as we used above) likely maximize absolute recognition performance by fitting the peak of the recognition curve, but simultaneously lower reliability by failing to include all relevant data. 
+Intriguingly, however, late end times and long overall window lengths tend to show higher reliability than shorter windows. 
+Shorter windows (e.g., 300-2000ms, as we used above) likely maximize absolute recognition performance by fitting the peak of the recognition curve, but simultaneously may lower reliability by failing to include all relevant data. 
 Especially for older children, the maximal IICs were found with windows that started between 500 and 1000ms and ended between 3000 and 4000ms, windows usually reserved for younger children. 
 This finding is sensible from a psychometric perspective -- averaging more timepoints (even if some contain limited signal) increases reliability and reduces variation.
-Thus, researchers interested in better measurement of individual variation or condition differences should consider using longer windows by default.
+Thus, researchers interested in better measurement of individual variation or condition differences could consider using longer windows by default.
 <!-- Moreover, there is some variation by age group in where the strongest ICCs are found (and in the overall strength of ICCs). <!-- discuss more? [GK: add mean +ICC per age?]) -->
 
 <!-- What general recommendations follow from this analysis? -->
@@ -357,7 +361,7 @@ Our first analysis shows that Peekbank can be used to model item-independent cha
 Children showed age-related increases in the speed of word recognition across one to five years of age, extending past foundational work [e.g., @fernald1998] by showing that these word processing gains generalize across items and are not only attributable to word-specific gains in processing speed. 
 The second analysis demonstrates how Peekbank can be used to make data-driven analytic decisions, focusing on the choice of time windows for analysis. 
 In looking-while-listening studies, researchers often choose a relatively short time window of roughly 300-1800 or 2000ms [@Fernald2008], with the justification that eye movements occurring after this window may no longer be related to the target label [@Swingley2000]. 
-Our results recommend that researchers consider increasing the size of the time window for analyzing target fixations (at least for familiar words) to maximize the consistent signal in children's target fixations.
+Our results suggest that researchers could consider increasing the size of the time window for analyzing target fixations (at least for familiar words) if their goal is to maximize consistent signal in children's target fixations.
 
 There are a number of limitations surrounding the current scope of the database. 
 A priority in future work will be to expand the size of the database. 
