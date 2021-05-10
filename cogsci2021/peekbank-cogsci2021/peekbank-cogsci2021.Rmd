@@ -10,11 +10,11 @@ author-information: >
     \\ {\large \bf Molly Lewis\textsuperscript{6}}, {\large \bf Bria Long\textsuperscript{4}}, {\large \bf Kyle MacDonald\textsuperscript{7}}, {\large \bf Jessica Mankewitz\textsuperscript{4}}, 
     \\ {\large \bf Stephan Meylan\textsuperscript{5,8}}, {\large \bf Annissa N. Saleh\textsuperscript{9}}, {\large \bf Rose M. Schneider\textsuperscript{10}}, {\large \bf Angeline Sin Mei Tsui\textsuperscript{4}}, 
     \\ {\large \bf Sarp Uner\textsuperscript{8}}, {\large \bf Tian Linger Xu\textsuperscript{11}}, {\large \bf Daniel Yurovsky\textsuperscript{6}}, {\large \bf Michael C. Frank (mcfrank@stanford.edu)\textsuperscript{4}} 
-    \\ {\textsuperscript{1}}Department of Psychology, Princeton University, {\textsuperscript{2}}Department of Psychology, The University of Chicago, 
-    \\ {\textsuperscript{3}}Scripps College, {\textsuperscript{4}}Department of Psychology, Stanford University, {\textsuperscript{5}}Department of Brain and Cognitive Sciences, MIT, 
-    \\ {\textsuperscript{6}}Department of Psychology, Carnegie Mellon University, {\textsuperscript{7}}Core Technology, McD Tech Labs, 
-    \\ {\textsuperscript{8}}Department of Psychology and Neuroscience, Duke University, {\textsuperscript{9}}Department of Psychology, UT Austin
-    \\ {\textsuperscript{10}}Department of Psychology, UC San Diego, {\textsuperscript{11}}Department of Psychological and Brain Sciences, Indiana University}
+    \\ {\textsuperscript{1}}Dept. of Psychology, Princeton University, {\textsuperscript{2}}Dept. of Psychology, University of Chicago, 
+    \\ {\textsuperscript{3}}Scripps College, {\textsuperscript{4}}Dept. of Psychology, Stanford University, {\textsuperscript{5}}Dept. of Brain and Cognitive Sciences, MIT, 
+    \\ {\textsuperscript{6}}Dept. of Psychology, Carnegie Mellon University, {\textsuperscript{7}}Core Technology, McD Tech Labs, 
+    \\ {\textsuperscript{8}}Dept. of Psychology and Neuroscience, Duke University, {\textsuperscript{9}}Dept. of Psychology, UT Austin
+    \\ {\textsuperscript{10}}Dept. of Psychology, UC San Diego, {\textsuperscript{11}}Dept. of Psychological and Brain Sciences, Indiana University}
 
 abstract: >
     The ability to rapidly recognize words and link them to referents in context is central to children's early language development. This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants' fixation on a target object (vs. a distractor) after hearing a target label. We present a large-scale, open database of infant and toddler eye-tracking data from looking-while-listening tasks. The goal of this effort is to address theoretical and methodological challenges in measuring vocabulary development. We present two analyses of the current database (N=1,320): (1) capturing age-related changes in infants' word recognition while generalizing across item-level variability and (2) assessing how a central methodological decision -- selecting the time window of analysis -- impacts the reliability of measurement. Future efforts will expand the scope of the current database to advance our understanding of participant-level and item-level variation in children's vocabulary development.
@@ -52,7 +52,7 @@ load(file = here("data","aoi_data_joined.Rds"))
 # Introduction
 
 Across their first years of life, children learn words in their native tongues at a rapid pace [@frank2021]. 
-A key facet of children's growing word knowledge is their ability rapidly process words and link them to relevant meanings -- often referred to as word recognition. 
+A key facet of children's growing word knowledge is their ability to rapidly process words and link them to relevant meanings -- often referred to as word recognition. 
 Developing word recognition skills builds a foundation for children’s language development; for example, the speed and accuracy with which infants as young as 18 months of age process words is predictive of later linguistic and general cognitive outcomes [@Marchman2008;@Marchman2018].
 
 Word recognition is traditionally studied in the “looking-while-listening” paradigm [alternatively referred to as the intermodal preferential looking procedure; @Fernald2008;@Hirsh-Pasek1987]. 
@@ -221,13 +221,13 @@ During data import, raw eye-tracking datasets are processed to conform to the Pe
 The centerpiece of the schema is the \texttt{aoi\textunderscore timepoints} table (Fig. \ref{fig:fig_framework_overview}), which records whether participants looked to the target or the distractor stimulus at each timepoint of a given trial. 
 Additional tables track information about data sources, participant characteristics, trial characteristics, stimuli, and raw eye-tracking data. 
 In addition to unifying the data format, we conduct several additional pre-processing steps to facilitate analyses across datasets. 
-First, we normalize time relative to the onset of the target label, since the main goal is to assess participants' fixation of the target image in response to hearing iits corresponding label. 
+First, we normalize time relative to the onset of the target label, since the main goal is to assess participants' fixation of the target image in response to hearing its corresponding label. 
 Second, we resample observations to a common sampling rate (40 Hz), in order to ease data visualization and analysis. 
 Where necessary (e.g., if the original data was sampled at 30 Hz), observations are interpolated by selecting the look location at the nearest time point in the original data.
 
 ## Current Data Sources
 
-The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising N=`r sum(summarize_datasets$num_subj)` total participants [Table 1; @Pomper2016; @Yurovsky2013; @Byers-Heinlein2017; @Frank2016; @Casillas2017; @Adams2018; @Potter2019; @Mahr2015; @Pomper2019; @Garrison2020; @Perry2017; @Swingley2002].
+The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising N=`r sum(summarize_datasets$num_subj)` total participants [Table 1; @Pomper2016; @Yurovsky2013; @Byers-Heinlein2017; @Frank2016; @Casillas2017; @Adams2018; @Potter2019; @Mahr2015; @Pomper2019; @Garrison2020; @Perry2017; @Swingley2002; @Yurovsky2017].
 Most datasets (`r sum(summarize_datasets$language=="English")` out of `r length(summarize_datasets$language)` total) consist of data from monolingual native English speakers. 
 They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),2)*100`% female). 
 The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. 
@@ -285,6 +285,7 @@ overall_novelty <- participant_means_novelty %>%
 # m <- lmer(avg_prop_looking ~ age+(1|dataset_name),data=by_participant_means)
 ```
 
+All reported results can be reproduced with analysis scripts openly available at https://github.com/langcog/peekbank-paper.
 In general, participants demonstrated robust, above-chance word recognition in each dataset (with chance being 0.5). 
 Table 2 shows the average proportion of target looking within a standard critical window of 300-2000ms after the onset of the label for each dataset [@Swingley2000]. 
 The number of unique target labels and their associated accuracy vary widely across datasets (Figure \ref{fig:peekbank_item_vis}). 
@@ -302,7 +303,7 @@ This issue is familiar in psychometrics: test developers interested in measuring
 
 Peekbank provides the appropriate large-scale database for estimating these item-independent developmental changes and designing age-appropriate tests in the future. Here we show a proof of concept by providing an estimate of the item-independent growth of word recognition accuracy across development. We take advantage of the equivalence between item response theory and linear mixed-effects models [LMMs; @de-boeck2011], using LMMs to model the trajectory of word recognition across age. We follow the approach of Mirman [-@Mirman2014] and use growth curve LMMs to predict the time course of recognition. Specifically, we predicted children's proportion of target looking during an early window of time (0-1500ms, chosen to avoid modeling declines in looking later in the trial), using an empirical logit transform on the proportion of target looking to allow the use of linear (rather than logistic) regression models. Our predictors were time after word onset and age, and we additionally included polynomial functions of time (up to fourth order) and quadratic effects of age, as well as their interactions. We subtracted all intercepts to force fits to start at a baseline of 0 (chance performance) at time zero. As a random effect structure, we included by-item, by-subject, and by-dataset random intercepts; though a larger random effect structure could be justified by the data, the size of the dataset precluded fitting these. The random effect structure allows us to model word recognition while generalizing across items and participants.
 
-Figure \ref{fig:age_gca} depicts the results of this analysis. Panel A shows the mean empirical word recognition curves for four age groups, along with fitted model performance. Although model fits are acceptable, developmental change appears irregular -- for example, 12- to 24-month-olds show slightly earlier recognition than 24- to 36-month-olds. This pattern is likely an artifact of averaging across datasets with substantially different items and structures. Panel B shows model predictions for the population level of each random effect -- our best estimates of the latent ability structure. Here we see continuous increases in both speed (point at which the curve rises) and accuracy (asymptote of the curve) across ages, though this developmental trend decelerates [consistent with other work on reaction time development; @frank2016b; @kail1991]. This proof of concept suggests that Peekbank can be used to model developmental change over multiple years, overcoming the limitations of individual datasets.
+Figure \ref{fig:age_gca} depicts the results of this analysis. Panel A shows the mean empirical word recognition curves for four age groups, along with fitted model performance. Although model fits are acceptable, developmental change appears irregular -- for example, 12- to 24-month-olds show slightly earlier recognition than 24- to 36-month-olds. This pattern is likely an artifact of averaging across datasets with substantially different items. Panel B shows model predictions for the population level of each random effect -- our best estimates of the latent ability structure. Here we see continuous increases in both speed (point at which the curve rises) and accuracy (asymptote of the curve) across ages, though this developmental trend decelerates [consistent with other work on reaction time development; @frank2016b; @kail1991]. This proof of concept suggests that Peekbank can be used to model developmental change over multiple years, overcoming the limitations of individual datasets.
 
 
 <!--
@@ -325,8 +326,9 @@ Taking a similar approach to that of @Peelle2020, we conducted a multiverse-styl
 Our multiverse analysis focuses on the reliability of participants' response to familiar words by measuring the subject-level inter-item correlation (IIC) for proportion of looking at familiar targets. 
 The time windows selected by researchers varies substantially in the literature, with some studies analyzing shorter time windows between 300ms and 1800-2000ms post-target onset [@Fernald2008;@Swingley2000], and others using longer time windows extending to approximately 3000-4000ms [especially with younger infants; e.g., @Bergelson2012a]. 
 We thus examined a broad range of window start times ranging from 300ms pre-target onset to 1500ms post-target onset and window end times ranging from 0ms to 4000ms post-target onset. 
-For each combination of window start time and end time with a minimum window duration of 50ms, we calculated participants’ average inter-item correlation for proportion of looking at familiar targets (mean IIC). 
+For each combination of window start time and end time with a minimum window duration of 50ms, we calculated participants’ average inter-item correlation for proportion of looking at familiar targets (mean IIC) within each dataset and subsequently averaged inter-item correlations across datasets. 
 Since observations were unevenly distributed across the age range, and because children likely show a varying response to familiar items as they age (often motivating different window choices), we split our data into four age bins (12-24, 24-36, 36-48, and 48-60 months).
+We restricted the analysis within a given age bin to include only datasets that contributed at least 5 unique test sessions.
 While it is an open question what space of possible windows will yield the greatest reliability, we expect to see low reliability (i.e. 0) in windows that start before target onset and in windows that end within 300ms post-target onset, before participants can execute a response.
 <!-- We removed the mahr_coartic dataset because it only included times up to 1800 ms post-target onset -->
 
@@ -337,7 +339,7 @@ It may be the case that even averaging many such trials does not yield highly re
 
 Intriguingly, however, late end times and long overall window lengths tend to show higher reliability than shorter windows. 
 Shorter windows (e.g., 300-2000ms, as we used above) likely maximize absolute recognition performance by fitting the peak of the recognition curve, but simultaneously may lower reliability by failing to include all relevant data. 
-Especially for older children, the maximal IICs were found with windows that started between 500 and 1000ms and ended between 3000 and 4000ms, windows usually reserved for younger children. 
+Especially for older children, the maximal IICs tended to be found with windows that started between 300 and 1000ms and ended between 3000 and 4000ms, windows usually reserved for younger children. 
 This finding is sensible from a psychometric perspective -- averaging more timepoints (even if some contain limited signal) increases reliability and reduces variation.
 Thus, researchers interested in better measurement of individual variation or condition differences could consider using longer windows by default.
 <!-- Moreover, there is some variation by age group in where the strongest ICCs are found (and in the overall strength of ICCs). <!-- discuss more? [GK: add mean +ICC per age?]) -->

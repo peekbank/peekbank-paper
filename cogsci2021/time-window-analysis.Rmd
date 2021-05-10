@@ -39,6 +39,11 @@ fam_data <- aoi_data_joined %>%
          dataset_name!="mahr_coartic") %>% # (only has endTimes up to 1800ms)
   mutate(age_binned = cut(age, seq(0,60,12))) 
 
+#overview of administrations for each dataset at a given age bin
+fam_data_admin_summary <- fam_data %>%
+  group_by(dataset_name, age_binned) %>%
+  summarize(N=length(unique(administration_id)))
+
 rm(aoi_data_joined)
 ```
 
@@ -92,6 +97,10 @@ do_interitem_analysis <- function(startTime, endTime, fam_data) {
          summarise(prop_corr = sum(aoi == "target") /
                       sum(aoi %in% c("target", "distractor"))) %>%
          group_by(dataset_name, age_binned) %>%
+        mutate(n=length(unique(administration_id))) %>%
+        group_by(dataset_name, age_binned,n) %>%
+        #only keep datasets that are contributing at least 5 admiinistrations (effectively, subjects) to the age bin
+        filter(n>=5) %>%
          nest() %>%
          mutate(interitem =  lapply(data, quietly(get_interitem)),
                 interitem = interitem[[1]]$result) %>%
@@ -118,7 +127,7 @@ mout <- map2_dfr(param.grid$startTimes, param.grid$endTimes,
 # Error in as_mapper(.f, ...) : object 'endTimes' not found
 
 
-write.table(mout, file="data/time-window-results.csv")      
+write.csv(mout, file="data/time-window-results.csv")      
 
 ```
 
@@ -130,7 +139,7 @@ Leave one dataset out, evaluate correlation
 
 ```{r cross-validation, eval=RUN_MODELS, message=F}
 cv_results <- list()
-for(dset in datasets$dataset_name) {
+for(dset in unique(fam_data$dataset_name)) {
    dat <- fam_data %>% filter(dataset_name != dset)
    cv_results[[dset]] <- map2_dfr(param.grid$startTimes, param.grid$endTimes, 
              do_interitem_analysis, dat)
@@ -162,7 +171,7 @@ We will visualize the ICCs with each of these datasets held out and try to chara
 
 ```{r, echo=F}
 # all data
-mout <- read.table("data/time-window-results.csv")
+mout <- read.csv("data/time-window-results.csv")
 #mout <- read.csv("cogsci2021/data/time-window-results.csv", sep=' ')
 ```
 
