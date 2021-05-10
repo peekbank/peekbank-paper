@@ -95,10 +95,10 @@ tongues at a rapid pace (Frank, Braginsky, Yurovsky, \& Marchman, 2021).
 A key facet of children's growing word knowledge is their ability to
 rapidly process words and link them to relevant meanings -- often
 referred to as word recognition. Developing word recognition skills
-builds a foundation for children's language development; for example,
-the speed and accuracy with which infants as young as 18 months of age
-process words is predictive of later linguistic and general cognitive
-outcomes (Marchman \& Fernald, 2008; Marchman et al., 2018).
+builds a foundation for language development; for example, the speed and
+accuracy with which infants process words are predictive of later
+linguistic and general cognitive outcomes (Marchman \& Fernald, 2008;
+Marchman et al., 2018).
 
 Word recognition is traditionally studied in the
 ``looking-while-listening'' paradigm (alternatively referred to as the
@@ -123,24 +123,24 @@ remain both about the trajectory of children's word recognition ability
 and the nature of the method itself. One central question is how to
 measure developmental change in the speed and accuracy of word
 recognition. In language development research, processing speed - the
-ability to quickly link a word with its referent - has been of key
+ability to quickly link a word to its referent - has been of key
 interest because it is thought to both reflect past language learning
 and to support subsequent learning. Age-related changes in speed of
-processing are argued to accelerate infants' learning: as infants become
-able to process incoming speech input faster, they become better
-equipped to learn from their language environment (Fernald \& Marchman,
-2012). Consistent with this hypothesis, longitudinal analyses have found
-that individual differences in word recognition speed predict linguistic
-and cognitive outcomes later in childhood (e.g., Marchman \& Fernald,
-2008). However, measuring increases in the speed and accuracy of word
+processing are argued to accelerate infants' learning: as infants begin
+to process incoming speech input faster, they become better equipped to
+learn from their language environment (Fernald \& Marchman, 2012).
+Consistent with this hypothesis, longitudinal analyses have found that
+individual differences in word recognition speed predict linguistic and
+cognitive outcomes later in childhood (e.g., Marchman \& Fernald, 2008).
+However, measuring increases in the speed and accuracy of word
 recognition faces the challenge of distinguishing developmental changes
 in word recognition skill from changes in knowledge of specific words.
 This problem is particularly thorny in child development research, since
 the number of items that can be tested within a single session is
-limited given that testing sessions with infants and items must be
-selected in an age-appropriate manner (Peter et al., 2019). Measuring
-developmental change therefore requires large-scale datasets with a
-range of items, in order to generalize age-related changes across words.
+limited and items must be selected in an age-appropriate manner (Peter
+et al., 2019). Measuring developmental change therefore requires
+large-scale datasets with a range of items, in order to generalize
+age-related changes across words.
 
 A second question relates to evaluating methodological best practices.
 In particular, many fundamental analytic decisions vary substantially
@@ -165,17 +165,18 @@ datasets on children's word recognition, (b) introduces a data format
 and processing tools for standardizing eye-tracking data across data
 sources, and (c) provides an interface for accessing and analyzing the
 database. In aggregating a large database of children's early word
-recognition, the project pursues two main goals: providing data-driven
-evidence that can inform methodological decisions in word recognition
-research and answering theoretical questions about the development of
-children's word knowledge. In the current paper, we give an overview of
-the key components of the project and some initial demonstrations of its
-utility in advancing theoretical and methodological insights. We report
-two analyses using the database and associated tools (N=1,320): (1) a
-growth curve analysis modeling age-related changes in infants' word
-recognition while generalizing across item-level variability; and (2) a
-multiverse-style analysis of how a central methodological decision --
-selecting the time window of analysis -- impacts inter-item reliability.
+recognition, the project pursues two main goals: answering theoretical
+questions about the development of children's word knowledge and
+providing data-driven evidence that can inform methodological decisions
+in word recognition research. In the current paper, we give an overview
+of the key components of the project and some initial demonstrations of
+its utility in advancing theoretical and methodological insights. We
+report two analyses using the database and associated tools (N=1,320):
+(1) a growth curve analysis modeling age-related changes in infants'
+word recognition while generalizing across item-level variability; and
+(2) a multiverse-style analysis of how a central methodological decision
+-- selecting the time window of analysis -- impacts inter-item
+reliability.
 
 \hypertarget{methods}{%
 \section{Methods}\label{methods}}
@@ -289,7 +290,7 @@ datasets vary across a number of dimensions related to design and
 methodology, and include studies using manually coded video recordings
 and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure
 gaze behavior. All studies tested familiar items, but the database also
-includes 0 datasets that tested novel pseudo-words in addition to
+includes 5 datasets that tested novel pseudo-words in addition to
 familiar words. All data, including an up-to-date list of current
 datasets and corresponding references, are openly available on the Open
 Science Framework (\url{https://osf.io/pr6wu/}).
@@ -393,8 +394,8 @@ time (up to fourth order) and quadratic effects of age, as well as their
 interactions. We subtracted all intercepts to force fits to start at a
 baseline of 0 (chance performance) at time zero. As a random effect
 structure, we included by-item, by-subject, and by-dataset random
-intercepts; though a larger random effect structure could be justified
-by the data, the size of the dataset precluded fitting these. The random
+intercepts; though larger random effect structures could be justified by
+the data, the size of the dataset precluded fitting these. The random
 effect structure allows us to model word recognition while generalizing
 across items and participants.
 
