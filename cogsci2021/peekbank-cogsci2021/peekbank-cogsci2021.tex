@@ -140,9 +140,10 @@ particularly thorny in child development research, since the number of
 items that can be tested within a single session is limited and items
 must be selected in an age-appropriate manner (Peter et al., 2019). One
 way to overcome this challenge is to measure word recognition across
-development in a large-scale dataset with a wide range of items, in
-order estimate the item-independent growth of word recognition speed and
-accuracy.
+development in a large-scale dataset with a wide range of items. A
+sufficiently large dataset would allow researchers to estimate
+developmental change in word recognition speed and accuracy while
+generalizing across changes related to specific words.
 
 A second question relates to evaluating methodological best practices.
 In particular, many fundamental analytic decisions vary substantially
@@ -391,16 +392,19 @@ Specifically, we predicted children's proportion of target looking
 during an early window of time (0-1500ms, chosen to avoid modeling
 declines in looking later in the trial), using an empirical logit
 transform on the proportion of target looking to allow the use of linear
-(rather than logistic) regression models. Our predictors were time after
-word onset and age, and we additionally included polynomial functions of
-time (up to fourth order) and quadratic effects of age, as well as their
-interactions. We subtracted all intercepts to force fits to start at a
-baseline of 0 (chance performance) at time zero. As a random effect
-structure, we included by-item, by-subject, and by-dataset random
-intercepts; though larger random effect structures could be justified by
-the data, the size of the dataset precluded fitting these. The random
-effect structure allows us to model word recognition while generalizing
-across items and participants.
+(rather than logistic) regression models. We focused our analysis on
+familiar words and included only datasets testing infants with
+monolingual English language exposure (12 datasets, see Table 1). Our
+predictors were time after word onset and age, and we additionally
+included polynomial functions of time (up to fourth order) and quadratic
+effects of age, as well as their interactions. We subtracted all
+intercepts to force fits to start at a baseline of 0 (chance
+performance) at time zero. As a random effect structure, we included
+by-item, by-subject, and by-dataset random intercepts; though larger
+random effect structures could be justified by the data, the size of the
+dataset precluded fitting these. The random effect structure allows us
+to model word recognition while generalizing across items and
+participants.
 
 Figure \ref{fig:age_gca} depicts the results of this analysis. Panel A
 shows the mean empirical word recognition curves for four age groups,
