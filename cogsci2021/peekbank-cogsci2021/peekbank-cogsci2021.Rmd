@@ -52,8 +52,8 @@ load(file = here("data","aoi_data_joined.Rds"))
 # Introduction
 
 Across their first years of life, children learn words in their native tongues at a rapid pace [@frank2021]. 
-A key facet of children's growing word knowledge is their ability to rapidly process words and link them to relevant meanings -- often referred to as word recognition. 
-Developing word recognition skills builds a foundation for language development; for example, the speed and accuracy with which infants process words are predictive of later linguistic and general cognitive outcomes [@Marchman2008;@Marchman2018].
+A key facet of children's growing word knowledge is their ability to rapidly process words and link them to relevant meanings -- often termed word recognition. 
+Developing word recognition skills builds a foundation for language development; for example, the speed and accuracy with which infants process words are predictive of later linguistic and cognitive outcomes [e.g., @Marchman2018].
 
 Word recognition is traditionally studied in the “looking-while-listening” paradigm [or alternatively in a version of the intermodal preferential looking paradigm; @Fernald2008;@Hirsh-Pasek1987]. 
 In such studies, infants listen to a sentence prompting a specific referent (e.g., *Look at the dog!*) while viewing two images on the screen (e.g., an image of a dog -- the target image -- and an image of a duck -- the distractor image). 
@@ -79,34 +79,12 @@ Establishing best practices therefore requires a large database of infant word r
 <!-- Peekbank: A large-scale database of looking-while-listening-studies -->
 What these two questions share is that they are difficult to answer at the scale of a single study. 
 To address this challenge, we introduce *Peekbank* (https://peekbank.stanford.edu/), a flexible and reproducible interface to an open database of developmental eye-tracking studies.
-The Peekbank project (a) collects a large set of eye-tracking datasets on children’s word recognition, (b) introduces a data format and processing tools for standardizing eye-tracking data across data sources, and (c) provides an interface for accessing and analyzing the database. 
-In aggregating a large database of children's early word recognition, the project pursues two main goals: answering theoretical questions about the development of children's word knowledge and providing data-driven evidence that can inform methodological decisions in word recognition research.
-In the current paper, we give an overview of the key components of the project and some initial demonstrations of its utility in advancing theoretical and methodological insights. 
-We report two analyses using the database and associated tools (N=1,320): (1) a growth curve analysis modeling age-related changes in infants' word recognition while generalizing across item-level variability; and (2) a multiverse-style analysis of how a central methodological decision -- selecting the time window of analysis -- impacts inter-item reliability.
+The Peekbank project (a) collects a large set of eye-tracking datasets on children’s word recognition, (b) introduces a data format and tools for standardizing eye-tracking data across data sources, and (c) provides an interface for accessing and analyzing the database. 
+In creating the Peekbank database, the project pursues two main aims: to answer central theoretical questions about lexical development and to provide data-driven guidance on methodological decisions.
+In the current paper, we give an overview of the key components of the project and demonstrate its utility in advancing theoretical and methodological insights. 
+We report two analyses using the database and associated tools (*N*=1,320): (1) a growth curve analysis modeling age-related changes in infants' word recognition while generalizing across item-level variability; and (2) a multiverse-style analysis of how a central methodological decision -- selecting the time window of analysis -- impacts inter-item reliability.
 
 # Methods
-
-## Database Framework
-
-
-```{r fig_framework_overview, fig.env = "figure", fig.align = "center", fig.height=4.5, set.cap.width=T, num.cols.cap=1, fig.cap = "Overview of the Peekbank data ecosystem. Peekbank tools are highlighted in green. *custom R packages."}
-img <- png::readPNG(here("figures","peekbankflowchartv6.png"))
-
-grid::grid.raster(img)
-```
-
-The Peekbank data framework consists of three components: (1) processing raw experimental datasets; (2) populating a relational database; and (3) providing an interface to the database (Fig. \ref{fig:fig_framework_overview}).
-The \texttt{peekds} library [for the R language; @RDevelopmentCoreTeam2010] helps researchers convert and validate existing datasets to use the relational format of the database. 
-The \texttt{peekbank} module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by \texttt{peekds}.
-The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet.
-The \texttt{peekbankr} library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank. 
-<!--
-```{r fig_schema, fig.env = "figure", fig.align = "center", fig.width=3.5, set.cap.width=T, num.cols.cap=1, fig.cap = "Data schema for the Peekbank database."}
-img <- png::readPNG(here("figures","schema.png"))
-#https://docs.google.com/presentation/d/1jZfGuTZFo5k4rcObYWJhdu94H7BnPvKYoGKJzQBBsUs/edit#slide=id.g7961a2384e_0_3
-grid::grid.raster(img)
-```
--->
 
 ```{r xtable, num.cols.cap=1, results="asis"}
 load(file = here("data","dataset_info.Rds"))
@@ -211,6 +189,27 @@ align(tab1) <- c("llrrrrrr")
 print(tab1, type="latex", comment = F,include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont", floating = TRUE,floating.environment = "table*")
 ```
 
+## Database Framework
+
+```{r fig_framework_overview, fig.env = "figure", fig.align = "center", fig.height=4.5, set.cap.width=T, num.cols.cap=1, fig.cap = "Overview of the Peekbank data ecosystem. Peekbank tools are highlighted in green. *custom R packages."}
+img <- png::readPNG(here("figures","peekbankflowchartv6.png"))
+
+grid::grid.raster(img)
+```
+
+The Peekbank data framework consists of three components: (1) processing raw experimental datasets; (2) populating a relational database; and (3) providing an interface to the database (Fig. \ref{fig:fig_framework_overview}).
+The \texttt{peekds} library [for the R language; @RDevelopmentCoreTeam2010] helps researchers convert and validate existing datasets to use the relational format of the database. 
+The \texttt{peekbank} module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by \texttt{peekds}.
+The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet.
+The \texttt{peekbankr} library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank. 
+<!--
+```{r fig_schema, fig.env = "figure", fig.align = "center", fig.width=3.5, set.cap.width=T, num.cols.cap=1, fig.cap = "Data schema for the Peekbank database."}
+img <- png::readPNG(here("figures","schema.png"))
+#https://docs.google.com/presentation/d/1jZfGuTZFo5k4rcObYWJhdu94H7BnPvKYoGKJzQBBsUs/edit#slide=id.g7961a2384e_0_3
+grid::grid.raster(img)
+```
+-->
+
 ## Data Format and Processing
 
 One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared re-usable data format across individual experiments. 
@@ -220,7 +219,7 @@ The schema of the database <!--(Fig. \ref{fig:fig_schema})--> is sufficiently ge
 
 During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. 
 The centerpiece of the schema is the \texttt{aoi\textunderscore timepoints} table (Fig. \ref{fig:fig_framework_overview}), which records whether participants looked to the target or the distractor stimulus at each timepoint of a given trial. 
-Additional tables track information about data sources, participant characteristics, trial characteristics, stimuli, and raw eye-tracking data. 
+Additional tables track information about data sources, participants, trials, stimuli, and raw eye-tracking data. 
 In addition to unifying the data format, we conduct several additional pre-processing steps to facilitate analyses across datasets. 
 First, we normalize time relative to the onset of the target label, since the main goal is to assess participants' fixation of the target image in response to hearing its corresponding label. 
 Second, we resample observations to a common sampling rate (40 Hz), in order to ease data visualization and analysis. 
@@ -231,8 +230,8 @@ Where necessary (e.g., if the original data was sampled at 30 Hz), observations 
 The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants [Table 1; @Pomper2016; @Yurovsky2013; @Byers-Heinlein2017; @Frank2016; @Casillas2017; @Adams2018; @Potter2019; @Mahr2015; @Pomper2019; @Garrison2020; @Perry2017; @Swingley2002; @Yurovsky2017].
 Most datasets (`r sum(summarize_datasets$language=="English")` out of `r length(summarize_datasets$language)` total) consist of data from monolingual native English speakers. 
 They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),2)*100`% female). 
-The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. 
-All studies tested familiar items, but the database also includes `r sum(summarize_novel_familiar$has_novel)` datasets that tested novel pseudo-words in addition to familiar words. All data, including an up-to-date list of current datasets and corresponding references, are openly available on the Open Science Framework (https://osf.io/pr6wu/).
+The datasets vary across a number of design-related dimensions, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. 
+All studies tested familiar items, but the database also includes `r sum(summarize_novel_familiar$has_novel)` datasets that tested novel pseudo-words in addition to familiar words. All data are openly available on the Open Science Framework (https://osf.io/pr6wu/).
 
 <!--
 ```{r peekbank_item_vis, fig.env = "figure*", fig.pos = "h", fig.width=6.5, fig.height=3.9, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "Item-level variability in proportion target looking within each dataset (chance=0.5). Time is centered on the onset of the target label (vertical line). Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines."}
@@ -251,7 +250,7 @@ grid::grid.raster(img)
 
 # Results
 
-## General descriptives and item variability
+## General descriptives and Item Variability
 
 ```{r xtable2 setup}
 dataset_means <- read_csv(here("data","dataset_means_prop_looking.csv"))
@@ -286,11 +285,11 @@ overall_novelty <- participant_means_novelty %>%
 # m <- lmer(avg_prop_looking ~ age+(1|dataset_name),data=by_participant_means)
 ```
 
-All reported results can be reproduced with analysis scripts openly available at https://github.com/langcog/peekbank-paper.
-In general, participants demonstrated robust, above-chance word recognition in each dataset (with chance being 0.5). 
+Analysis scripts for all results are openly available at https://github.com/langcog/peekbank-paper.
+In general, participants demonstrated robust, above-chance word recognition in each dataset (chance=0.5). 
 Table 2 shows the average proportion of target looking within a standard critical window of 300-2000ms after the onset of the label for each dataset [@Swingley2000]. 
 The number of unique target labels and their associated accuracy vary widely across datasets (Figure \ref{fig:peekbank_item_vis}). 
-Proportion target looking was generally higher for familiar words (*M* = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,3)*100`%, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,3)*100`%, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,3)*100`%], *n* = `r filter(overall_novelty,stimulus_novelty=="familiar")$N`) than for novel words learned during the experiment (*M* = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,3)*100`%, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,3)*100`%, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,3)*100`%], *n* = `r filter(overall_novelty,stimulus_novelty=="novel")$N`). 
+Proportion target looking was generally higher for familiar words (*M* = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="familiar")$N`) than for novel words learned during the experiment (*M* = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="novel")$N`). 
 
 ```{r xtable2, num.cols.cap=1, results="asis"}
 print(tab2, type="latex", comment = F, table.placement = "H",include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont")
@@ -340,7 +339,7 @@ It may be the case that even averaging many such trials does not yield highly re
 
 Intriguingly, however, late end times and long overall window lengths tend to show higher reliability than shorter windows. 
 Shorter windows (e.g., 300-2000ms, as we used above) likely maximize absolute recognition performance by fitting the peak of the recognition curve, but simultaneously may lower reliability by failing to include all relevant data. 
-Especially for older children, the maximal IICs tended to be found with windows that started between 300 and 1000ms and ended between 3000 and 4000ms, windows usually reserved for younger children. 
+Especially for older children, the maximal IICs tended to be found with windows that started between 300 and 1000ms and ended between 3000 and 4000ms. 
 This finding is sensible from a psychometric perspective -- averaging more timepoints (even if some contain limited signal) increases reliability and reduces variation.
 Thus, researchers interested in better measurement of individual variation or condition differences could consider using longer windows by default.
 <!-- Moreover, there is some variation by age group in where the strongest ICCs are found (and in the overall strength of ICCs). <!-- discuss more? [GK: add mean +ICC per age?]) -->
@@ -383,8 +382,8 @@ Our results suggest that researchers could consider increasing the size of the t
 There are a number of limitations surrounding the current scope of the database. 
 A priority in future work will be to expand the size of the database. 
 With 15 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results. 
-Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability.
-The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background [all but one dataset comes from WEIRD populations; @Muthukrishna2020]. 
+Expanding the set of distinct datasets will lead to more robust generalizations across item-level variability.
+The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (mostly monolingual native English speakers) and cultural background [all but one dataset comes from WEIRD populations; @Muthukrishna2020]. 
 Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
 
 Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development. 

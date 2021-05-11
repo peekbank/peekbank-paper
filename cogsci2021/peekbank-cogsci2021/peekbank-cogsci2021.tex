@@ -93,12 +93,11 @@ looking-while-listening
 Across their first years of life, children learn words in their native
 tongues at a rapid pace (Frank, Braginsky, Yurovsky, \& Marchman, 2021).
 A key facet of children's growing word knowledge is their ability to
-rapidly process words and link them to relevant meanings -- often
-referred to as word recognition. Developing word recognition skills
-builds a foundation for language development; for example, the speed and
-accuracy with which infants process words are predictive of later
-linguistic and general cognitive outcomes (Marchman \& Fernald, 2008;
-Marchman et al., 2018).
+rapidly process words and link them to relevant meanings -- often termed
+word recognition. Developing word recognition skills builds a foundation
+for language development; for example, the speed and accuracy with which
+infants process words are predictive of later linguistic and cognitive
+outcomes (e.g., Marchman et al., 2018).
 
 Word recognition is traditionally studied in the
 ``looking-while-listening'' paradigm (or alternatively in a version of
@@ -165,24 +164,50 @@ the scale of a single study. To address this challenge, we introduce
 reproducible interface to an open database of developmental eye-tracking
 studies. The Peekbank project (a) collects a large set of eye-tracking
 datasets on children's word recognition, (b) introduces a data format
-and processing tools for standardizing eye-tracking data across data
-sources, and (c) provides an interface for accessing and analyzing the
-database. In aggregating a large database of children's early word
-recognition, the project pursues two main goals: answering theoretical
-questions about the development of children's word knowledge and
-providing data-driven evidence that can inform methodological decisions
-in word recognition research. In the current paper, we give an overview
-of the key components of the project and some initial demonstrations of
-its utility in advancing theoretical and methodological insights. We
-report two analyses using the database and associated tools (N=1,320):
-(1) a growth curve analysis modeling age-related changes in infants'
-word recognition while generalizing across item-level variability; and
-(2) a multiverse-style analysis of how a central methodological decision
--- selecting the time window of analysis -- impacts inter-item
-reliability.
+and tools for standardizing eye-tracking data across data sources, and
+(c) provides an interface for accessing and analyzing the database. In
+creating the Peekbank database, the project pursues two main aims: to
+answer central theoretical questions about lexical development and to
+provide data-driven guidance on methodological decisions. In the current
+paper, we give an overview of the key components of the project and
+demonstrate its utility in advancing theoretical and methodological
+insights. We report two analyses using the database and associated tools
+(\emph{N}=1,320): (1) a growth curve analysis modeling age-related
+changes in infants' word recognition while generalizing across
+item-level variability; and (2) a multiverse-style analysis of how a
+central methodological decision -- selecting the time window of analysis
+-- impacts inter-item reliability.
 
 \hypertarget{methods}{%
 \section{Methods}\label{methods}}
+
+\begin{table*}[ht]
+\centering
+\begingroup\fontsize{9pt}{10pt}\selectfont
+\begin{tabular}{lrrrrrr}
+  \hline
+Dataset Name & Citation & N & Mean Age (mos.) & Age Range (mos.) & Method & Language \\ 
+  \hline
+attword & (Yurovsky \& Frank, 2017) & 288 & 25.5 & 13 - 59 & eye-tracking & English \\ 
+  canine & unpublished & 36 & 23.8 & 21 - 27 & manual coding & English \\ 
+  coartic & (Mahr et al., 2015) & 29 & 20.8 & 18 - 24 & eye-tracking & English \\ 
+  cowpig & (Perry et al., 2017) & 45 & 20.5 & 19 - 22 & manual coding & English \\ 
+  ft\_pt & (Adams et al., 2018) & 69 & 17.1 & 13 - 20 & manual coding & English \\ 
+  mispron & (Swingley \& Aslin, 2002) & 50 & 15.1 & 14 - 16 & manual coding & English \\ 
+  mix & (Byers-Heinlein et al., 2017) & 48 & 20.1 & 19 - 21 & eye-tracking & English, French \\ 
+  reflook\_socword & (Yurovsky et al., 2013) & 435 & 33.6 & 12 - 70 & eye-tracking & English \\ 
+  reflook\_v4 & unpublished & 45 & 34.2 & 11 - 60 & eye-tracking & English \\ 
+  remix & (Potter et al., 2019) & 44 & 22.6 & 18 - 29 & manual coding & Spanish, English \\ 
+  salientme & (Pomper \& Saffran, 2019) & 44 & 40.1 & 38 - 43 & manual coding & English \\ 
+  switchingCues & (Pomper \& Saffran, 2016) & 60 & 44.3 & 41 - 47 & manual coding & English \\ 
+  tablet & (Frank et al., 2016) & 69 & 35.5 & 12 - 60 & eye-tracking & English \\ 
+  tseltal & (Casillas et al., 2017) & 23 & 31.3 & 9 - 48 & manual coding & Tseltal \\ 
+  yoursmy & (Garrison et al., 2020) & 35 & 14.5 & 12 - 18 & eye-tracking & English \\ 
+   \hline
+\end{tabular}
+\endgroup
+\caption{Overview over the datasets in the current database.} 
+\end{table*}
 
 \hypertarget{database-framework}{%
 \subsection{Database Framework}\label{database-framework}}
@@ -213,34 +238,6 @@ variety of programming languages over the internet. The
 interface, or API, that offers high-level abstractions for accessing
 data in Peekbank.
 
-\begin{table*}[ht]
-\centering
-\begingroup\fontsize{9pt}{10pt}\selectfont
-\begin{tabular}{lrrrrrr}
-  \hline
-Dataset Name & Citation & N & Mean Age (mos.) & Age Range (mos.) & Method & Language \\ 
-  \hline
-attword & (Yurovsky \& Frank, 2017) & 288 & 25.5 & 13 - 59 & eye-tracking & English \\ 
-  canine & unpublished & 36 & 23.8 & 21 - 27 & manual coding & English \\ 
-  coartic & (Mahr et al., 2015) & 29 & 20.8 & 18 - 24 & eye-tracking & English \\ 
-  cowpig & (Perry et al., 2017) & 45 & 20.5 & 19 - 22 & manual coding & English \\ 
-  ft\_pt & (Adams et al., 2018) & 69 & 17.1 & 13 - 20 & manual coding & English \\ 
-  mispron & (Swingley \& Aslin, 2002) & 50 & 15.1 & 14 - 16 & manual coding & English \\ 
-  mix & (Byers-Heinlein et al., 2017) & 48 & 20.1 & 19 - 21 & eye-tracking & English, French \\ 
-  reflook\_socword & (Yurovsky et al., 2013) & 435 & 33.6 & 12 - 70 & eye-tracking & English \\ 
-  reflook\_v4 & unpublished & 45 & 34.2 & 11 - 60 & eye-tracking & English \\ 
-  remix & (Potter et al., 2019) & 44 & 22.6 & 18 - 29 & manual coding & Spanish, English \\ 
-  salientme & (Pomper \& Saffran, 2019) & 44 & 40.1 & 38 - 43 & manual coding & English \\ 
-  switchingCues & (Pomper \& Saffran, 2016) & 60 & 44.3 & 41 - 47 & manual coding & English \\ 
-  tablet & (Frank et al., 2016) & 69 & 35.5 & 12 - 60 & eye-tracking & English \\ 
-  tseltal & (Casillas et al., 2017) & 23 & 31.3 & 9 - 48 & manual coding & Tseltal \\ 
-  yoursmy & (Garrison et al., 2020) & 35 & 14.5 & 12 - 18 & eye-tracking & English \\ 
-   \hline
-\end{tabular}
-\endgroup
-\caption{Overview over the datasets in the current database.} 
-\end{table*}
-
 \hypertarget{data-format-and-processing}{%
 \subsection{Data Format and
 Processing}\label{data-format-and-processing}}
@@ -262,17 +259,16 @@ to the Peekbank data schema. The centerpiece of the schema is the
 \ref{fig:fig_framework_overview}), which records whether participants
 looked to the target or the distractor stimulus at each timepoint of a
 given trial. Additional tables track information about data sources,
-participant characteristics, trial characteristics, stimuli, and raw
-eye-tracking data. In addition to unifying the data format, we conduct
-several additional pre-processing steps to facilitate analyses across
-datasets. First, we normalize time relative to the onset of the target
-label, since the main goal is to assess participants' fixation of the
-target image in response to hearing its corresponding label. Second, we
-resample observations to a common sampling rate (40 Hz), in order to
-ease data visualization and analysis. Where necessary (e.g., if the
-original data was sampled at 30 Hz), observations are interpolated by
-selecting the look location at the nearest time point in the original
-data.
+participants, trials, stimuli, and raw eye-tracking data. In addition to
+unifying the data format, we conduct several additional pre-processing
+steps to facilitate analyses across datasets. First, we normalize time
+relative to the onset of the target label, since the main goal is to
+assess participants' fixation of the target image in response to hearing
+its corresponding label. Second, we resample observations to a common
+sampling rate (40 Hz), in order to ease data visualization and analysis.
+Where necessary (e.g., if the original data was sampled at 30 Hz),
+observations are interpolated by selecting the look location at the
+nearest time point in the original data.
 
 \hypertarget{current-data-sources}{%
 \subsection{Current Data Sources}\label{current-data-sources}}
@@ -289,14 +285,13 @@ Byers-Heinlein, \& Lew-Williams, 2019; Swingley \& Aslin, 2002; Yurovsky
 of 15 total) consist of data from monolingual native English speakers.
 They span a wide age spectrum with participants ranging from 9 to 70
 months of age, and are balanced in terms of gender (46\% female). The
-datasets vary across a number of dimensions related to design and
-methodology, and include studies using manually coded video recordings
-and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure
-gaze behavior. All studies tested familiar items, but the database also
-includes 5 datasets that tested novel pseudo-words in addition to
-familiar words. All data, including an up-to-date list of current
-datasets and corresponding references, are openly available on the Open
-Science Framework (\url{https://osf.io/pr6wu/}).
+datasets vary across a number of design-related dimensions, and include
+studies using manually coded video recordings and automated eye-tracking
+methods (e.g., Tobii, EyeLink) to measure gaze behavior. All studies
+tested familiar items, but the database also includes 5 datasets that
+tested novel pseudo-words in addition to familiar words. All data are
+openly available on the Open Science Framework
+(\url{https://osf.io/pr6wu/}).
 
 \sidecaptionvpos{figure}{c}
 \begin{SCfigure*}[0.2] 
@@ -309,22 +304,21 @@ Science Framework (\url{https://osf.io/pr6wu/}).
 \section{Results}\label{results}}
 
 \hypertarget{general-descriptives-and-item-variability}{%
-\subsection{General descriptives and item
-variability}\label{general-descriptives-and-item-variability}}
+\subsection{General descriptives and Item
+Variability}\label{general-descriptives-and-item-variability}}
 
-All reported results can be reproduced with analysis scripts openly
-available at \url{https://github.com/langcog/peekbank-paper}. In
-general, participants demonstrated robust, above-chance word recognition
-in each dataset (with chance being 0.5). Table 2 shows the average
-proportion of target looking within a standard critical window of
-300-2000ms after the onset of the label for each dataset (Swingley \&
-Aslin, 2000). The number of unique target labels and their associated
-accuracy vary widely across datasets (Figure
-\ref{fig:peekbank_item_vis}). Proportion target looking was generally
-higher for familiar words (\emph{M} = 65.9\%, 95\% CI = {[}65\%,
-66.7\%{]}, \emph{n} = 1269) than for novel words learned during the
-experiment (\emph{M} = 59.3\%, 95\% CI = {[}57.8\%, 60.8\%{]}, \emph{n}
-= 822).
+Analysis scripts for all results are openly available at
+\url{https://github.com/langcog/peekbank-paper}. In general,
+participants demonstrated robust, above-chance word recognition in each
+dataset (chance=0.5). Table 2 shows the average proportion of target
+looking within a standard critical window of 300-2000ms after the onset
+of the label for each dataset (Swingley \& Aslin, 2000). The number of
+unique target labels and their associated accuracy vary widely across
+datasets (Figure \ref{fig:peekbank_item_vis}). Proportion target looking
+was generally higher for familiar words (\emph{M} = 0.66, 95\% CI =
+{[}0.65, 0.67{]}, \emph{n} = 1269) than for novel words learned during
+the experiment (\emph{M} = 0.59, 95\% CI = {[}0.58, 0.61{]}, \emph{n} =
+822).
 
 \begin{table}[H]
 \centering
@@ -482,12 +476,11 @@ recognition performance by fitting the peak of the recognition curve,
 but simultaneously may lower reliability by failing to include all
 relevant data. Especially for older children, the maximal IICs tended to
 be found with windows that started between 300 and 1000ms and ended
-between 3000 and 4000ms, windows usually reserved for younger children.
-This finding is sensible from a psychometric perspective -- averaging
-more timepoints (even if some contain limited signal) increases
-reliability and reduces variation. Thus, researchers interested in
-better measurement of individual variation or condition differences
-could consider using longer windows by default.
+between 3000 and 4000ms. This finding is sensible from a psychometric
+perspective -- averaging more timepoints (even if some contain limited
+signal) increases reliability and reduces variation. Thus, researchers
+interested in better measurement of individual variation or condition
+differences could consider using longer windows by default.
 
 \begin{SCfigure*}[0.25] 
 \includegraphics[width=13.6cm,height=8.5cm]{../figures/interitem_cors_window_analysis.png}
@@ -538,12 +531,11 @@ database. A priority in future work will be to expand the size of the
 database. With 15 datasets currently available in the database,
 idiosyncrasies of particular designs and condition manipulations still
 have substantial influence on modeling results. Expanding the set of
-distinct datasets will allow us to increase the number of observations
-per item across datasets, leading to more robust generalizations across
+distinct datasets will lead to more robust generalizations across
 item-level variability. The current database is also limited by the
 relatively homogeneous background of its participants, both with respect
-to language (almost entirely monolingual native English speakers) and
-cultural background (all but one dataset comes from WEIRD populations;
+to language (mostly monolingual native English speakers) and cultural
+background (all but one dataset comes from WEIRD populations;
 Muthukrishna et al., 2020). Increasing the diversity of participant
 backgrounds and languages will expand the scope of the generalizations
 we can form about child word recognition.
@@ -592,8 +584,8 @@ acquisition research. \emph{Child Development}, \emph{89}(6),
 
 \leavevmode\hypertarget{ref-Byers-Heinlein2017}{}%
 Byers-Heinlein, K., Morin-Lessard, E., \& Lew-Williams, C. (2017).
-Bilingual infants control their languages as they listen.
-\emph{Proceedings of the National Academy of Sciences}, 201703220.
+Bilingual infants control their languages as they listen. \emph{PNAS},
+201703220.
 
 \leavevmode\hypertarget{ref-Casillas2017}{}%
 Casillas, M., Brown, P., \& Levinson, S. (2017). Casillas HomeBank
@@ -606,7 +598,7 @@ Psychology}, \emph{52}(4), 521--536.
 
 \leavevmode\hypertarget{ref-de-boeck2011}{}%
 De Boeck, P., Bakker, M., Zwitser, R., Nivard, M., Hofman, A.,
-Tuerlinckx, F., \ldots{} others. (2011). The estimation of item response
+Tuerlinckx, F., \& Partchev, I. (2011). The estimation of item response
 models with the lmer function from the lme4 package in r. \emph{Journal
 of Statistical Software}, \emph{39}(12), 1--28.
 
@@ -703,9 +695,9 @@ R}. Boca Raton, FL: CRC Press.
 
 \leavevmode\hypertarget{ref-Muthukrishna2020}{}%
 Muthukrishna, M., Bell, A. V., Henrich, J., Curtin, C. M., Gedranovich,
-A., McInerney, J., \& Thue, B. (2020). Beyond Western, Educated,
-Industrial, Rich, and Democratic (WEIRD) Psychology: Measuring and
-Mapping Scales of Cultural and Psychological Distance.
+A., McInerney, J., \& Thue, B. (2020). Beyond Western, educated,
+industrial, rich, and democratic (WEIRD) psychology: Measuring and
+mapping scales of cultural and psychological distance.
 \emph{Psychological Science}, \emph{31}(6), 678--701.
 
 \leavevmode\hypertarget{ref-Peelle2020}{}%
@@ -731,8 +723,8 @@ Switching dimensions disrupts young children's language comprehension.
 \emph{Plos One}, \emph{11}(6), e0158459.
 
 \leavevmode\hypertarget{ref-Pomper2019}{}%
-Pomper, R., \& Saffran, J. R. (2019). Familiar Object Salience Affects
-Novel Word Learning. \emph{Child Development}, \emph{90}(2), e246--e262.
+Pomper, R., \& Saffran, J. R. (2019). Familiar object salience affects
+novel word learning. \emph{Child Development}, \emph{90}(2), e246--e262.
 
 \leavevmode\hypertarget{ref-Potter2019}{}%
 Potter, C. E., Fourakis, E., Morin-Lessard, E., Byers-Heinlein, K., \&
@@ -773,14 +765,12 @@ François, R., \ldots{} Yutani, H. (2019). Welcome to the tidyverse.
 
 \leavevmode\hypertarget{ref-Yurovsky2017}{}%
 Yurovsky, D., \& Frank, M. C. (2017). Beyond naïve cue combination:
-salience and social cues in early word learning. \emph{Developmental
+Salience and social cues in early word learning. \emph{Developmental
 Science}, \emph{20}(2), 1--17.
 
 \leavevmode\hypertarget{ref-Yurovsky2013}{}%
 Yurovsky, D., Wade, A., \& Frank, M. C. (2013). Online processing of
-speech and social Information in early word learning. \emph{Proceedings
-of the 35th Annual Conference of the Cognitive Science Society of the},
-1641--1646.
+speech and social information in early word learning., 1641--1646.
 
 \bibliographystyle{apacite}
 
