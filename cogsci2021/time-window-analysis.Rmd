@@ -304,3 +304,36 @@ prop_pos = length(which(rec_window$mean>0)) / nrow(rec_window)
 summary(rec_window$mean) # minimum: .043, med: .091, mean = .091, max=.131
 ```
 
+## Are most of the top IIC values in the recommended region?
+
+```{r, echo=T}
+mout_by_age_bin <- mout %>%
+  group_by(age_binned) %>%
+  rename(icc=mean) %>%
+  mutate(
+    top_decile_val=quantile(icc,probs=seq(0,1,0.1))[10],
+    num_top_decile=sum(icc>=top_decile_val)
+  ) %>%
+  filter(startTime<=1000 & startTime>300 & endTime >= 2500) %>%
+  group_by(age_binned,top_decile_val,num_top_decile) %>%
+  summarize(
+    num_window_top_decile=sum(icc>=top_decile_val)) %>%
+  mutate(
+    percent_top_decile=num_window_top_decile/num_top_decile) %>%
+   print()
+```
+
+## Where are the highest IICs for each age group?
+
+The highest IICs are for very short window sizes (50ms), so we filter out window sizes <100ms.
+
+```{r}
+mout_by_age_bin <- mout %>%
+   mutate(windowSize = endTime - startTime) %>%
+   filter(windowSize > 100) %>%
+   group_by(age_binned) %>% 
+      summarise(maxIIC = max(mean), 
+             startTime=startTime[which(mean==max(mean))],
+             endTime=endTime[which(mean==max(mean))]) %>%
+      print()
+```
