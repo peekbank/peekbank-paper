@@ -227,7 +227,12 @@ Where necessary (e.g., if the original data was sampled at 30 Hz), observations 
 
 ## Current Data Sources
 
-The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants [Table 1; @Pomper2016; @Yurovsky2013; @Byers-Heinlein2017; @Frank2016; @Casillas2017; @Adams2018; @Potter2019; @Mahr2015; @Pomper2019; @Garrison2020; @Perry2017; @Swingley2002; @Yurovsky2017].
+---
+nocite: | 
+  @Pomper2016; @Yurovsky2013; @Byers-Heinlein2017; @Frank2016; @Casillas2017; @Adams2018; @Potter2019; @Mahr2015; @Pomper2019; @Garrison2020; @Perry2017; @Swingley2002; @Yurovsky2017
+...
+
+The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table 1).
 Most datasets (`r sum(summarize_datasets$language=="English")` out of `r length(summarize_datasets$language)` total) consist of data from monolingual native English speakers. 
 They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),2)*100`% female). 
 The datasets vary across a number of design-related dimensions, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. 
@@ -284,16 +289,15 @@ overall_novelty <- participant_means_novelty %>%
 # #fit age prediction model
 # m <- lmer(avg_prop_looking ~ age+(1|dataset_name),data=by_participant_means)
 ```
+```{r xtable2, num.cols.cap=1, results="asis"}
+print(tab2, type="latex", comment = F, table.placement = "H",include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont")
+```
 
 Analysis scripts for all results are openly available at https://github.com/langcog/peekbank-paper.
 In general, participants demonstrated robust, above-chance word recognition in each dataset (chance=0.5). 
 Table 2 shows the average proportion of target looking within a standard critical window of 300-2000ms after the onset of the label for each dataset [@Swingley2000]. 
 The number of unique target labels and their associated accuracy vary widely across datasets (Figure \ref{fig:peekbank_item_vis}). 
 Proportion target looking was generally higher for familiar words (*M* = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="familiar")$N`) than for novel words learned during the experiment (*M* = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="novel")$N`). 
-
-```{r xtable2, num.cols.cap=1, results="asis"}
-print(tab2, type="latex", comment = F, table.placement = "H",include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont")
-```
 
 ## Predicting Age-Related Changes While Generalizing Across Items
 
@@ -339,7 +343,7 @@ It may be the case that even averaging many such trials does not yield highly re
 
 Intriguingly, however, late end times and long overall window lengths tend to show higher reliability than shorter windows. 
 Shorter windows (e.g., 300-2000ms, as we used above) likely maximize absolute recognition performance by fitting the peak of the recognition curve, but simultaneously may lower reliability by failing to include all relevant data. 
-Especially for older children, the maximal IICs tended to be found with windows that started between 300 and 1000ms and ended between 3000 and 4000ms. 
+Especially for older children, the maximal IICs tended to be found with windows that started between 300 and 1000ms and ended between 2500 and 4000ms. 
 This finding is sensible from a psychometric perspective -- averaging more timepoints (even if some contain limited signal) increases reliability and reduces variation.
 Thus, researchers interested in better measurement of individual variation or condition differences could consider using longer windows by default.
 <!-- Moreover, there is some variation by age group in where the strongest ICCs are found (and in the overall strength of ICCs). <!-- discuss more? [GK: add mean +ICC per age?]) -->
@@ -361,7 +365,7 @@ grid::grid.raster(img)
 -->
 \begin{SCfigure*}[0.25] 
 \includegraphics[width=13.6cm,height=8.5cm]{../figures/interitem_cors_window_analysis.png}
-\caption{Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid.}
+\caption{Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid. Black lines highlight the region (start time: [300, 100], end time: [2500, 4000]) in which IICs tend to be highest (mean = 0.093; range = [.042 - 13.1]).}
 \label{fig:time_window}
 \end{SCfigure*}
 
@@ -384,11 +388,11 @@ A priority in future work will be to expand the size of the database.
 With 15 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results. 
 Expanding the set of distinct datasets will lead to more robust generalizations across item-level variability.
 The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (mostly monolingual native English speakers) and cultural background [all but one dataset comes from WEIRD populations; @Muthukrishna2020]. 
-Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
+Increasing the diversity of participant backgrounds will expand the scope of the generalizations we can form about child word recognition.
 
 Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development. 
 Gaze behavior has been at the core of many of the key advances in our understanding of infant cognition. 
-Aggregating large datasets of infant looking behavior in a single, openly-accessible format promises to bring a fuller picture of infant cognitive development into view.
+Aggregating large datasets of infant looking behavior in a unified, openly-accessible format promises to bring a fuller picture of infant cognitive development into view.
 
 # Acknowledgements
 
