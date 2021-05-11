@@ -210,7 +210,8 @@ plot_interitem <- function(dat, title) {
       scale_fill_gradient2(low = "blue", mid = "white", high = "red") +
       xlab("Start Time (ms)") +
       ylab("End Time (ms)") +
-      facet_wrap( ~ age_binned)# +
+      facet_wrap( ~ age_binned) +
+      annotate("rect", xmin = 300, xmax = 1000, ymin = 2500, color="black", ymax = 4000, alpha = 0)
       #ggtitle(title) 
    #ggsave("figures/interitem_cors_window_analysis.png", width=8,height=5)
 }
@@ -292,4 +293,14 @@ rec_settings_iic_avg = mean(subset(mout, startTime>=500 & windowLength>=1500)$me
 `r 100*round(start_lt300, 2)`% of low IICs (<.01) had start times <300ms, but pushing the start time out to at least 500 ms eliminated `r 100*round(start_lt500, 2)`% of the low IICs.
 A window length of at least 1500 ms eliminated `r 100*round(winLength_lt1500, 2)`% of low ICCs, and this threshold combined with a start time of at least 300 ms eliminated all but `r 100*round(win1500_start300, 3)`% of low ICCs. 
 A start time of 500 ms and a window of at least 1500 ms resulted in no IICs < .01, and an average IIC of `r round(rec_settings_iic_avg, 2)`.
+
+### IIC Summary of Recommended window
+
+(For CogSci paper figure's annotation: 300 <= startTime <= 1000, endTime >= 2500
+
+```{r}
+rec_window <- subset(mout, startTime<=1000 & startTime>300 & endTime >= 2500)
+prop_pos = length(which(rec_window$mean>0)) / nrow(rec_window)
+summary(rec_window$mean) # minimum: .043, med: .091, mean = .091, max=.131
+```
 
