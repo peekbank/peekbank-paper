@@ -52,7 +52,7 @@ load(file = here("data","aoi_data_joined.Rds"))
 # Introduction
 
 Across their first years of life, children learn words in their native tongues at a rapid pace [@frank2021]. 
-A key facet of children's growing word knowledge is their ability to rapidly process words and link them to relevant meanings -- often termed word recognition. 
+A key facet of children's growing word knowledge is their ability to efficiently process words and link them to relevant meanings -- often termed word recognition. 
 Developing word recognition skills builds a foundation for language development; for example, the speed and accuracy with which infants process words are predictive of later linguistic and cognitive outcomes [e.g., @Marchman2018].
 
 Word recognition is traditionally studied in the “looking-while-listening” paradigm [or alternatively in a version of the intermodal preferential looking paradigm; @Fernald2008;@Hirsh-Pasek1987]. 
@@ -325,10 +325,10 @@ grid::grid.raster(img)
 
 ## Time Window Selection
 
-In our second analysis, we address a common analytic decision facing researchers: how to summarize time course data into a single measure of accuracy. 
+In our second analysis, we address an analytic decision researchers often face: how to summarize time course data into a single measure of accuracy. 
 Taking a similar approach to that of @Peelle2020, we conducted a multiverse-style analysis considering possible time windows researchers might select [@steegenEtAl2016].
 Our multiverse analysis focuses on the reliability of participants' response to familiar words by measuring the subject-level inter-item correlation (IIC) for proportion of looking at familiar targets. 
-The time windows selected by researchers varies substantially in the literature, with some studies analyzing shorter time windows between 300ms and 1800-2000ms post-target onset [@Fernald2008;@Swingley2000], and others using longer time windows extending to approximately 3000-4000ms [especially with younger infants; e.g., @Bergelson2012a]. 
+The time windows selected by researchers vary substantially in the literature, with some studies analyzing shorter time windows between 300ms and 1800-2000ms post-target onset [@Fernald2008;@Swingley2000], and others using longer time windows extending to approximately 3000-4000ms [especially with younger infants; e.g., @Bergelson2012a]. 
 We thus examined a broad range of window start times ranging from 300ms pre-target onset to 1500ms post-target onset and window end times ranging from 0ms to 4000ms post-target onset. 
 For each combination of window start time and end time with a minimum window duration of 50ms, we calculated participants’ average inter-item correlation for proportion of looking at familiar targets (mean IIC) within each dataset and subsequently averaged inter-item correlations across datasets. 
 Since observations were unevenly distributed across the age range, and because children likely show a varying response to familiar items as they age (often motivating different window choices), we split our data into four age bins (12-24, 24-36, 36-48, and 48-60 months).
@@ -338,12 +338,11 @@ While it is an open question what space of possible windows will yield the great
 
 Results from this multiverse analysis are shown in Figure \ref{fig:time_window}, where each colored pixel represents the mean IIC for proportion of looking to familiar targets for a specific combination of window start and end time. 
 The analysis shows that IIC is positive (red) under a wide range of sensible window choices. 
-IIC is relatively low however, especially for the youngest age group, suggesting that individual items carry only limited shared signal regarding children's underlying ability. 
-It may be the case that even averaging many such trials does not yield highly reliable measures of individual differences, although some multi-trial paradigms are exceptions to this generalization [@Fernald2008].
+IIC is relatively low however, especially for the youngest age group, suggesting that individual items carry only limited shared signal regarding children's underlying ability.
 
 Intriguingly, however, late end times and long overall window lengths tend to show higher reliability than shorter windows. 
 Shorter windows (e.g., 300-2000ms, as we used above) likely maximize absolute recognition performance by fitting the peak of the recognition curve, but simultaneously may lower reliability by failing to include all relevant data. 
-Especially for older children, the maximal IICs tended to be found with windows that started between 300 and 1000ms and ended between 2500 and 4000ms. 
+Especially for older children, higher IICs tended to be found with windows that started between 300 and 1000ms and ended between 2500 and 4000ms. 
 This finding is sensible from a psychometric perspective -- averaging more timepoints (even if some contain limited signal) increases reliability and reduces variation.
 Thus, researchers interested in better measurement of individual variation or condition differences could consider using longer windows by default.
 <!-- Moreover, there is some variation by age group in where the strongest ICCs are found (and in the overall strength of ICCs). <!-- discuss more? [GK: add mean +ICC per age?]) -->
@@ -365,7 +364,7 @@ grid::grid.raster(img)
 -->
 \begin{SCfigure*}[0.25] 
 \includegraphics[width=13.6cm,height=8.5cm]{../figures/interitem_cors_window_analysis.png}
-\caption{Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid. Black lines highlight the region (start time: [300, 100], end time: [2500, 4000]) in which IICs tend to be highest (mean = 0.093; range = [.042 - 13.1]).}
+\caption{Participants' average inter-item correlation for proportion of looking time to familiar targets, as a function of window start time and end time, with each facet showing a different age group. More positive (red) correlations are more desirable, and blue/white represent start/end time combinations that researchers should avoid. Black lines highlight the region (start time: [300, 1000], end time: [2500, 4000]) in which IICs tend to be highest (mean = .093; range = [.042 - .131]).}
 \label{fig:time_window}
 \end{SCfigure*}
 
@@ -379,16 +378,16 @@ This paper presents an illustration of some of the key theoretical and methodolo
 
 Our first analysis shows that Peekbank can be used to model item-independent changes in the speed and accuracy of word recognition across development. 
 Children showed age-related increases in the speed of word recognition across one to five years of age, extending past foundational work [e.g., @fernald1998] by showing that these word processing gains generalize across items and are not only attributable to word-specific gains in processing speed. 
-The second analysis demonstrates how Peekbank can be used to make data-driven analytic decisions, focusing on the choice of time windows for analysis. 
+Our second analysis demonstrates how Peekbank can be used to make data-driven analytic decisions, focusing on the choice of time windows for analysis. 
 In looking-while-listening studies, researchers often choose a relatively short time window of roughly 300-1800 or 2000ms [@Fernald2008], with the justification that eye movements occurring after this window may no longer be related to the target label [@Swingley2000]. 
-Our results suggest that researchers could consider increasing the size of the time window for analyzing target fixations (at least for familiar words) if their goal is to maximize consistent signal in children's target fixations.
+Our results suggest that researchers could consider increasing the size of the time window for analyzing target fixations, at least for familiar words, if their goal is to maximize consistent signal in children's target fixations.
 
 There are a number of limitations surrounding the current scope of the database. 
 A priority in future work will be to expand the size of the database. 
-With 15 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results. 
-Expanding the set of distinct datasets will lead to more robust generalizations across item-level variability.
+With 15 datasets currently available, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results. 
+Increasing the set of distinct datasets will lead to more robust generalizations across item-level variability.
 The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (mostly monolingual native English speakers) and cultural background [all but one dataset comes from WEIRD populations; @Muthukrishna2020]. 
-Increasing the diversity of participant backgrounds will expand the scope of the generalizations we can form about child word recognition.
+Broadening the diversity of participant backgrounds will expand the scope of the generalizations we can form about child word recognition.
 
 Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development. 
 Gaze behavior has been at the core of many of the key advances in our understanding of infant cognition. 
