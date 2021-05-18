@@ -290,11 +290,34 @@ Steps for extending the database?
 \hypertarget{shiny-app}{%
 \subsection{Shiny App}\label{shiny-app}}
 
+One goal of the Peekbank project is to allow a wide range of users to easily explore and learn from the database.
+We therefore have created an interactive web application -- \texttt{peekbank-shiny} -- that allows users to quickly and easily create informative visualizations of individual datasets and aggregated data.
+\texttt{peekbank-shiny} is built using Shiny, a software package for creating web apps using R.
+The Shiny app allows users to create commonly used visualizations of looking-while-listening data, based on data from the Peekbank database.
+Specifically, users can visualize
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  the time course of looking data in a profile plot depicting infant target looking across trial time,
+\item
+  overall accuracy (proportion target looking) within a specified analysis window,
+\item
+  reaction times (speed of fixating the target image) in response to a target label, and
+\item
+  an onset-contingent plot, which shows the time course of participant looking as a function of their look location at the onset of the target label.
+\end{enumerate}
+
+Users are given various customization options for each of these visualizations, e.g., choosing which datasets to include in the plots, controlling the age range of participants, splitting the visualizations by age bins, and controlling the analysis window for time course analyses.
+Plots are then updated in real time to reflect users' customization choices, and users are given options to share the visualizations they created.
+The Shiny app thus allows users to quickly inspect basic properties of Peekbanks datasets and create reproducible visualizations without incurring any of the technical overhead required to access the database through R.
+
 \hypertarget{peekbankr}{%
 \subsection{Peekbankr}\label{peekbankr}}
 
 Functions:
-connect\_to\_peekbank()
+connect\_to\_peekbank():
 get\_datasets()
 get\_subjects()
 get\_administrations()
