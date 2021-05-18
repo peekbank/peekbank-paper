@@ -1,0 +1,28 @@
+dataset_name,dataset_rename,bib_cite,apa_cite
+pomper_saffran_2016,switchingCues,Pomper2016,"(Pomper & Saffran, 2016)"
+attword_processed,attword,,"(Yurovsky & Frank, 2017)"
+reflook_v4,reflook_v4,,
+reflook_socword,reflook_socword,Yurovsky2013,"(Yurovsky et al., 2013)"
+byers-heinlein_2017,mix,Byers-Heinlein2017,"(Byers-Heinlein et al., 2017)"
+frank_tablet_2016,tablet,Frank2016,"(Frank et al., 2016)"
+casillas_tseltal_2015,tseltal,Casillas2017,"(Casillas et al., 2017)"
+adams_marchman_2018,ft_pt,Adams2018,"(Adams et al., 2018)"
+potter_canine,canine,,
+potter_remix,remix,Potter2019,"(Potter et al., 2019)"
+kartushina_2019,freq_cues,Mayor2019,
+mahr_coartic,coartic,Mahr2015,"(Mahr et al., 2015)"
+pomper_dimy,dimy,,
+pomper_prime,prime,,
+pomper_salientme,salientme,Pomper2019,"(Pomper & Saffran, 2019)"
+pomper_yumme,yumme,,
+ferguson_eyetrackingr,word_recog,,
+garrison_bergelson_2020,yoursmy,Garrison2020,"(Garrison et al., 2020)"
+perry_cowpig,cowpig,Perry2017,"(Perry et al., 2017)"
+bacon_gendercues,gendercues,,
+weisleder_stl,stl,,
+fmw_2013,fmw,,
+hurtado_2008,input_uptake,,
+xsectional_2007,xsectional,,
+gazetriggered_2020,gazetriggered,,
+ronfard_2021,lsc,,
+swingley_aslin_2002,mispron,Swingley2002,"(Swingley & Aslin, 2002)"

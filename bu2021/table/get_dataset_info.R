@@ -5,9 +5,9 @@ library(ggplot2)
 library(xtable)
 library(here)
 
-load(file = here("data","dataset_info.Rds"))
+load(file = here("bu2021","table","dataset_info.Rds"))
 
-dataset_name_mapping <- read_csv(here("data","dataset_name_mapping.csv"))
+dataset_name_mapping <- read_csv(here("bu2021","table","dataset_name_mapping.csv"))
 
 dataset_unique_subj <- dataset_info %>%
   distinct(subject_id,sex)
@@ -24,8 +24,8 @@ summarize_datasets <- dataset_info %>%
     lowest_age=min(age, na.rm=T),
     language=unique(native_language)[1],
     tracker=unique(tracker)[1],
-    num_female=length(sex=="female"),
-    num_male=length(sex=="male")) %>%
+    num_female=sum(sex=="female"),
+    num_male=sum(sex=="male")) %>%
   mutate(
     method=case_when(
       method=="manual gaze coding" ~ "manual coding",
