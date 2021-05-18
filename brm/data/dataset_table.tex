@@ -1,0 +1,25 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{amsmath}
+\usepackage{siunitx, mhchem}
+\usepackage{array, booktabs, makecell}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{legalpaper, landscape, margin=1in}
+
+
+\begin{document}
+
+\begin{table}[ht!]
+\centering
+\small\begin{tabular}{lrrlrrllrr}  \hline\thead{Dataset \\ Name} & N & \thead{Mean \\  Age \\ (mos.)} & Method & \thead{ Maximum \\  Age \\ (mos.)} & \thead{Minimum \\ Age \\ (mos.) } & \thead{Native \\ Language} & Eyetracker & \thead{No. of \\ females} \\   \hlineattword & 288 & 25.5 & \thead{preprocessed \\ eyetracking} & 58.7 & 12.6 & eng & SMI iView & 288 \\   canine & 36 & 23.8 & \thead{manual  \\ coding} & 27.0 & 21.0 & eng & video\_camera & 36 \\   coartic & 29 & 20.8 & \thead{eye-\\tracking} & 23.8 & 18.1 & eng & Tobii & 29 \\   cowpig & 45 & 20.5 & \thead{manual  \\ coding} & 22.0 & 19.0 & eng & video\_camera & 45  \\   ft\_pt & 69 & 17.1 & \thead{manual  \\ coding} & 20.0 & 13.0 & eng & video\_camera & 270  \\   mispron & 50 & 15.1 & \thead{manual  \\ coding} & 16.0 & 14.1 & eng & video\_camera & 50 \\   mix & 48 & 20.1 & \thead{eye-\\tracking}  & 21.0 & 19.0 & eng, fre & Tobii T60-XL & 48 \\   reflook\_socword & 435 & 33.6 & \thead{eye-\\tracking}  & 70.0 & 12.0 & eng & SMI & 435  \\   reflook\_v4 & 45 & 34.2 & \thead{eye-\\tracking}  & 60.0 & 11.0 & eng & SMI & 45 \\   remix & 44 & 22.6 & \thead{manual  \\ coding} & 29.0 & 18.0 & spa, eng & video\_camera & 44 \\   salientme & 44 & 40.1 & \thead{manual  \\ coding} & 43.0 & 38.0 & eng & video\_camera & 44 \\   switchingCues & 60 & 44.3 & \thead{manual  \\ coding} & 47.0 & 41.0 & eng & video\_camera & 60 \\   tablet & 69 & 35.5 & \thead{eye-\\tracking}  & 60.0 & 12.0 & eng & SMI & 69 \\   tseltal & 23 & 31.3 & \thead{manual  \\ coding} & 48.0 & 9.0 & other &  video\_camera & 23\\   yoursmy & 35 & 14.5 & \thead{eye-\\tracking}  & 18.0 & 12.0 & eng & Eyelink 1000+ & 35 \\    \hline\end{tabular}\caption{Overview over the datasets in the current database.} \end{table}
+
+\end{document}
