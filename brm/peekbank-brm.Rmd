@@ -4,7 +4,7 @@ shorttitle        : "Peekbank repository for developmental eye-tracking data"
 
 author: 
   - name          : "Peekbank team"
-    affiliation   : "1"
+    affiliation   : "2"
     corresponding : yes    # Define only one corresponding author
     address       : "Postal address"
     email         : "my@email.com"
@@ -13,15 +13,69 @@ author:
       - Writing - Original Draft Preparation
       - Writing - Review & Editing
   - name          : "Martin Zettersten"
+    affiliation   : "1"
+  - name          : "Claire Bergey"
     affiliation   : "2"
+  - name          : "Naiti S. Bhatt"
+    affiliation   : "3"
+  - name          : "Veronica Boyce"
+    affiliation   : "4"
+  - name          : "Mika Braginsky"
+    affiliation   : "5"
+  - name          : "Alexandra Carstensen"
+    affiliation   : "4"
+  - name          : "Benny deMayo"
+    affiliation   : "1"
+  - name          : "George Kachergis"
+    affiliation   : "4"
+  - name          : "Molly Lewis"
+    affiliation   : "6"
+  - name          : "Bria Long"
+    affiliation   : "4"
+  - name          : "Kyle MacDonald"
+    affiliation   : "7"
+  - name          : "Jessica Mankewitz"
+    affiliation   : "4"
+  - name          : "Stephan Meylan"
+    affiliation   : "5,8"
+  - name          : "Annissa N. Saleh"
+    affiliation   : "9"
+  - name          : "Rose M. Schneider"
+    affiliation   : "10"
+  - name          : "Angeline Sin Mei Tsui"
+    affiliation   : "4"
+  - name          : "Sarp Uner"
+    affiliation   : "8"
+  - name          : "Tian Linger Xu"
+    affiliation   : "11"
+  - name          : "Daniel Yurovsky"
+    affiliation   : "6"
   - name          : "Michael C. Frank"
     affiliation   : "1"
 
 affiliation:
   - id            : "1"
-    institution   : "Stanford University"
+    institution   : "Dept. of Psychology, Princeton University"
   - id            : "2"
-    institution   : "Princeton University"
+    institution   : "Dept. of Psychology, University of Chicago"
+  - id            : "3"
+    institution   : "Scripps College"
+  - id            : "4"
+    institution   : "Dept. of Psychology, Stanford University"
+  - id            : "5"
+    institution   : "Dept. of Brain and Cognitive Sciences, MIT"
+  - id            : "6"
+    institution   : "Dept. of Psychology, Carnegie Mellon University"
+  - id            : "7"
+    institution   : "Core Technology, McD Tech Labs"
+  - id            : "8"
+    institution   : "Dept. of Psychology and Neuroscience, Duke University"
+  - id            : "9"
+    institution   : "Dept. of Psychology, UT Austin"
+  - id            : "10"
+    institution   : "Dept. of Psychology, UC San Diego"
+  - id            : "11"
+    institution   : "Dept. of Psychological and Brain Sciences, Indiana University"
 
 authornote: |
   Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
@@ -49,7 +103,7 @@ footnotelist      : no
 linenumbers       : yes
 mask              : no
 draft             : no
-
+figsintext        : yes
 documentclass     : "apa6"
 classoption       : "man"
 output            : papaja::apa6_pdf
@@ -61,13 +115,18 @@ library("here")
 library("png")
 library("tidyverse")
 library("peekbankr")
+library("xtable")
+library(extrafont)
+#extrafont::font_import()
+extrafont::loadfonts()
 r_refs("peekbank.bib")
 ```
 
 ```{r analysis-preferences}
 # Seed for random number generation
 set.seed(42)
-knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed,warning=F,
+                      message=F)
 ```
 
 # Introduction
@@ -140,7 +199,114 @@ grid::grid.raster(img)
 
 
 ## Current Data Sources.
-The database currently includes 11 looking-while-listening datasets comprising N=1233 total participants (Table XX). Most datasets (10 out of 11 total) consist of data from monolingual native English speakers. They span a wide age spectrum with participants ranging from 8 to 84 months of age, and are balanced in terms of gender (48% female). The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. Most studies focused on testing familiar items, but the database also includes studies with novel pseudowords. All data (and accompanying references) are openly available on the Open Science Framework (https://osf.io/pr6wu/?view_only=07a3887eb7a24643bdc1b2612f2729de).
+
+```{r xtable, num.cols.cap=1, results="asis"}
+load(file = here("brm","data","dataset_info.Rds"))
+load(file = here("brm","data","aoi_data_joined.Rds"))
+
+dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
+iso_codes <- read_csv(here("brm","data","iso_language_codes.csv"))
+
+dataset_unique_subj <- dataset_info %>%
+  distinct(subject_id,sex)
+
+summarize_novel_familiar <- aoi_data_joined %>%
+  group_by(dataset_name,stimulus_novelty) %>%
+  summarize(n=n()) %>%
+  left_join(dataset_name_mapping) %>%
+  pivot_wider(id_cols=dataset_rename,names_from = stimulus_novelty,values_from=n) %>%
+  group_by(dataset_rename) %>%
+  summarize(
+    has_familiar = ifelse(is.na(familiar)|familiar==0,0,1),
+    has_novel=ifelse(is.na(novel)|novel==0,0,1)
+  )
+
+summarize_datasets <- dataset_info %>%
+  left_join(dataset_name_mapping) %>%
+  group_by(dataset_rename, apa_cite) %>%
+  summarize(
+    #num_admin=length(unique(administration_id)),
+    num_subj=length(unique(subject_id)),
+    #percent_female=round(sum(sex=="female")/sum(sex %in% c("female","male")),2),
+    avg_age=mean(age,na.rm=T),
+    min_age_months = round(min(age, na.rm = TRUE),0), 
+    max_age_months = round(max(age, na.rm = TRUE),0),
+    method=unique(coding_method)[1],
+    native_language = names(which.max(table(native_language)))) %>%
+  # mutate(
+  #   percent_female = case_when(
+  #     is.nan(percent_female) ~ "N/A",
+  #     TRUE ~ paste0(percent_female*100,"%"))
+  # ) %>%
+  mutate(
+    method=case_when(
+      method=="manual gaze coding" ~ "manual coding",
+      method=="eyetracking" ~ "eye-tracking",
+      method=="preprocessed eyetracking" ~ "eye-tracking",
+      TRUE ~ method)
+  ) %>%
+    #split language into multiple columns (only two expected; expand if dataset acquires more)
+  separate(native_language,into=c("native_language_1","native_language_2"),sep=", ") %>%
+  #join based on ISO standard
+  left_join(iso_codes,by=c("native_language_1"="iso_code")) %>%
+  left_join(iso_codes,by=c("native_language_2"="iso_code")) %>%
+  rename(
+    language_name_1 = language_name.x,
+    language_name_2 = language_name.y
+  ) %>%
+  #clean up some naming issues
+  mutate(
+    language_name_1 = case_when(
+      language_name_1 == "Spanish; Castilian" ~ "Spanish",
+      TRUE ~ language_name_1
+    )) %>%
+  #unite names
+  mutate(
+    language = case_when(
+      !is.na(language_name_2) ~ paste(language_name_1,language_name_2,sep=", "),
+      TRUE ~ language_name_1)) %>%
+  # native language special cases
+  mutate(
+    language = case_when(
+      dataset_rename == "tseltal" ~ "Tseltal",
+      TRUE ~ language)) %>%
+  #convert age range into one column
+  mutate(age_range_months= paste(min_age_months,max_age_months,sep=" - ")) %>%
+  mutate(
+   apa_cite=case_when(
+      is.na(apa_cite) ~ "unpublished",
+      TRUE ~ apa_cite
+  )) %>%
+  select(dataset_rename,apa_cite, num_subj,avg_age,age_range_months,method,language) %>%
+  arrange(dataset_rename)
+
+summarize_dataset_by_age_bin <- dataset_info %>%
+  left_join(dataset_name_mapping) %>%
+  mutate(
+    age_bin = case_when(
+      age <= 24 ~ "(12,24]",
+      age <=36 ~ "(24,36]",
+      age <=48 ~ "(36,48]",
+      age<=60 ~ "(48,60]"
+    )
+  ) %>%
+  group_by(dataset_rename,age_bin) %>%
+  summarize(
+    num_subj=length(unique(subject_id)))
+
+tab1 <- xtable::xtable(summarize_datasets, digits=c(1), 
+                       caption = "Overview over the datasets in the current database.")
+
+names(tab1) <- c("Dataset Name", "Citation","N","Mean Age (mos.)","Age Range (mos.)", "Method", "Language")
+
+align(tab1) <- c("llrrrrrr")
+
+print(tab1, type="latex", comment = F,include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont")
+```
+
+The database currently includes 11 looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table XX). Most datasets (10 out of 11 total) consist of data from monolingual native English speakers. They span a wide age spectrum with participants ranging from 8 to 84 months of age, and are balanced in terms of gender (48% female). The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. Most studies focused on testing familiar items, but the database also includes studies with novel pseudowords. All data (and accompanying references) are openly available on the Open Science Framework (https://osf.io/pr6wu/?view_only=07a3887eb7a24643bdc1b2612f2729de).
+
+
 
 How selected?
 Language coverage?
@@ -155,10 +321,25 @@ Steps for extending the database?
 
 ## Shiny App
 
+One goal of the Peekbank project is to allow a wide range of users to easily explore and learn from the database.
+We therefore have created an interactive web application -- \texttt{peekbank-shiny} -- that allows users to quickly and easily create informative visualizations of individual datasets and aggregated data.
+\texttt{peekbank-shiny} is built using Shiny, a software package for creating web apps using R.
+The Shiny app allows users to create commonly used visualizations of looking-while-listening data, based on data from the Peekbank database.
+Specifically, users can visualize 
+
+1. the time course of looking data in a profile plot depicting infant target looking across trial time,
+2. overall accuracy (proportion target looking) within a specified analysis window,
+3. reaction times (speed of fixating the target image) in response to a target label, and
+4. an onset-contingent plot, which shows the time course of participant looking as a function of their look location at the onset of the target label.
+
+Users are given various customization options for each of these visualizations, e.g., choosing which datasets to include in the plots, controlling the age range of participants, splitting the visualizations by age bins, and controlling the analysis window for time course analyses.
+Plots are then updated in real time to reflect users' customization choices, and users are given options to share the visualizations they created.
+The Shiny app thus allows users to quickly inspect basic properties of Peekbanks datasets and create reproducible visualizations without incurring any of the technical overhead required to access the database through R.
+
 ## Peekbankr
 
 Functions:
-connect_to_peekbank()
+connect_to_peekbank():
 get_datasets()
 get_subjects()
 get_administrations()
@@ -177,7 +358,7 @@ Data in raw format (if some additional datum needed, e.g. pupil size?)
 
 We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis [e.g., @hardwicke2018] and also provides an easy way to explore looking-while-listening timecourse data in a standardized format. Our second example showss an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis can be used for optimizing the stimuli for new experiments. 
 
-## Computational reproducibility example: Swingley & Aslin (2003)
+## Computational reproducibility example: Swingley & Aslin (2002)
 
 
 
