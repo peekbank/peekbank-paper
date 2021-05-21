@@ -214,7 +214,11 @@ What these two questions share is that they are difficult to answer at the scale
 \hypertarget{database-framework.}{%
 \subsection{Database Framework.}\label{database-framework.}}
 
-The Peekbank data framework consists of three components: (1) processing raw experimental datasets; (2) populating a relational database; and (3) providing an interface to the database (Fig XX). The peekds library (for the R language; R Development Core Team, 2020) helps researchers convert and validate existing datasets to use the relational format of the database. The peekbank module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by peekds. The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet. The peekbankr library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
+One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared re-usable data format across individual experiments. Researcher conventions for structuring data vary, as do the technical specifications of different devices, rendering the task of integrating datasets from different labs and data sources difficult. Therefore, our first effort was developing a common, tidy format for the eye-tracking data in Peekbank to ease the process of conducting cross-dataset analyses (Wickham et al., 2019). All incoming datasets will be processed into this unified format and then ingested into the core database.
+
+As illustrated in Figure XX, the Peekbank framework consists of three main components: (1) processing eye-tracking experimental datasets into a unified format; (2) populating a relational database; and (3) providing an interface to the database. These components are supported by three libraries. The peekds library (for the R language; R Development Core Team, 2020) helps researchers convert and validate existing datasets to use the relational format of the database. The peekbank module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by peekds. The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet. The peekbankr library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
+
+In the following sections, we will begin by providing the details on the database's scheme design and technical implementation on peekds. For users who are primarily interested in accessing the database can skip these details and focus on access through the peekbankr API and the web apps.
 
 \begin{figure}
 
@@ -228,7 +232,7 @@ The Peekbank data framework consists of three components: (1) processing raw exp
 \hypertarget{data-format-and-processing.}{%
 \subsection{Data Format and Processing.}\label{data-format-and-processing.}}
 
-One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared re-usable data format across individual experiments. Researcher conventions for structuring data vary, as do the technical specifications of different devices, rendering the task of integrating datasets from different labs and data sources difficult. We developed a common, tidy format for the eye-tracking data in Peekbank to ease the process of conducting cross-dataset analyses (Wickham et al., 2019). The schema of the database is sufficiently general to handle heterogeneous datasets, including both manually coded and automated eye-tracking data.
+During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. The centerpiece of the schema is the aoi\_timepoints table (Fig XX), which records whether participants looked to the target or the distractor stimulus at each timepoint of a given trial. Additional tables track information about data sources, participant characteristics, trial characteristics, stimuli, and raw eye-tracking data. In addition to unifying the data format, we conduct several additional pre-processing steps to facilitate analyses across datasets, including resampling observations to a common sampling rate (40 Hz) and normalizing time relative to the onset of the target label.
 
 \begin{figure}
 
@@ -238,8 +242,6 @@ One of the main challenges in compiling a large-scale eye-tracking dataset is th
 
 \caption{The Peekbank schema. Each square represents a table in the relational database.}\label{fig:fig-schema}
 \end{figure}
-
-During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. The centerpiece of the schema is the aoi\_timepoints table (Fig XX), which records whether participants looked to the target or the distractor stimulus at each timepoint of a given trial. Additional tables track information about data sources, participant characteristics, trial characteristics, stimuli, and raw eye-tracking data. In addition to unifying the data format, we conduct several additional pre-processing steps to facilitate analyses across datasets, including resampling observations to a common sampling rate (40 Hz) and normalizing time relative to the onset of the target label.
 
 \hypertarget{current-data-sources.}{%
 \subsection{Current Data Sources.}\label{current-data-sources.}}

@@ -192,7 +192,7 @@ grid::grid.raster(img)
 During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. The centerpiece of the schema is the aoi_timepoints table (Fig XX), which records whether participants looked to the target or the distractor stimulus at each timepoint of a given trial. Additional tables track information about data sources, participant characteristics, trial characteristics, stimuli, and raw eye-tracking data. In addition to unifying the data format, we conduct several additional pre-processing steps to facilitate analyses across datasets, including resampling observations to a common sampling rate (40 Hz) and normalizing time relative to the onset of the target label.
 
 ```{r fig-schema, fig.env = "figure", fig.align = "center", fig.height=4.5, set.cap.width=T, num.cols.cap=1, fig.cap = "The Peekbank schema. Each square represents a table in the relational database."}
-img <- png::readPNG(here("brm/figures","schema.png"))
+img <- png::readPNG(here("brm/figures","schema_3.png"))
 
 grid::grid.raster(img)
 ```
