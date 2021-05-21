@@ -249,6 +249,7 @@ During data import, raw eye-tracking datasets are processed to conform to the Pe
 \begin{table}[ht]
 \centering
 \begingroup\fontsize{9pt}{10pt}\selectfont
+\scalebox{0.85}{
 \begin{tabular}{lrrrrrr}
   \hline
 Dataset Name & Citation & N & Mean Age (mos.) & Age Range (mos.) & Method & Language \\ 
@@ -270,6 +271,7 @@ attword & (Yurovsky \& Frank, 2017) & 288 & 25.5 & 13 - 59 & eye-tracking & Engl
   yoursmy & (Garrison et al., 2020) & 35 & 14.5 & 12 - 18 & eye-tracking & English \\ 
    \hline
 \end{tabular}
+}
 \endgroup
 \caption{Overview over the datasets in the current database.} 
 \end{table}
@@ -339,7 +341,7 @@ Data in raw format (if some additional datum needed, e.g.~pupil size?)
 \hypertarget{peekbank-in-action}{%
 \section{Peekbank in Action}\label{peekbank-in-action}}
 
-We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis (e.g., {\textbf{???}}) and also provides an easy way to explore looking-while-listening timecourse data in a standardized format. Our second example showss an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis can be used for optimizing the stimuli for new experiments.
+We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis (e.g., Hardwicke et al., 2018) and also provides an easy way to explore looking-while-listening timecourse data in a standardized format. Our second example showss an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis can be used for optimizing the stimuli for new experiments.
 
 \hypertarget{computational-reproducibility-example-swingley-aslin-2002}{%
 \subsection{Computational reproducibility example: Swingley \& Aslin (2002)}\label{computational-reproducibility-example-swingley-aslin-2002}}
@@ -373,7 +375,7 @@ Finally, while the current database is focused on studies of word recognition, t
 
 We would like to thank the labs and researchers that have made their data publicly available in the database.
 
-We used R (Version 4.0.3; R Core Team, 2020) and the R-packages \emph{dplyr} (Version 1.0.3; Wickham et al., 2021), \emph{extrafont} (Version 0.17; Winston Chang, 2014), \emph{forcats} (Version 0.5.0; Wickham, 2021a), \emph{ggplot2} (Version 3.3.3; Wickham, 2016), \emph{here} (Version 1.0.1; Müller, 2020), \emph{papaja} (Version 0.1.0.9997; Aust \& Barth, 2020), \emph{peekbankr} (Version 0.1.1.9001; Braginsky, MacDonald, \& Frank, 2021), \emph{plyr} (Version 1.8.6; Wickham et al., 2021; Wickham, 2011), \emph{png} (Version 0.1.7; Urbanek, 2013), \emph{purrr} (Version 0.3.4; Henry \& Wickham, 2020), \emph{readr} (Version 1.4.0; Wickham \& Hester, 2020), \emph{stringr} (Version 1.4.0; Wickham, 2019), \emph{tibble} (Version 3.0.5; Müller \& Wickham, 2021), \emph{tidyr} (Version 1.1.2; Wickham, 2021b), \emph{tidyverse} (Version 1.3.0; Wickham, Averick, et al., 2019), and \emph{xtable} (Version 1.8.4; Dahl, Scott, Roosen, Magnusson, \& Swinton, 2019) for all our analyses.
+We used R (Version 4.0.3; R Core Team, 2020) and the R-packages \emph{dplyr} (Version 1.0.3; Wickham et al., 2021), \emph{extrafont} (Version 0.17; Winston Chang, 2014), \emph{forcats} (Version 0.5.0; Wickham, 2021a), \emph{ggplot2} (Version 3.3.3; Wickham, 2016), \emph{here} (Version 1.0.1; Müller, 2020), \emph{papaja} (Version 0.1.0.9997; Aust \& Barth, 2020), \emph{peekbankr} (Version 0.1.1.9001; Braginsky, MacDonald, \& Frank, 2021), \emph{plyr} (Version 1.8.6; Wickham et al., 2021; Wickham, 2011), \emph{png} (Version 0.1.7; Urbanek, 2013), \emph{pso} (Version 1.0.3; Bendtsen., 2012), \emph{purrr} (Version 0.3.4; Henry \& Wickham, 2020), \emph{readr} (Version 1.4.0; Wickham \& Hester, 2020), \emph{stringr} (Version 1.4.0; Wickham, 2019), \emph{tibble} (Version 3.0.5; Müller \& Wickham, 2021), \emph{tidyr} (Version 1.1.2; Wickham, 2021b), \emph{tidyverse} (Version 1.3.0; Wickham, Averick, et al., 2019), and \emph{xtable} (Version 1.8.4; Dahl, Scott, Roosen, Magnusson, \& Swinton, 2019) for all our analyses.
 
 \newpage
 
@@ -388,11 +390,17 @@ We used R (Version 4.0.3; R Core Team, 2020) and the R-packages \emph{dplyr} (Ve
 \leavevmode\hypertarget{ref-R-papaja}{}%
 Aust, F., \& Barth, M. (2020). \emph{papaja: Create APA manuscripts with R Markdown}. Retrieved from \url{https://github.com/crsh/papaja}
 
+\leavevmode\hypertarget{ref-R-pso}{}%
+Bendtsen., C. (2012). \emph{Pso: Particle swarm optimization}. Retrieved from \url{https://CRAN.R-project.org/package=pso}
+
 \leavevmode\hypertarget{ref-R-peekbankr}{}%
 Braginsky, M., MacDonald, K., \& Frank, M. (2021). \emph{Peekbankr: Accessing the peekbank database}. Retrieved from \url{http://github.com/langcog/peekbankr}
 
 \leavevmode\hypertarget{ref-R-xtable}{}%
 Dahl, D. B., Scott, D., Roosen, C., Magnusson, A., \& Swinton, J. (2019). \emph{Xtable: Export tables to latex or html}. Retrieved from \url{https://CRAN.R-project.org/package=xtable}
+
+\leavevmode\hypertarget{ref-Hardwicke2018}{}%
+Hardwicke, T. E., Mathur, M. B., MacDonald, K., Nilsonne, G., Banks, G. C., Kidwell, M. C., \ldots{} Frank, M. C. (2018). Data availability, reusability, and analytic reproducibility: Evaluating the impact of a mandatory open data policy at the journal Cognition. \emph{Royal Society Open Science}, \emph{5}(8). \url{https://doi.org/10.1098/rsos.180448}
 
 \leavevmode\hypertarget{ref-R-purrr}{}%
 Henry, L., \& Wickham, H. (2020). \emph{Purrr: Functional programming tools}. Retrieved from \url{https://CRAN.R-project.org/package=purrr}
