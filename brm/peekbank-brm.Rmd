@@ -109,7 +109,18 @@ What these two questions share is that they are difficult to answer at the scale
 # Design and Technical Approach
 
 ## Database Framework.
-The Peekbank framework consists of three main components: (1) processing eye-tracking experimental datasets into a unified format; (2) populating a relational database; and (3) providing an interface to the database (Fig XX). These components are supported by three libraries. The peekds library (for the R language; R Development Core Team, 2020) helps researchers convert and validate existing datasets to use the relational format of the database. The peekbank module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by peekds. The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet. The peekbankr library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
+
+<!-- 
+guiding users through the sections, similar to the childes-db paper 
+Need to explain motivations first, such as issues encountered when consolidating multiple experimental design, etc. 
+why a unified format is need first, hence the data import and raw data processing
+-->
+
+One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared re-usable data format across individual experiments. Researcher conventions for structuring data vary, as do the technical specifications of different devices, rendering the task of integrating datasets from different labs and data sources difficult. Therefore, our first effort was developing a common, tidy format for the eye-tracking data in Peekbank to ease the process of conducting cross-dataset analyses (Wickham et al., 2019). All incoming datasets will be processed into this unified format and then ingested into the core database. 
+
+As illustrated in Figure XX, the Peekbank framework consists of three main components: (1) processing eye-tracking experimental datasets into a unified format; (2) populating a relational database; and (3) providing an interface to the database. These components are supported by three libraries. The peekds library (for the R language; R Development Core Team, 2020) helps researchers convert and validate existing datasets to use the relational format of the database. The peekbank module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by peekds. The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet. The peekbankr library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
+
+In the following sections, we will begin by providing the details on the database’s scheme design and technical implementation on peekds. For users who are primarily interested in accessing the database can skip these details and focus on access through the peekbankr API and the web apps.
 
 
 ```{r fig-framework-overview, fig.env = "figure", fig.align = "center", fig.height=4.5, set.cap.width=T, num.cols.cap=1, fig.cap = "Overview of the Peekbank data ecosystem. Peekbank tools are highlighted in green. *custom R packages."}
@@ -119,7 +130,7 @@ grid::grid.raster(img)
 ```
 
 ## Data Format and Processing.
-One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared re-usable data format across individual experiments. Researcher conventions for structuring data vary, as do the technical specifications of different devices, rendering the task of integrating datasets from different labs and data sources difficult. We developed a common, tidy format for the eye-tracking data in Peekbank to ease the process of conducting cross-dataset analyses (Wickham et al., 2019). The schema of the database  is sufficiently general to handle heterogeneous datasets, including both manually coded and automated eye-tracking data.
+During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. The centerpiece of the schema is the aoi_timepoints table (Fig XX), which records whether participants looked to the target or the distractor stimulus at each timepoint of a given trial. Additional tables track information about data sources, participant characteristics, trial characteristics, stimuli, and raw eye-tracking data. In addition to unifying the data format, we conduct several additional pre-processing steps to facilitate analyses across datasets, including resampling observations to a common sampling rate (40 Hz) and normalizing time relative to the onset of the target label.
 
 ```{r fig-schema, fig.env = "figure", fig.align = "center", fig.height=4.5, set.cap.width=T, num.cols.cap=1, fig.cap = "The Peekbank schema. Each square represents a table in the relational database."}
 img <- png::readPNG(here("brm/figures","schema.png"))
@@ -127,7 +138,6 @@ img <- png::readPNG(here("brm/figures","schema.png"))
 grid::grid.raster(img)
 ```
 
-During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. The centerpiece of the schema is the aoi_timepoints table (Fig XX), which records whether participants looked to the target or the distractor stimulus at each timepoint of a given trial. Additional tables track information about data sources, participant characteristics, trial characteristics, stimuli, and raw eye-tracking data. In addition to unifying the data format, we conduct several additional pre-processing steps to facilitate analyses across datasets, including resampling observations to a common sampling rate (40 Hz) and normalizing time relative to the onset of the target label.
 
 ## Current Data Sources.
 The database currently includes 11 looking-while-listening datasets comprising N=1233 total participants (Table XX). Most datasets (10 out of 11 total) consist of data from monolingual native English speakers. They span a wide age spectrum with participants ranging from 8 to 84 months of age, and are balanced in terms of gender (48% female). The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. Most studies focused on testing familiar items, but the database also includes studies with novel pseudowords. All data (and accompanying references) are openly available on the Open Science Framework (https://osf.io/pr6wu/?view_only=07a3887eb7a24643bdc1b2612f2729de).
