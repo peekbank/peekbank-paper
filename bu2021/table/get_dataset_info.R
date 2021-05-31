@@ -73,7 +73,7 @@ summarize_datasets <- dataset_info %>%
   arrange(dataset_rename)
 
 tab1 <- xtable::xtable(summarize_datasets, digits=c(1), 
-                       caption = "Overview over the datasets in the current database.")
+                       caption = NULL)
 
 names(tab1) <- c("Dataset Name", "Citation","N","Mean Age (mos.)","Age Range (mos.)", "Method", "Language")
 
