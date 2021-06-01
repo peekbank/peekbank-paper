@@ -188,8 +188,22 @@ img <- png::readPNG(here("brm/figures","peekbankflowchartv6.png"))
 grid::grid.raster(img)
 ```
 
-## Data Format and Processing.
-During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. The centerpiece of the schema is the aoi_timepoints table (Fig XX), which records whether participants looked to the target or the distractor stimulus at each timepoint of a given trial. Additional tables track information about data sources, participant characteristics, trial characteristics, stimuli, and raw eye-tracking data. In addition to unifying the data format, we conduct several additional pre-processing steps to facilitate analyses across datasets, including resampling observations to a common sampling rate (40 Hz) and normalizing time relative to the onset of the target label.
+## Database Schema
+The peekbank database has two main sets of data: (1) metadata on the experiment design and participants and (2) timecourse looking data (Fig XX). Here, we will give an outline of the tables encoding this data, starting with metadata.
+
+Metadata can be separated into two parts: (1) subject-level demographics and (2) trial structure information. Subject-level information includes subjects, who are individuals who participated in the study, and administrations, which are runs of the experiment. For example, in the case of longitudinal studies, multiple administrations of an experiment can be linked to a single subject or participant. The subjects table contains information at the subject level, such as a subject’s sex and native language, and the administrations table includes information specific to a particular run of the experiment, such as the subject’s age at the time of the experiment and the eyecoding method for that administration. 
+
+The stimuli and trial types tables store information about the experiment design. Stimuli are (label, image) mappings that are seen in the experiment. When the experiment includes multiple potential labels per image (e.g., in designs testing understanding of multiple languages or synonymy), images can have multiple rows in this table for unique labels as well as a row with no label to be used when the image appears solely as a distractor (and thus its label is ambiguous). 
+
+The trial types table encodes information about each trial of the experiment including the target stimulus and location, the distractor stimulus and location, and the point of disambiguation for that trial. Each trial type is additionally linked to a set of area of interest (AOI) dimensions, encoded in the aoi_region_sets table. 
+
+Because individual trial types can be repeated multiple times within an administration, the order of the trials is encoded in the trials table. Each unique ordering that occurred in the experiment is encoded—so, for example, if every participant saw the same ordering, the trials table will only have as many rows as there were trials in the experiment; if there were many different orderings, the trials table will represent each ordering. The trial id, which links a trial type to the order it was presented in an administration, is attached to the eyetracking time course data. 
+
+Timecourse looking data is encoded in two tables: aoi_timepoints and xy_timepoints. The aoi_timepoints encodes time-stamped looks to areas of interest: looks to the target, looks to the distractor, looks to other places, and missing looks. All datasets have this table. 
+
+Both the aoi_timepoints and xy_timepoints tables are resampled to a consistent sampling rate, as described in the Import section below.
+
+## Import
 
 ```{r fig-schema, fig.env = "figure", fig.align = "center", fig.height=4.5, set.cap.width=T, num.cols.cap=1, fig.cap = "The Peekbank schema. Each square represents a table in the relational database."}
 img <- png::readPNG(here("brm/figures","schema_3.png"))
