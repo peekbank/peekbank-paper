@@ -376,12 +376,13 @@ trials <- peekbankr::get_trials(dataset_name = "swingley_aslin_2002")
 ```
 
 ```{r}
-accs <- aoi_timepoints %>%
+swingley_data <- aoi_timepoints %>%
   left_join(administrations) %>%
   left_join(trials) %>%
   left_join(trial_types) %>%
   filter(condition != "filler") %>%
-  mutate(condition = ifelse(condition == "cp", "Correct","Mispronunciation")) %>%
+  mutate(condition = ifelse(condition == "cp", "Correct","Mispronunciation"))
+accs <- swingley_data  %>%
   # mutate(age_group = ifelse(age < mean(age), "13-17", "17-20")) %>%
   group_by(t_norm, administration_id, condition) %>% 
   summarise(correct = mean(aoi == "target") / 
@@ -390,17 +391,45 @@ accs <- aoi_timepoints %>%
   summarise(ci = 1.96 * sd(correct) / sqrt(length(correct)), 
             correct = mean(correct))
 
-ggplot(accs, aes(x = t_norm, y = correct, col = condition)) + 
+ggplot(accs, aes(x = t_norm, y = correct, col = condition))+
+  geom_vline(xintercept = 367)+
+  geom_vline(xintercept = 2000)+
+  geom_polygon(data=data.frame(t_norm=c(367,367,2000,2000),correct=c(0.4,0.72,0.72,0.4)),aes(col=NULL),fill="gray",alpha=0.4)+
   geom_pointrange(aes(ymin = correct - ci, 
                       ymax = correct + ci)) +
   geom_hline(yintercept = .5, lty = 2, col = "black") + 
   langcog::theme_mikabr() + 
   langcog::scale_color_solarized(name = "Age Group") + 
-  xlim(-500, 3000) + 
+  #xlim(-500, 3000) + 
   xlab("Time from target word onset (msec)") + 
   ylab("Proportion correct") + 
-  theme(legend.position = "bottom") 
+  theme(legend.position = "bottom") +
+  coord_cartesian(xlim = c(-500,3000), ylim = c(0.4,0.72))
 ```
+
+```{r}
+subject_accuracy <- swingley_data   %>%
+  group_by(administration_id, lab_age, condition,trial_id) %>% 
+  filter(t_norm >=367 & t_norm>=2000) %>%
+  summarise(correct = mean(aoi == "target") / 
+              mean(aoi %in% c("target","distractor"))) %>%
+  group_by(administration_id, lab_age, condition) %>% 
+  summarize(accuracy = mean(correct,na.rm=TRUE))
+subject_mp_effect <- subject_accuracy %>%
+  group_by(administration_id, lab_age) %>%
+  summarize(
+    mp_effect=accuracy[condition=="Correct"]-accuracy[condition=="Mispronunciation"]
+  )
+#Figure 1 (would need to separate by Mp-close/distant to truly reproduce figure)
+ggplot(subject_mp_effect,aes(lab_age,mp_effect))+
+  geom_point(size=2)+
+  geom_smooth(method="lm")+
+  xlab("Mispronunciation Effect")+
+  ylab("Age in days")
+  
+
+```
+
 
 ## Item analyses
 
