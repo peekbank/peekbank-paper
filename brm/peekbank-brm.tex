@@ -229,10 +229,23 @@ In the following sections, we will begin by providing the details on the databas
 \caption{Overview of the Peekbank data ecosystem. Peekbank tools are highlighted in green. *custom R packages.}\label{fig:fig-framework-overview}
 \end{figure}
 
-\hypertarget{data-format-and-processing.}{%
-\subsection{Data Format and Processing.}\label{data-format-and-processing.}}
+\hypertarget{database-schema}{%
+\subsection{Database Schema}\label{database-schema}}
 
-During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. The centerpiece of the schema is the aoi\_timepoints table (Fig XX), which records whether participants looked to the target or the distractor stimulus at each timepoint of a given trial. Additional tables track information about data sources, participant characteristics, trial characteristics, stimuli, and raw eye-tracking data. In addition to unifying the data format, we conduct several additional pre-processing steps to facilitate analyses across datasets, including resampling observations to a common sampling rate (40 Hz) and normalizing time relative to the onset of the target label.
+The peekbank database has two main sets of data: (1) metadata on the experiment design and participants and (2) timecourse looking data (Fig XX). Here, we will give an outline of the tables encoding this data, starting with metadata.
+
+Metadata can be separated into two parts: (1) subject-level demographics and (2) trial structure information. Subject-level information includes the \texttt{subjects} table, information about individuals who participated in the study, and the \texttt{administrations} table, information about runs of the experiment. In the case of longitudinal studies, multiple administrations of an experiment can be linked to a single subject or participant. The \texttt{subjects} table contains information at the subject level, such as a subject's sex and native language, and the \texttt{administrations} table includes information specific to a particular run of the experiment, such as the subject's age at the time of the experiment and the eyecoding method for that administration.
+
+The \texttt{stimuli} and \texttt{trial\_types} tables store information about the experiment design. Stimuli are (label, image) mappings that are seen in the experiment. When the experiment includes multiple potential labels per image (e.g., in designs testing understanding of multiple languages or synonymy), images can have multiple rows in the \texttt{stimuli} table for unique labels as well as a row with no label to be used when the image appears solely as a distractor (and thus its label is ambiguous). The \texttt{trial\_types} table encodes information about each trial of the experiment including the target stimulus and location, the distractor stimulus and location, and the point of disambiguation for that trial. If this dataset used automatic eyetracking rather than manual coding, each trial type is additionally linked to a set of area of interest (x, y) coordinates, encoded in the \texttt{aoi\_region\_sets} table.
+
+Because individual trial types can be repeated multiple times within an administration, the order of the trials is encoded in the \texttt{trials} table. Each unique ordering that occurred in the experiment is encoded---for example, if every participant saw the same ordering, the trials table would only have as many rows as there were trials in the experiment; if there were many different orderings, the trials table would represent each ordering. The \texttt{trial\_id}, which links a trial type to the order it was presented in an administration, is attached to the time course looking data.
+
+Timecourse looking data is encoded in two tables: \texttt{aoi\_timepoints} and \texttt{xy\_timepoints}. The \texttt{aoi\_timepoints} table encodes time-stamped looks to areas of interest: looks to the target, looks to the distractor, looks to other places, and missing looks. All datasets have this table, and it is the centerpiece of the schema where looking behavior is recorded. Additionally, for eyetracking data that is automatically rather than manually coded, the \texttt{xy\_timepoints} table encodes the (x, y) coordinates of looks over the course of the experiment. Both the \texttt{aoi\_timepoints} and \texttt{xy\_timepoints} tables are resampled to a consistent sampling rate, as described below.
+
+\hypertarget{import}{%
+\subsection{Import}\label{import}}
+
+During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. The following section is a description of the import process for peekbank. It serves as both a description of our method in importing the datasets already in the database, as well as a high-level overview of the import process for researchers looking to import their data in the future. First, we will describe the import of metadata, and second, we will describe import of the timecourse looking data, including processing functions in \texttt{peekds} for normalizing and resampling looking behavior.
 
 \begin{figure}
 
@@ -348,6 +361,8 @@ We provide two potential use-cases for Peekbank data. In each case, we provide s
 
 \includegraphics{peekbank-brm_files/figure-latex/unnamed-chunk-1-1.pdf}
 
+\includegraphics{peekbank-brm_files/figure-latex/unnamed-chunk-2-1.pdf}
+
 \hypertarget{item-analyses}{%
 \subsection{Item analyses}\label{item-analyses}}
 
@@ -360,7 +375,7 @@ ALso, item selection but maybe not yet?
 \hypertarget{links-to-parent-report-vocabulary-data}{%
 \subsection{Links to parent report vocabulary data}\label{links-to-parent-report-vocabulary-data}}
 
-\includegraphics{peekbank-brm_files/figure-latex/unnamed-chunk-5-1.pdf}
+\includegraphics{peekbank-brm_files/figure-latex/unnamed-chunk-6-1.pdf}
 
 \hypertarget{discussion-conclusion}{%
 \section{Discussion/ Conclusion}\label{discussion-conclusion}}
