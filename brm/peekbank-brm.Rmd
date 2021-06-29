@@ -393,57 +393,75 @@ Data in raw format (if some additional datum needed, e.g. pupil size?)
 
 # Peekbank in Action
 
-We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis [e.g., @Hardwicke2018] and also provides an easy way to explore looking-while-listening timecourse data in a standardized format. Our second example showss an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis can be used for optimizing the stimuli for new experiments. 
+We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis [e.g., @Hardwicke2018] and also provides an easy way to explore looking-while-listening timecourse data in a standardized format. Our second example shows an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis can be used for optimizing the stimuli for new experiments. 
 
 ## Computational reproducibility example: Swingley & Aslin (2002)
 
+@swingley2002 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. "oppel" (close mispronunciation) or "opel" (distant mispronunciation) instead of "apple" (correct condition). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. 
 
-
-```{r get_am}
-
-aoi_timepoints <- peekbankr::get_aoi_timepoints(dataset_name = "swingley_aslin_2002", 
-                                                
-                                         rle=FALSE)
+```{r swingley_data, echo = TRUE}
+aoi_timepoints <- peekbankr::get_aoi_timepoints(dataset_name = "swingley_aslin_2002")
 administrations <- peekbankr::get_administrations(dataset_name = "swingley_aslin_2002")
-
-stimuli <- peekbankr::get_stimuli(dataset_name = "swingley_aslin_2002")
 trial_types <- peekbankr::get_trial_types(dataset_name = "swingley_aslin_2002")
 trials <- peekbankr::get_trials(dataset_name = "swingley_aslin_2002")
 ```
 
-```{r}
+We begin by retrieving the relevant tables from the database, `aoi_timepoints`, `administrations`, `trial_types`, and `trials`. As discussed above, each of these can be downloaded using a simple API call through `peekbankr`, which returns dataframes that include ID fields. These ID fields allow for easy joining of the data into a single dataframe containing all the information necessary for the analysis.  
+
+```{r swingley_joins, echo=TRUE}
 swingley_data <- aoi_timepoints %>%
   left_join(administrations) %>%
   left_join(trials) %>%
   left_join(trial_types) %>%
   filter(condition != "filler") %>%
   mutate(condition = ifelse(condition == "cp", "Correct","Mispronunciation"))
-accs <- swingley_data  %>%
-  # mutate(age_group = ifelse(age < mean(age), "13-17", "17-20")) %>%
-  group_by(t_norm, administration_id, condition) %>% 
-  summarise(correct = mean(aoi == "target") / 
-              mean(aoi %in% c("target","distractor"))) %>%
-  group_by(t_norm, condition) %>% 
-  summarise(ci = 1.96 * sd(correct) / sqrt(length(correct)), 
-            correct = mean(correct))
-
-ggplot(accs, aes(x = t_norm, y = correct, col = condition))+
-  geom_vline(xintercept = 367)+
-  geom_vline(xintercept = 2000)+
-  geom_polygon(data=data.frame(t_norm=c(367,367,2000,2000),correct=c(0.4,0.72,0.72,0.4)),aes(col=NULL),fill="gray",alpha=0.4)+
-  geom_pointrange(aes(ymin = correct - ci, 
-                      ymax = correct + ci)) +
-  geom_hline(yintercept = .5, lty = 2, col = "black") + 
-  # langcog::theme_mikabr() + 
-  langcog::scale_color_solarized(name = "Age Group") + 
-  #xlim(-500, 3000) + 
-  xlab("Time from target word onset (msec)") + 
-  ylab("Proportion correct") + 
-  theme(legend.position = "bottom") +
-  coord_cartesian(xlim = c(-500,3000), ylim = c(0.4,0.72))
 ```
 
-```{r}
+As the code above shows, once the data are joined, condition information for each timepoint is present and so we can easily filter out filler trials and set up the conditions for further analysis. For simplicity, here we combine both mispronunciation conditions since this manipulation showed no effect in the original paper. 
+
+```{r swingley_analysis, echo=TRUE}
+accuracies <- swingley_data  %>%
+  group_by(t_norm, administration_id, condition) %>% 
+  summarize(correct = mean(aoi == "target") / 
+              mean(aoi %in% c("target","distractor"))) %>%
+  group_by(t_norm, condition) %>% 
+  summarize(ci = 1.96 * sd(correct) / sqrt(length(correct)), 
+            mean_correct = mean(correct))
+```
+
+
+
+```{r swingley_fig, fig.cap="Proportion looking at the correct referent by time from the point of disambiguation (the onset of the target noun, e.g. "apple"). Colors show the two pronunciation conditions; points give means and ranges show 95\\% confidence intervals. The dotted line shows the point of disambiguation and the dashed line shows chance performance."}
+ggplot(accuracies, aes(x = t_norm, y = mean_correct, col = condition))+
+  geom_hline(yintercept = .5, lty = 2, col = "black") + 
+  geom_vline(xintercept = 0, lty = 3, col = "black") + 
+  # geom_vline(xintercept = 367) +
+  # geom_vline(xintercept = 2000) +
+  # geom_polygon(data = data.frame(t_norm = c(367,367,2000,2000),                               mean_correct=c(0, 1, 1, 0)),
+  #              aes(col=NULL),
+  #              fill="gray", alpha = 0.4) +
+  geom_pointrange(aes(ymin = mean_correct - ci, 
+                      ymax = mean_correct + ci), 
+                  position = position_dodge(width = 10)) +
+  ylab("Prop. Looking at Correct Image") + 
+  xlab("Time from Target Word Onset (msec)") + 
+  langcog::theme_mikabr() +
+  langcog::scale_color_solarized(name = "Condition") + 
+  theme(legend.position = "bottom") +
+  coord_cartesian(xlim = c(-500,3000), ylim = c(0.4,0.8))
+```
+
+The final step in our analysis is to create a summary dataframe using `dplyr` commands. We first group the data by timestep, participant, and condition and compute the proportion looking at the correct image. We then summarize again, averaging across participants, computing both means and 95% confidence intervals (via the  approximation of 1.96 times the standard error of the mean). The resulting dataframe can be used for visualization of the time-course of looking. 
+
+```{r swingley_fig_code, echo = TRUE, eval = FALSE}
+ggplot(accuracies, aes(x = t_norm, y = mean_correct, col = condition))+
+  geom_pointrange(aes(ymin = mean_correct - ci, 
+                      ymax = mean_correct + ci))
+```
+
+Figure \ref{fig:swingley_fig} shows the average time course of looking for the two conditions, as produced by the code above (styling commands are removed for clarity of presentation, but are available in the Markdwon). Looks after the correctly pronounced noun appeared both faster (deviating from chance earlier) and more accurate (showing a higher asymptote). Overall, this example demonstrates the ability to produce this visualization in just a few lines of code.
+
+```{r eval=FALSE}
 subject_accuracy <- swingley_data   %>%
   group_by(administration_id, lab_age, condition,trial_id) %>% 
   filter(t_norm >=367 & t_norm>=2000) %>%
@@ -589,6 +607,7 @@ ggplot(wb_pb,
 Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive. Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science (Bergmann et al., 2018; Frank, Braginsky, Yurovsky, & Marchman, 2017; The ManyBabies Consortium, 2020). The Peekbank project expands on these efforts by building an infrastructure for aggregating eye-tracking data across studies, with a specific focus on the looking-while-listening paradigm. This paper presents an illustration of some of the key theoretical and methodological questions that can be addressed using Peekbank: generalizing across item-level variability in children’s word recognition and providing data-driven guidance on methodological choices.
 
 There are a number of limitations surrounding the current scope of the database. A priority in future work will be to expand the size of the database. With 11 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results. Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability. The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset comes from WEIRD populations; Muthukrishna et al., 2020). Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition. 
+
 Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development. Gaze behavior has been at the core of many of the key advances in our understanding of infant cognition. Aggregating large datasets of infant looking behavior in a single, openly-accessible format promises to bring a fuller picture of infant cognitive development into view.
 
 # Acknowledgements
