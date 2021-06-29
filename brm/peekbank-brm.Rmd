@@ -1,7 +1,6 @@
 ---
 title             : "Peekbank: Exploring children's word recognition through an open, large-scale repository for developmental eye-tracking data"
 shorttitle        : "Peekbank repository for developmental eye-tracking data"
-
 author: 
   - name          : "Peekbank team"
     affiliation   : "2"
@@ -52,7 +51,6 @@ author:
     affiliation   : "6"
   - name          : "Michael C. Frank"
     affiliation   : "1"
-
 affiliation:
   - id            : "1"
     institution   : "Dept. of Psychology, Princeton University"
@@ -76,12 +74,9 @@ affiliation:
     institution   : "Dept. of Psychology, UC San Diego"
   - id            : "11"
     institution   : "Dept. of Psychological and Brain Sciences, Indiana University"
-
 authornote: |
   Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
-
   Enter author note here.
-
 abstract: |
   The ability to rapidly recognize words and link them to referents in context is central to children’s early language development. 
   This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants’ fixation on a target object (vs. a distractor) after hearing a target label. 
@@ -89,13 +84,11 @@ abstract: |
   The goal of this effort is to address theoretical and methodological challenges in measuring vocabulary development. 
   [tools; processing; analysis/ usage examples]
   
-  <!-- https://tinyurl.com/ybremelq -->
   
+  <!-- https://tinyurl.com/ybremelq -->
 keywords          : "keywords"
 wordcount         : "X"
-
 bibliography      : ["peekbank.bib"]
-
 floatsintext      : no
 figurelist        : no
 tablelist         : no
@@ -107,139 +100,200 @@ figsintext        : yes
 documentclass     : "apa6"
 classoption       : "man"
 output            : papaja::apa6_pdf
+editor_options: 
+  markdown: 
+    wrap: sentence
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
-library("papaja")
-library("here")
-library("png")
-library("tidyverse")
-library("peekbankr")
-library("xtable")
-library(extrafont)
-#extrafont::font_import()
-extrafont::loadfonts()
-r_refs("peekbank.bib")
+library(papaja)
+library(here)
+library(tidyverse)
+library(peekbankr)
+library(xtable)
+# library(extrafont)
+# extrafont::font_import()
+# extrafont::loadfonts()
+# r_refs("peekbank.bib")
 ```
 
 ```{r analysis-preferences}
 # Seed for random number generation
 set.seed(42)
-knitr::opts_chunk$set(cache.extra = knitr::rand_seed,warning=F,
-                      message=F)
+knitr::opts_chunk$set(cache = TRUE, cache.extra = knitr::rand_seed,
+                      echo = FALSE, warning = FALSE, message = FALSE)
+theme_set(theme_bw())
+# .font <- "Source Sans Pro"
+theme_set(theme_bw(base_size = 14))
+theme_update(panel.grid = ggplot2::element_blank(),
+             strip.background = ggplot2::element_blank(),
+             legend.key = ggplot2::element_blank(),
+             panel.border = ggplot2::element_blank(),
+             axis.line = ggplot2::element_line(),
+             strip.text = ggplot2::element_text(face = "bold"))
 ```
 
 # Introduction
 
 Across their first years of life, children learn words in their native tongues at a rapid pace (Frank, Braginsky, Yurovsky, & Marchman, 2021).
-[notes about the size/ pace]
-A key part of the word learning process is children’s emerging ability to rapidly process words and link them to relevant meanings – often referred to as word recognition. 
+[notes about the size/ pace] A key part of the word learning process is children's emerging ability to rapidly process words and link them to relevant meanings -- often referred to as word recognition.
 Measuring early word recognition offers insight into children's early word representations and the processes supporting early language comprehension (Bergelson, 2020).
-Word recognition skills are also thought to build a foundation for children’s subsequent language development. 
+Word recognition skills are also thought to build a foundation for children's subsequent language development.
 Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes (Bleses, Makransky, Dale, Højen, & Ari, 2016; Marchman et al., 2018).
-While word recognition is a central part of children's language development, mapping the trajectory of word recognition skills has remained elusive. 
+While word recognition is a central part of children's language development, mapping the trajectory of word recognition skills has remained elusive.
 Studies investigating children's word recognition are typically limited in scope to experiments in individual labs involving small samples tested on a limited set of items.
 This limitation in scale makes it difficult to understand developmental changes in children's word knowledge at a broad scale.
 Peekbank provides an openly accessible database of eye-tracking data of children's word recognition, with the primary goal of facilitating the study of developmental changes in children's word knowledge and recognition speed.
 
-## The “Looking-While-Listening” Paradigm
-Word recognition is traditionally studied in the “looking-while-listening” paradigm (alternatively referred to as the intermodal preferential looking procedure; Fernald, Zangl, Portillo, & Marchman, 2008; Hirsh-Pasek, Cauley, Golinkoff, & Gordon, 1987). 
-In such studies, infants listen to a sentence prompting a specific referent (e.g., Look at the dog!) while viewing two images on the screen (e.g., an image of a dog – the target image – and an image of a duck – the distractor image). 
-Infants’ word recognition is measured in terms of how quickly and accurately they fixate on the correct target image after hearing its label. 
-Past research has used this same basic method to study a wide range of questions in language development. 
-For example, the looking-while-listening paradigm has been used to uncover early knowledge of nouns in infants’ early noun knowledge, phonological representations of words, prediction during language processing, and individual differences in language development (Bergelson & Swingley, 2012; Golinkoff, Ma, Song, & Hirsh-Pasek, 2013; Lew-Williams & Fernald, 2007; Marchman et al., 2018; Swingley & Aslin, 2000).
+## The "Looking-While-Listening" Paradigm
+
+Word recognition is traditionally studied in the "looking-while-listening" paradigm (alternatively referred to as the intermodal preferential looking procedure; Fernald, Zangl, Portillo, & Marchman, 2008; Hirsh-Pasek, Cauley, Golinkoff, & Gordon, 1987).
+In such studies, infants listen to a sentence prompting a specific referent (e.g., Look at the dog!) while viewing two images on the screen (e.g., an image of a dog -- the target image -- and an image of a duck -- the distractor image).
+Infants' word recognition is measured in terms of how quickly and accurately they fixate on the correct target image after hearing its label.
+Past research has used this same basic method to study a wide range of questions in language development.
+For example, the looking-while-listening paradigm has been used to uncover early knowledge of nouns in infants' early noun knowledge, phonological representations of words, prediction during language processing, and individual differences in language development (Bergelson & Swingley, 2012; Golinkoff, Ma, Song, & Hirsh-Pasek, 2013; Lew-Williams & Fernald, 2007; Marchman et al., 2018; Swingley & Aslin, 2000).
 
 ## Measuring developmental change in word recognition
-While the looking-while-listening paradigm has been highly fruitful in advancing understanding of early word knowledge, fundamental questions remain both about the trajectory of children’s word recognition ability and the nature of the method itself.
-One central question is how to measure developmental change in word recognition. 
+
+While the looking-while-listening paradigm has been highly fruitful in advancing understanding of early word knowledge, fundamental questions remain both about the trajectory of children's word recognition ability and the nature of the method itself.
+One central question is how to measure developmental change in word recognition.
 A key idea in the language learning literature is that processing speed - the ability to quickly link a word with its referent - supports language learning.
 Age-related changes in speed of processing are thought to accelerate infants' subsequent language learning: the faster infants are able to process incoming speech input, the better able they become to learn from their language environment.
-Similarly, longitudinal analyses have found that individual differences in word recognition speed predict linguistic and cognitive outcomes later in childhood (e.g., Marchman & Fernald, 2008). 
-However, measuring increases in the speed and accuracy of word recognition faces the challenge of distinguishing developmental changes in word recognition skill from changes in knowledge of specific words. 
-This problem is particularly thorny in child development, since the number of items that can be tested within a single session is limited and items must be selected in an age-appropriate manner (Peter et al., 2019). 
+Similarly, longitudinal analyses have found that individual differences in word recognition speed predict linguistic and cognitive outcomes later in childhood (e.g., Marchman & Fernald, 2008).
+However, measuring increases in the speed and accuracy of word recognition faces the challenge of distinguishing developmental changes in word recognition skill from changes in knowledge of specific words.
+This problem is particularly thorny in child development, since the number of items that can be tested within a single session is limited and items must be selected in an age-appropriate manner (Peter et al., 2019).
 Measuring developmental change therefore requires large-scale datasets with a range of items, in order to generalize age-related changes across words.
 
 ## Developing methodological best-practices
-A second question relates to evaluating methodological best practices. In particular, many fundamental analytic decisions vary substantially across studies, and different decisions may lead to different inferences about children’s word recognition. For example, researchers vary in how they select time windows for analysis, transform the dependent measure of target fixations, and model the time course of word recognition (Csibra, Hernik, Mascaro, Tatone, & Lengyel, 2016; Fernald et al., 2008; Huang & Snedeker, 2020). This problem is made more complex by the fact that many of these decisions depend on a variety of design-related and participant-related factors (e.g., infant age). Establishing best practices therefore requires a large database of infant word recognition studies varying across such factors, in order to test the potential consequences of methodological decisions on study results.
+
+A second question relates to evaluating methodological best practices.
+In particular, many fundamental analytic decisions vary substantially across studies, and different decisions may lead to different inferences about children's word recognition.
+For example, researchers vary in how they select time windows for analysis, transform the dependent measure of target fixations, and model the time course of word recognition (Csibra, Hernik, Mascaro, Tatone, & Lengyel, 2016; Fernald et al., 2008; Huang & Snedeker, 2020).
+This problem is made more complex by the fact that many of these decisions depend on a variety of design-related and participant-related factors (e.g., infant age).
+Establishing best practices therefore requires a large database of infant word recognition studies varying across such factors, in order to test the potential consequences of methodological decisions on study results.
 
 ## Peekbank: An open database of developmental eye-tracking studies.
-What these two questions share is that they are difficult to answer at the scale of a single study. To address this challenge, we introduce Peekbank, a flexible and reproducible interface to an open database of developmental eye-tracking studies. The Peekbank project (a) collects a large set of eye-tracking datasets on children’s word recognition, (b) introduces a data format and processing tools for standardizing eye-tracking data across data sources, and (c) provides an interface for accessing and analyzing the database. In the current paper, we give an overview of the key components of the project and some initial demonstrations of its utility in advancing theoretical and methodological insights. We report two analyses using the database and associated tools (N=1,233): (1) a growth curve analysis modeling age-related changes in infants’ word recognition while generalizing across item-level variability; and (2) a multiverse-style analysis of how a central methodological decision – selecting the time window of analysis – impacts inter-item reliability.
+
+What these two questions share is that they are difficult to answer at the scale of a single study.
+To address this challenge, we introduce Peekbank, a flexible and reproducible interface to an open database of developmental eye-tracking studies.
+The Peekbank project (a) collects a large set of eye-tracking datasets on children's word recognition, (b) introduces a data format and processing tools for standardizing eye-tracking data across data sources, and (c) provides an interface for accessing and analyzing the database.
+In the current paper, we give an overview of the key components of the project and some initial demonstrations of its utility in advancing theoretical and methodological insights.
+We report two analyses using the database and associated tools (N=1,233): (1) a growth curve analysis modeling age-related changes in infants' word recognition while generalizing across item-level variability; and (2) a multiverse-style analysis of how a central methodological decision -- selecting the time window of analysis -- impacts inter-item reliability.
 
 # Design and Technical Approach
 
 ## Database Framework.
 
+```{=html}
 <!-- 
 guiding users through the sections, similar to the childes-db paper 
 Need to explain motivations first, such as issues encountered when consolidating multiple experimental design, etc. 
 why a unified format is need first, hence the data import and raw data processing
 -->
+```
+One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared re-usable data format across individual experiments.
+Researcher conventions for structuring data vary, as do the technical specifications of different devices, rendering the task of integrating datasets from different labs and data sources difficult.
+Therefore, our first effort was developing a common, tidy format for the eye-tracking data in Peekbank to ease the process of conducting cross-dataset analyses (Wickham et al., 2019).
+All incoming datasets will be processed into this unified format and then ingested into the core database.
 
-One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared re-usable data format across individual experiments. Researcher conventions for structuring data vary, as do the technical specifications of different devices, rendering the task of integrating datasets from different labs and data sources difficult. Therefore, our first effort was developing a common, tidy format for the eye-tracking data in Peekbank to ease the process of conducting cross-dataset analyses (Wickham et al., 2019). All incoming datasets will be processed into this unified format and then ingested into the core database. 
+As illustrated in Figure\ \ref{fig:fig-framework-overview}, the Peekbank framework consists of three main components: (1) processing eye-tracking experimental datasets into a unified format; (2) populating a relational database; and (3) providing an interface to the database.
+These components are supported by three libraries.
+The peekds library (for the R language; R Development Core Team, 2020) helps researchers convert and validate existing datasets to use the relational format of the database.
+The peekbank module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by peekds.
+The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet.
+The peekbankr library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
 
-As illustrated in Figure XX, the Peekbank framework consists of three main components: (1) processing eye-tracking experimental datasets into a unified format; (2) populating a relational database; and (3) providing an interface to the database. These components are supported by three libraries. The peekds library (for the R language; R Development Core Team, 2020) helps researchers convert and validate existing datasets to use the relational format of the database. The peekbank module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by peekds. The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet. The peekbankr library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
+In the following sections, we will begin by providing the details on the database's scheme design and technical implementation on peekds.
+For users who are primarily interested in accessing the database can skip these details and focus on access through the peekbankr API and the web apps.
 
-In the following sections, we will begin by providing the details on the database’s scheme design and technical implementation on peekds. For users who are primarily interested in accessing the database can skip these details and focus on access through the peekbankr API and the web apps.
-
-
-```{r fig-framework-overview, fig.env = "figure", fig.align = "center", fig.height=4.5, set.cap.width=T, num.cols.cap=1, fig.cap = "Overview of the Peekbank data ecosystem. Peekbank tools are highlighted in green. *custom R packages."}
-img <- png::readPNG(here("brm/figures","peekbankflowchartv6.png"))
-
-grid::grid.raster(img)
+```{r fig-framework-overview, fig.env = "figure", fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "Overview of the Peekbank data ecosystem. Peekbank tools are highlighted in green. *custom R packages."}
+knitr::include_graphics(here("brm/figures","peekbankflowchartv6.png"))
 ```
 
 ## Database Schema
 
-The peekbank database has two main sets of data: (1) metadata on the experiment design and participants and (2) timecourse looking data (Fig XX). Here, we will give an outline of the tables encoding this data.
+The peekbank database has two main sets of data: (1) metadata on the experiment design and participants and (2) timecourse looking data (Fig XX).
+Here, we will give an outline of the tables encoding this data.
 
 ### Metadata
-Metadata can be separated into two parts: (1) subject-level demographics and (2) trial structure information. Subject-level information includes the `subjects` table, information about individuals who participated in the study, and the `administrations` table, information about runs of the experiment. The `subjects` table contains information at the subject level, such as a subject’s sex and native language, and the `administrations` table includes information specific to a particular run of the experiment, such as the subject’s age at the time of the experiment and the eyecoding method for that administration. 
 
-The `stimuli` and `trial_types` tables store information about the experiment design. Stimuli are (label, image) mappings that are seen in the experiment. The `trial_types` table encodes information about each trial of the experiment including the target stimulus and location, the distractor stimulus and location, and the point of disambiguation for that trial. If this dataset used automatic eyetracking rather than manual coding, each trial type is additionally linked to a set of area of interest (x, y) coordinates, encoded in the `aoi_region_sets` table. 
+Metadata can be separated into two parts: (1) subject-level demographics and (2) trial structure information.
+Subject-level information includes the `subjects` table, information about individuals who participated in the study, and the `administrations` table, information about runs of the experiment.
+The `subjects` table contains information at the subject level, such as a subject's sex and native language, and the `administrations` table includes information specific to a particular run of the experiment, such as the subject's age at the time of the experiment and the eyecoding method for that administration.
 
-Because individual trial types can be repeated multiple times within an administration, the order of the trials is encoded in the `trials` table. Each unique ordering that occurred in the experiment is encoded—for example, if every participant saw the same ordering, the trials table would only have as many rows as there were trials in the experiment; if there were many different orderings, the trials table would represent each ordering. The `trial_id`, which links a trial type to the order it was presented in an administration, is attached to the  time course looking data. 
+The `stimuli` and `trial_types` tables store information about the experiment design.
+Stimuli are (label, image) mappings that are seen in the experiment.
+The `trial_types` table encodes information about each trial of the experiment including the target stimulus and location, the distractor stimulus and location, and the point of disambiguation for that trial.
+If this dataset used automatic eyetracking rather than manual coding, each trial type is additionally linked to a set of area of interest (x, y) coordinates, encoded in the `aoi_region_sets` table.
+
+Because individual trial types can be repeated multiple times within an administration, the order of the trials is encoded in the `trials` table.
+Each unique ordering that occurred in the experiment is encoded---for example, if every participant saw the same ordering, the trials table would only have as many rows as there were trials in the experiment; if there were many different orderings, the trials table would represent each ordering.
+The `trial_id`, which links a trial type to the order it was presented in an administration, is attached to the time course looking data.
 
 ### Timecourse data
-Timecourse looking data is encoded in two tables: `aoi_timepoints` and `xy_timepoints`. The `aoi_timepoints` table encodes time-stamped looks to areas of interest: looks to the target, looks to the distractor, looks to other places, and missing looks. All datasets have this table, and it is the centerpiece of the schema where looking behavior is recorded. Additionally, for eyetracking data that is automatically rather than manually coded, the `xy_timepoints` table encodes the (x, y) coordinates of looks over the course of the experiment. Both the `aoi_timepoints` and `xy_timepoints` tables are resampled to a consistent sampling rate, as described in the Import section below.
+
+Timecourse looking data is encoded in two tables: `aoi_timepoints` and `xy_timepoints`.
+The `aoi_timepoints` table encodes time-stamped looks to areas of interest: looks to the target, looks to the distractor, looks to other places, and missing looks.
+All datasets have this table, and it is the centerpiece of the schema where looking behavior is recorded.
+Additionally, for eyetracking data that is automatically rather than manually coded, the `xy_timepoints` table encodes the (x, y) coordinates of looks over the course of the experiment.
+Both the `aoi_timepoints` and `xy_timepoints` tables are resampled to a consistent sampling rate, as described in the Import section below.
 
 ## Import
 
-During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. The following section is a description of the import process for peekbank. It serves as both a description of our method in importing the datasets already in the database, as well as a high-level overview of the import process for researchers looking to import their data in the future. First, we will describe the import of metadata, and second, we will describe import of the timecourse looking data, including processing functions in `peekds` for normalizing and resampling looking behavior.
+During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema.
+The following section is a description of the import process for peekbank.
+It serves as both a description of our method in importing the datasets already in the database, as well as a high-level overview of the import process for researchers looking to import their data in the future.
+First, we will describe the import of metadata, and second, we will describe import of the timecourse looking data, including processing functions in `peekds` for normalizing and resampling looking behavior.
 
 ### Metadata
-Subject-level data is imported for all participants who have experiment data. In general, we import data without particular exclusions, including as many participants as possible in the database. The `subjects` and `administrations` tables separate information at the subject level from information about runs of the experiment, such that longitudinal studies have multiple administrations linked to each subject.
 
-The `stimuli` table has a row for each (word, image) pair, and thus is used slightly differently across different experiment designs. In most experiments, there is a one-to-one mapping between images and labels (e.g., each time an image of a dog appears it is referred to as "dog"). For studies in which there are multiple potential labels per image (e.g., "dog" and "chien" are both used to refer to an image of a dog), images can have multiple rows in the `stimuli` table with unique labels as well as a row with no label to be used when the image appears solely as a distractor (and thus its label is ambiguous). This structure is useful for studies on synonymy or using multiple languages. For studies in which the same label refers to multiple images (e.g., the word "dog" refers to an image of a dalmatian and a poodle), the same label can have multiple rows in the `stimuli` table with unique images. The `trial_types` table contains each pair of stimuli, a target and distractor, seen in the experiment. The `trial_types` table links trial types to the `aoi_region_sets` table and the `trials` table.
+Subject-level data is imported for all participants who have experiment data.
+In general, we import data without particular exclusions, including as many participants as possible in the database.
+The `subjects` and `administrations` tables separate information at the subject level from information about runs of the experiment, such that longitudinal studies have multiple administrations linked to each subject.
 
-The `trials` table encodes each unique ordering of trial types seen in all runs of an experiment. For example, for experiments with a fixed trial order, the `trials` table will have as many rows as there are stimuli in the experiment; for experiments with a randomized trial order, there will be many rows linking the trial orderings to the trial types. The `trials` table links all experiment design information to the timecourse data.
+The `stimuli` table has a row for each (word, image) pair, and thus is used slightly differently across different experiment designs.
+In most experiments, there is a one-to-one mapping between images and labels (e.g., each time an image of a dog appears it is referred to as "dog").
+For studies in which there are multiple potential labels per image (e.g., "dog" and "chien" are both used to refer to an image of a dog), images can have multiple rows in the `stimuli` table with unique labels as well as a row with no label to be used when the image appears solely as a distractor (and thus its label is ambiguous).
+This structure is useful for studies on synonymy or using multiple languages.
+For studies in which the same label refers to multiple images (e.g., the word "dog" refers to an image of a dalmatian and a poodle), the same label can have multiple rows in the `stimuli` table with unique images.
+The `trial_types` table contains each pair of stimuli, a target and distractor, seen in the experiment.
+The `trial_types` table links trial types to the `aoi_region_sets` table and the `trials` table.
+
+The `trials` table encodes each unique ordering of trial types seen in all runs of an experiment.
+For example, for experiments with a fixed trial order, the `trials` table will have as many rows as there are stimuli in the experiment; for experiments with a randomized trial order, there will be many rows linking the trial orderings to the trial types.
+The `trials` table links all experiment design information to the timecourse data.
 
 ### Timecourse data
-Raw looking data is a series of looks to AOIs or to (x, y) coordinates on the experiment screen, linked to points in time. For data generated by eyetrackers, we typically have (x, y) coordinates at each time point, which will be encoded in the `xy_timepoints` table. These looks will also be recoded into AOIs using the AOI coordinates in the `aoi_region_sets` table using the `add_aois()` function in `peekds`, which will be encoded in the `aoi_timepoints` table. For hand-coded data, we typically have a series of AOIs; these will be recoded into the categories in the Peekbank schema (target, distractor, other, and missing) and encoded in the `aoi_timepoints` table, and these datasets will not have an `xy_timepoints` table.
 
-Typically, timepoints in the `xy_timepoints` table and `aoi_timepoints` table need to be regularized to center each trial's time around the point of disambiguation--the time of target word onset in the trial. If time values run throughout the experiment rather than resetting to zero at the beginning of each trial, `rezero_times()` is used to reset the time at each trial. After this, each trial's times are centered around the point of disambiguation using `normalize_times()`. When these steps are complete, the time course is ready for resampling.
+Raw looking data is a series of looks to AOIs or to (x, y) coordinates on the experiment screen, linked to points in time.
+For data generated by eyetrackers, we typically have (x, y) coordinates at each time point, which will be encoded in the `xy_timepoints` table.
+These looks will also be recoded into AOIs using the AOI coordinates in the `aoi_region_sets` table using the `add_aois()` function in `peekds`, which will be encoded in the `aoi_timepoints` table.
+For hand-coded data, we typically have a series of AOIs; these will be recoded into the categories in the Peekbank schema (target, distractor, other, and missing) and encoded in the `aoi_timepoints` table, and these datasets will not have an `xy_timepoints` table.
 
-To facilitate time course analysis and visualization across datasets, timecourse data must be resampled to a uniform sampling rate. To do this, we use the `resample()` function. During the resampling process, we interpolate using constant interpolation, selecting the looking location for the nearest time point in the original data for both `aoi_timepoints` and `xy_timepoints` data. Compared to linear interpolation (see e.g. Wass et al., 2014), constant interpolation has the advantage that it does not introduce new look locations, so it is a more conservative method of resampling.
+Typically, timepoints in the `xy_timepoints` table and `aoi_timepoints` table need to be regularized to center each trial's time around the point of disambiguation--the time of target word onset in the trial.
+If time values run throughout the experiment rather than resetting to zero at the beginning of each trial, `rezero_times()` is used to reset the time at each trial.
+After this, each trial's times are centered around the point of disambiguation using `normalize_times()`.
+When these steps are complete, the time course is ready for resampling.
 
-After resampling, the final step of dataset import is validation. The `peekds` package offers functions to check the now processed data tables against the most updated database schema to ensure that all tables have the required fields and correct data types for database ingestion. In an effort to double check the data quality and to make sure that no errors are made in the importing script, we also create a time course plot based on our processed tables to replicate the results in the original paper in the validation step. 
+To facilitate time course analysis and visualization across datasets, timecourse data must be resampled to a uniform sampling rate.
+To do this, we use the `resample()` function.
+During the resampling process, we interpolate using constant interpolation, selecting the looking location for the nearest time point in the original data for both `aoi_timepoints` and `xy_timepoints` data.
+Compared to linear interpolation (see e.g. Wass et al., 2014), constant interpolation has the advantage that it does not introduce new look locations, so it is a more conservative method of resampling.
 
+After resampling, the final step of dataset import is validation.
+The `peekds` package offers functions to check the now processed data tables against the most updated database schema to ensure that all tables have the required fields and correct data types for database ingestion.
+In an effort to double check the data quality and to make sure that no errors are made in the importing script, we also create a time course plot based on our processed tables to replicate the results in the original paper in the validation step.
 
-## CHECK and edit resampling section for ties and for maximum time over which we interpolate ##
+## CHECK and edit resampling section for ties and for maximum time over which we interpolate
 
-
-
-```{r fig-schema, fig.env = "figure", fig.align = "center", fig.height=4.5, set.cap.width=T, num.cols.cap=1, fig.cap = "The Peekbank schema. Each square represents a table in the relational database."}
-img <- png::readPNG(here("brm/figures","schema_3.png"))
-
-grid::grid.raster(img)
+```{r fig-schema, fig.env = "figure", fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "The Peekbank schema. Each square represents a table in the relational database."}
+knitr::include_graphics(here("brm/figures","schema_3.png"))
 ```
-
 
 ## Current Data Sources.
 
-```{r xtable, num.cols.cap=1, results="asis"}
-load(file = here("brm","data","dataset_info.Rds"))
-load(file = here("brm","data","aoi_data_joined.Rds"))
-
+```{r eval=FALSE}
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 iso_codes <- read_csv(here("brm","data","iso_language_codes.csv"))
 
@@ -316,20 +370,25 @@ summarize_datasets <- dataset_info %>%
   select(dataset_rename,apa_cite, num_subj,avg_age,age_range_months,method,language) %>%
   arrange(dataset_rename)
 
-summarize_dataset_by_age_bin <- dataset_info %>%
-  left_join(dataset_name_mapping) %>%
-  mutate(
-    age_bin = case_when(
-      age <= 24 ~ "(12,24]",
-      age <=36 ~ "(24,36]",
-      age <=48 ~ "(36,48]",
-      age<=60 ~ "(48,60]"
-    )
-  ) %>%
-  group_by(dataset_rename,age_bin) %>%
-  summarize(
-    num_subj=length(unique(subject_id)))
+saveRDS(summarize_datasets, here("brm", "data", "summarize_datasets.rds"))
 
+# summarize_dataset_by_age_bin <- dataset_info %>%
+#   left_join(dataset_name_mapping) %>%
+#   mutate(
+#     age_bin = case_when(
+#       age <= 24 ~ "(12,24]",
+#       age <=36 ~ "(24,36]",
+#       age <=48 ~ "(36,48]",
+#       age<=60 ~ "(48,60]"
+#     )
+#   ) %>%
+#   group_by(dataset_rename,age_bin) %>%
+#   summarize(
+#     num_subj=length(unique(subject_id)))
+```
+
+```{r dataset-table, num.cols.cap=1, results="asis"}
+summarize_datasets <- readRDS(here("brm", "data", "summarize_datasets.rds"))
 tab1 <- xtable::xtable(summarize_datasets, digits=c(1), 
                        caption = "Overview over the datasets in the current database.")
 
@@ -341,9 +400,12 @@ print(tab1, type="latex", comment = F,include.rownames=FALSE, size="\\fontsize{9
 scalebox=0.85)
 ```
 
-The database currently includes 11 looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table XX). Most datasets (10 out of 11 total) consist of data from monolingual native English speakers. They span a wide age spectrum with participants ranging from 8 to 84 months of age, and are balanced in terms of gender (48% female). The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. Most studies focused on testing familiar items, but the database also includes studies with novel pseudowords. All data (and accompanying references) are openly available on the Open Science Framework (https://osf.io/pr6wu/?view_only=07a3887eb7a24643bdc1b2612f2729de).
-
-
+The database currently includes 11 looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table XX).
+Most datasets (10 out of 11 total) consist of data from monolingual native English speakers.
+They span a wide age spectrum with participants ranging from 8 to 84 months of age, and are balanced in terms of gender (48% female).
+The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior.
+Most studies focused on testing familiar items, but the database also includes studies with novel pseudowords.
+All data (and accompanying references) are openly available on the Open Science Framework (<https://osf.io/pr6wu/?view_only=07a3887eb7a24643bdc1b2612f2729de>).
 
 How selected?
 Language coverage?
@@ -351,8 +413,7 @@ More details about lab and design variation?
 
 ## Versioning + Expanding the database
 
-Information about versioning approach/ regularity of updates
-Steps for extending the database?
+Information about versioning approach/ regularity of updates Steps for extending the database?
 
 # Interfacing with peekbank
 
@@ -362,12 +423,12 @@ One goal of the Peekbank project is to allow a wide range of users to easily exp
 We therefore have created an interactive web application -- \texttt{peekbank-shiny} -- that allows users to quickly and easily create informative visualizations of individual datasets and aggregated data.
 \texttt{peekbank-shiny} is built using Shiny, a software package for creating web apps using R.
 The Shiny app allows users to create commonly used visualizations of looking-while-listening data, based on data from the Peekbank database.
-Specifically, users can visualize 
+Specifically, users can visualize
 
-1. the time course of looking data in a profile plot depicting infant target looking across trial time,
-2. overall accuracy (proportion target looking) within a specified analysis window,
-3. reaction times (speed of fixating the target image) in response to a target label, and
-4. an onset-contingent plot, which shows the time course of participant looking as a function of their look location at the onset of the target label.
+1.  the time course of looking data in a profile plot depicting infant target looking across trial time,
+2.  overall accuracy (proportion target looking) within a specified analysis window,
+3.  reaction times (speed of fixating the target image) in response to a target label, and
+4.  an onset-contingent plot, which shows the time course of participant looking as a function of their look location at the onset of the target label.
 
 Users are given various customization options for each of these visualizations, e.g., choosing which datasets to include in the plots, controlling the age range of participants, splitting the visualizations by age bins, and controlling the analysis window for time course analyses.
 Plots are then updated in real time to reflect users' customization choices, and users are given options to share the visualizations they created.
@@ -375,49 +436,44 @@ The Shiny app thus allows users to quickly inspect basic properties of Peekbanks
 
 ## Peekbankr
 
-Functions:
-connect_to_peekbank():
-get_datasets()
-get_subjects()
-get_administrations()
-get_stimuli()
-get_aoi_timepoints()
-get_trials()
-get_trial_types()
-get_xy_timepoints()
-get_aoi_region_sets()
+Functions: connect_to_peekbank(): get_datasets() get_subjects() get_administrations() get_stimuli() get_aoi_timepoints() get_trials() get_trial_types() get_xy_timepoints() get_aoi_region_sets()
 
 ## OSF site
-Stimuli
-Data in raw format (if some additional datum needed, e.g. pupil size?)
+
+Stimuli Data in raw format (if some additional datum needed, e.g. pupil size?)
 
 # Peekbank in Action
 
-We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis [e.g., @Hardwicke2018] and also provides an easy way to explore looking-while-listening timecourse data in a standardized format. Our second example showss an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis can be used for optimizing the stimuli for new experiments. 
+We provide two potential use-cases for Peekbank data.
+In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database.
+Our first example shows how we can replicate the analysis for a classic study.
+This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis [e.g., @Hardwicke2018] and also provides an easy way to explore looking-while-listening timecourse data in a standardized format.
+Our second example showss an in-depth exploration of developmental changes in the recognition of particular words.
+Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis can be used for optimizing the stimuli for new experiments.
 
 ## Computational reproducibility example: Swingley & Aslin (2002)
 
+```{r get_swingley, eval=FALSE}
+aoi_timepoints <- get_aoi_timepoints(dataset_name = "swingley_aslin_2002",
+                                     rle=FALSE)
+administrations <- get_administrations(dataset_name = "swingley_aslin_2002")
 
+stimuli <- get_stimuli(dataset_name = "swingley_aslin_2002")
+trial_types <- get_trial_types(dataset_name = "swingley_aslin_2002")
+trials <- get_trials(dataset_name = "swingley_aslin_2002")
 
-```{r get_am}
-
-aoi_timepoints <- peekbankr::get_aoi_timepoints(dataset_name = "swingley_aslin_2002", 
-                                                
-                                         rle=FALSE)
-administrations <- peekbankr::get_administrations(dataset_name = "swingley_aslin_2002")
-
-stimuli <- peekbankr::get_stimuli(dataset_name = "swingley_aslin_2002")
-trial_types <- peekbankr::get_trial_types(dataset_name = "swingley_aslin_2002")
-trials <- peekbankr::get_trials(dataset_name = "swingley_aslin_2002")
-```
-
-```{r}
 swingley_data <- aoi_timepoints %>%
   left_join(administrations) %>%
   left_join(trials) %>%
   left_join(trial_types) %>%
   filter(condition != "filler") %>%
   mutate(condition = ifelse(condition == "cp", "Correct","Mispronunciation"))
+saveRDS(swingley_data, here("brm", "data", "swingley_data.rds"))
+```
+
+```{r swingley_acc}
+swingley_data <- readRDS(here("brm", "data", "swingley_data.rds"))
+
 accs <- swingley_data  %>%
   # mutate(age_group = ifelse(age < mean(age), "13-17", "17-20")) %>%
   group_by(t_norm, administration_id, condition) %>% 
@@ -433,8 +489,7 @@ ggplot(accs, aes(x = t_norm, y = correct, col = condition))+
   geom_polygon(data=data.frame(t_norm=c(367,367,2000,2000),correct=c(0.4,0.72,0.72,0.4)),aes(col=NULL),fill="gray",alpha=0.4)+
   geom_pointrange(aes(ymin = correct - ci, 
                       ymax = correct + ci)) +
-  geom_hline(yintercept = .5, lty = 2, col = "black") + 
-  langcog::theme_mikabr() + 
+  geom_hline(yintercept = .5, lty = 2, col = "black") +
   langcog::scale_color_solarized(name = "Age Group") + 
   #xlim(-500, 3000) + 
   xlab("Time from target word onset (msec)") + 
@@ -443,7 +498,7 @@ ggplot(accs, aes(x = t_norm, y = correct, col = condition))+
   coord_cartesian(xlim = c(-500,3000), ylim = c(0.4,0.72))
 ```
 
-```{r}
+```{r swingley_subj}
 subject_accuracy <- swingley_data   %>%
   group_by(administration_id, lab_age, condition,trial_id) %>% 
   filter(t_norm >=367 & t_norm>=2000) %>%
@@ -462,35 +517,41 @@ ggplot(subject_mp_effect,aes(lab_age,mp_effect))+
   geom_smooth(method="lm")+
   xlab("Mispronunciation Effect")+
   ylab("Age in days")
-  
-
 ```
-
 
 ## Item analyses
 
-To illustrate the power of aggregating data across multiple datasets, we, 
+To illustrate the power of aggregating data across multiple datasets, we,
 
-aspirational goal - 
+aspirational goal -
 
-ALso, item selection but maybe not yet? 
+ALso, item selection but maybe not yet?
 
-```{r all_data}
-all_aoi_timepoints <- peekbankr::get_aoi_timepoints(rle=FALSE)
-all_stimuli <- peekbankr::get_stimuli()
-all_administrations <- peekbankr::get_administrations()
-all_trial_types <- peekbankr::get_trial_types() 
-all_trials <- peekbankr::get_trials()  
+```{r all_data, eval=FALSE}
+all_aoi_timepoints <- get_aoi_timepoints(rle=FALSE)
+all_stimuli <- get_stimuli()
+all_administrations <- get_administrations()
+all_trial_types <- get_trial_types() 
+all_trials <- get_trials()  
 
 aoi_data_joined <- all_aoi_timepoints %>%
   right_join(all_administrations) %>%
   right_join(all_trials) %>%
   right_join(all_trial_types) %>%
   mutate(stimulus_id = target_id) %>%
-  right_join(all_stimuli) 
+  right_join(all_stimuli)
+
+aoi_data_joined <- aoi_data_joined |>
+  select(administration_id, english_stimulus_label, age, t_norm, aoi)
+saveRDS(aoi_data_joined, here("brm","data","aoi_data_joined.rds"))
 ```
 
-```{r eval=FALSE}
+```{r load_peekbank}
+dataset_info <- readRDS(here("brm","data","dataset_info.rds"))
+aoi_data_joined <- readRDS(here("brm","data","aoi_data_joined.rds"))
+```
+
+```{r item_counts, eval=FALSE}
 item_counts <- aoi_data_joined %>%
   group_by(administration_id, english_stimulus_label) %>%
   count() %>%
@@ -504,8 +565,7 @@ ggplot(filter(item_counts, n > 80),
   coord_flip()
 ```
 
-
-```{r}
+```{r target_word_data}
 target_words <- c("book","dog","car","frog","apple",
                   "shoe","kitty","cookie","carrot","birdie","banana","ball")
 
@@ -520,7 +580,9 @@ target_word_data <- aoi_data_joined %>%
   summarise(ci = 1.96 * sd(correct, na.rm=TRUE) / sqrt(length(correct)), 
             correct = mean(correct, na.rm=TRUE), 
             n = n()) 
+```
 
+```{r target_word_plot}
 p <- ggplot(filter(target_word_data, n > 60), 
        aes(x = t_norm, y = correct, col = age_group)) + 
   geom_line() + 
@@ -528,18 +590,17 @@ p <- ggplot(filter(target_word_data, n > 60),
                  alpha = .2) + 
   ylim(.35,1) + 
   facet_wrap(~english_stimulus_label) + 
-  geom_hline(yintercept = .5, lty = 2, col = "black") + 
-  langcog::theme_mikabr() + 
+  geom_hline(yintercept = .5, lty = 2, col = "black") +
   langcog::scale_color_solarized(name = "Age Group (months)") + 
   xlim(0, 4000) + 
   xlab("Time from target word onset (msec)") + 
   ylab("Proportion correct") + 
   theme(legend.position = "bottom")
-
 ```
+
 ## Links to parent report vocabulary data
 
-```{r}
+```{r get_aoas, eval=FALSE}
 items <- wordbankr::get_item_data(language = "English (American)") %>%
   filter(definition %in% target_words)
 ws_data <- wordbankr::get_instrument_data(language = "English (American)", 
@@ -564,10 +625,12 @@ aoas <- wordbankr::fit_aoa(wordbank_data,
                            method = "glmrob",
                            age_min = 8, 
                            age_max = 36)
+saveRDS(aoas, here("brm","data","aoas.rds"))
 ```
 
+```{r aoas}
+aoas <- readRDS(here("brm","data","aoas.rds"))
 
-```{r}
 wb_pb <- target_word_data %>%
   filter(t_norm > 300, t_norm < 3000, n > 20) %>%
   group_by(age_group, english_stimulus_label) %>%
@@ -582,28 +645,39 @@ ggplot(wb_pb,
   geom_smooth(aes(group = 1), method = "lm")
 ```
 
-
-
 # Discussion/ Conclusion
 
-Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive. Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science (Bergmann et al., 2018; Frank, Braginsky, Yurovsky, & Marchman, 2017; The ManyBabies Consortium, 2020). The Peekbank project expands on these efforts by building an infrastructure for aggregating eye-tracking data across studies, with a specific focus on the looking-while-listening paradigm. This paper presents an illustration of some of the key theoretical and methodological questions that can be addressed using Peekbank: generalizing across item-level variability in children’s word recognition and providing data-driven guidance on methodological choices.
+Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive.
+Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science (Bergmann et al., 2018; Frank, Braginsky, Yurovsky, & Marchman, 2017; The ManyBabies Consortium, 2020).
+The Peekbank project expands on these efforts by building an infrastructure for aggregating eye-tracking data across studies, with a specific focus on the looking-while-listening paradigm.
+This paper presents an illustration of some of the key theoretical and methodological questions that can be addressed using Peekbank: generalizing across item-level variability in children's word recognition and providing data-driven guidance on methodological choices.
 
-There are a number of limitations surrounding the current scope of the database. A priority in future work will be to expand the size of the database. With 11 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results. Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability. The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset comes from WEIRD populations; Muthukrishna et al., 2020). Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition. 
-Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development. Gaze behavior has been at the core of many of the key advances in our understanding of infant cognition. Aggregating large datasets of infant looking behavior in a single, openly-accessible format promises to bring a fuller picture of infant cognitive development into view.
+There are a number of limitations surrounding the current scope of the database.
+A priority in future work will be to expand the size of the database.
+With 11 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results.
+Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability.
+The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset comes from WEIRD populations; Muthukrishna et al., 2020).
+Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
+Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development.
+Gaze behavior has been at the core of many of the key advances in our understanding of infant cognition.
+Aggregating large datasets of infant looking behavior in a single, openly-accessible format promises to bring a fuller picture of infant cognitive development into view.
 
 # Acknowledgements
+
 We would like to thank the labs and researchers that have made their data publicly available in the database.
 
 We used `r cite_r("peekbank.bib")` for all our analyses.
-
 
 \newpage
 
 # References
 
+```{=tex}
 \begingroup
 \setlength{\parindent}{-0.5in}
 \setlength{\leftskip}{0.5in}
+```
+::: {#refs custom-style="Bibliography"}
+:::
 
-<div id="refs" custom-style="Bibliography"></div>
 \endgroup

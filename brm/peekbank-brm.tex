@@ -5,8 +5,8 @@
 \documentclass[
   english,
   man,floatsintext]{apa6}
+\usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
@@ -44,7 +44,7 @@
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
-\usepackage{graphicx,grffile}
+\usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
@@ -85,9 +85,9 @@
 
 % Create new environments so endfloat can handle them
 % \newenvironment{ltable}
-%   {\begin{landscape}\begin{center}\begin{threeparttable}}
-%   {\end{threeparttable}\end{center}\end{landscape}}
-\newenvironment{lltable}{\begin{landscape}\begin{center}\begin{ThreePartTable}}{\end{ThreePartTable}\end{center}\end{landscape}}
+%   {\begin{landscape}\centering\begin{threeparttable}}
+%   {\end{threeparttable}\end{landscape}}
+\newenvironment{lltable}{\begin{landscape}\centering\begin{ThreePartTable}}{\end{ThreePartTable}\end{landscape}}
 
 % Enables adjusting longtable caption width to table width
 % Solution found at http://golatex.de/longtable-mit-caption-so-breit-wie-die-tabelle-t15767.html
@@ -128,8 +128,34 @@
   \usepackage{polyglossia}
   \setmainlanguage[]{english}
 \else
-  \usepackage[shorthands=off,main=english]{babel}
+  \usepackage[main=english]{babel}
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
 \fi
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1 \everypar{\setlength{\hangindent}{\cslhangindent}}\ignorespaces\fi
+  % set entry spacing
+  \ifnum #2 > 0
+  \setlength{\parskip}{#2\baselineskip}
+  \fi
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 \title{Peekbank: Exploring children's word recognition through an open, large-scale repository for developmental eye-tracking data}
 \author{Peekbank team\textsuperscript{2}, Martin Zettersten\textsuperscript{1}, Claire Bergey\textsuperscript{2}, Naiti S. Bhatt\textsuperscript{3}, Veronica Boyce\textsuperscript{4}, Mika Braginsky\textsuperscript{5}, Alexandra Carstensen\textsuperscript{4}, Benny deMayo\textsuperscript{1}, George Kachergis\textsuperscript{4}, Molly Lewis\textsuperscript{6}, Bria Long\textsuperscript{4}, Kyle MacDonald\textsuperscript{7}, Jessica Mankewitz\textsuperscript{4}, Stephan Meylan\textsuperscript{5,8}, Annissa N. Saleh\textsuperscript{9}, Rose M. Schneider\textsuperscript{10}, Angeline Sin Mei Tsui\textsuperscript{4}, Sarp Uner\textsuperscript{8}, Tian Linger Xu\textsuperscript{11}, Daniel Yurovsky\textsuperscript{6}, \& Michael C. Frank\textsuperscript{1}}
@@ -139,7 +165,6 @@
 \authornote{
 
 Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
-
 Enter author note here.
 
 The authors made the following contributions. Peekbank team: Conceptualization, Writing - Original Draft Preparation, Writing - Review \& Editing.
@@ -167,8 +192,7 @@ The goal of this effort is to address theoretical and methodological challenges 
 \section{Introduction}\label{introduction}}
 
 Across their first years of life, children learn words in their native tongues at a rapid pace (Frank, Braginsky, Yurovsky, \& Marchman, 2021).
-{[}notes about the size/ pace{]}
-A key part of the word learning process is children's emerging ability to rapidly process words and link them to relevant meanings -- often referred to as word recognition.
+{[}notes about the size/ pace{]} A key part of the word learning process is children's emerging ability to rapidly process words and link them to relevant meanings -- often referred to as word recognition.
 Measuring early word recognition offers insight into children's early word representations and the processes supporting early language comprehension (Bergelson, 2020).
 Word recognition skills are also thought to build a foundation for children's subsequent language development.
 Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes (Bleses, Makransky, Dale, Højen, \& Ari, 2016; Marchman et al., 2018).
@@ -178,9 +202,9 @@ This limitation in scale makes it difficult to understand developmental changes 
 Peekbank provides an openly accessible database of eye-tracking data of children's word recognition, with the primary goal of facilitating the study of developmental changes in children's word knowledge and recognition speed.
 
 \hypertarget{the-looking-while-listening-paradigm}{%
-\subsection{\texorpdfstring{The \enquote{Looking-While-Listening} Paradigm}{The ``Looking-While-Listening'' Paradigm}}\label{the-looking-while-listening-paradigm}}
+\subsection{The ``Looking-While-Listening'' Paradigm}\label{the-looking-while-listening-paradigm}}
 
-Word recognition is traditionally studied in the \enquote{looking-while-listening} paradigm (alternatively referred to as the intermodal preferential looking procedure; Fernald, Zangl, Portillo, \& Marchman, 2008; Hirsh-Pasek, Cauley, Golinkoff, \& Gordon, 1987).
+Word recognition is traditionally studied in the ``looking-while-listening'' paradigm (alternatively referred to as the intermodal preferential looking procedure; Fernald, Zangl, Portillo, \& Marchman, 2008; Hirsh-Pasek, Cauley, Golinkoff, \& Gordon, 1987).
 In such studies, infants listen to a sentence prompting a specific referent (e.g., Look at the dog!) while viewing two images on the screen (e.g., an image of a dog -- the target image -- and an image of a duck -- the distractor image).
 Infants' word recognition is measured in terms of how quickly and accurately they fixate on the correct target image after hearing its label.
 Past research has used this same basic method to study a wide range of questions in language development.
@@ -201,12 +225,20 @@ Measuring developmental change therefore requires large-scale datasets with a ra
 \hypertarget{developing-methodological-best-practices}{%
 \subsection{Developing methodological best-practices}\label{developing-methodological-best-practices}}
 
-A second question relates to evaluating methodological best practices. In particular, many fundamental analytic decisions vary substantially across studies, and different decisions may lead to different inferences about children's word recognition. For example, researchers vary in how they select time windows for analysis, transform the dependent measure of target fixations, and model the time course of word recognition (Csibra, Hernik, Mascaro, Tatone, \& Lengyel, 2016; Fernald et al., 2008; Huang \& Snedeker, 2020). This problem is made more complex by the fact that many of these decisions depend on a variety of design-related and participant-related factors (e.g., infant age). Establishing best practices therefore requires a large database of infant word recognition studies varying across such factors, in order to test the potential consequences of methodological decisions on study results.
+A second question relates to evaluating methodological best practices.
+In particular, many fundamental analytic decisions vary substantially across studies, and different decisions may lead to different inferences about children's word recognition.
+For example, researchers vary in how they select time windows for analysis, transform the dependent measure of target fixations, and model the time course of word recognition (Csibra, Hernik, Mascaro, Tatone, \& Lengyel, 2016; Fernald et al., 2008; Huang \& Snedeker, 2020).
+This problem is made more complex by the fact that many of these decisions depend on a variety of design-related and participant-related factors (e.g., infant age).
+Establishing best practices therefore requires a large database of infant word recognition studies varying across such factors, in order to test the potential consequences of methodological decisions on study results.
 
 \hypertarget{peekbank-an-open-database-of-developmental-eye-tracking-studies.}{%
 \subsection{Peekbank: An open database of developmental eye-tracking studies.}\label{peekbank-an-open-database-of-developmental-eye-tracking-studies.}}
 
-What these two questions share is that they are difficult to answer at the scale of a single study. To address this challenge, we introduce Peekbank, a flexible and reproducible interface to an open database of developmental eye-tracking studies. The Peekbank project (a) collects a large set of eye-tracking datasets on children's word recognition, (b) introduces a data format and processing tools for standardizing eye-tracking data across data sources, and (c) provides an interface for accessing and analyzing the database. In the current paper, we give an overview of the key components of the project and some initial demonstrations of its utility in advancing theoretical and methodological insights. We report two analyses using the database and associated tools (N=1,233): (1) a growth curve analysis modeling age-related changes in infants' word recognition while generalizing across item-level variability; and (2) a multiverse-style analysis of how a central methodological decision -- selecting the time window of analysis -- impacts inter-item reliability.
+What these two questions share is that they are difficult to answer at the scale of a single study.
+To address this challenge, we introduce Peekbank, a flexible and reproducible interface to an open database of developmental eye-tracking studies.
+The Peekbank project (a) collects a large set of eye-tracking datasets on children's word recognition, (b) introduces a data format and processing tools for standardizing eye-tracking data across data sources, and (c) provides an interface for accessing and analyzing the database.
+In the current paper, we give an overview of the key components of the project and some initial demonstrations of its utility in advancing theoretical and methodological insights.
+We report two analyses using the database and associated tools (N=1,233): (1) a growth curve analysis modeling age-related changes in infants' word recognition while generalizing across item-level variability; and (2) a multiverse-style analysis of how a central methodological decision -- selecting the time window of analysis -- impacts inter-item reliability.
 
 \hypertarget{design-and-technical-approach}{%
 \section{Design and Technical Approach}\label{design-and-technical-approach}}
@@ -214,15 +246,24 @@ What these two questions share is that they are difficult to answer at the scale
 \hypertarget{database-framework.}{%
 \subsection{Database Framework.}\label{database-framework.}}
 
-One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared re-usable data format across individual experiments. Researcher conventions for structuring data vary, as do the technical specifications of different devices, rendering the task of integrating datasets from different labs and data sources difficult. Therefore, our first effort was developing a common, tidy format for the eye-tracking data in Peekbank to ease the process of conducting cross-dataset analyses (Wickham et al., 2019). All incoming datasets will be processed into this unified format and then ingested into the core database.
+One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared re-usable data format across individual experiments.
+Researcher conventions for structuring data vary, as do the technical specifications of different devices, rendering the task of integrating datasets from different labs and data sources difficult.
+Therefore, our first effort was developing a common, tidy format for the eye-tracking data in Peekbank to ease the process of conducting cross-dataset analyses (Wickham et al., 2019).
+All incoming datasets will be processed into this unified format and then ingested into the core database.
 
-As illustrated in Figure XX, the Peekbank framework consists of three main components: (1) processing eye-tracking experimental datasets into a unified format; (2) populating a relational database; and (3) providing an interface to the database. These components are supported by three libraries. The peekds library (for the R language; R Development Core Team, 2020) helps researchers convert and validate existing datasets to use the relational format of the database. The peekbank module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by peekds. The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet. The peekbankr library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
+As illustrated in Figure~\ref{fig:fig-framework-overview}, the Peekbank framework consists of three main components: (1) processing eye-tracking experimental datasets into a unified format; (2) populating a relational database; and (3) providing an interface to the database.
+These components are supported by three libraries.
+The peekds library (for the R language; R Development Core Team, 2020) helps researchers convert and validate existing datasets to use the relational format of the database.
+The peekbank module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by peekds.
+The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet.
+The peekbankr library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
 
-In the following sections, we will begin by providing the details on the database's scheme design and technical implementation on peekds. For users who are primarily interested in accessing the database can skip these details and focus on access through the peekbankr API and the web apps.
+In the following sections, we will begin by providing the details on the database's scheme design and technical implementation on peekds.
+For users who are primarily interested in accessing the database can skip these details and focus on access through the peekbankr API and the web apps.
 
 \begin{figure}
 
-{\centering \includegraphics{peekbank-brm_files/figure-latex/fig-framework-overview-1} 
+{\centering \includegraphics[width=18in,height=4.5in]{/Users/mikabr/Dropbox/projects/peekbank/peekbank-paper/brm/figures/peekbankflowchartv6} 
 
 }
 
@@ -232,24 +273,89 @@ In the following sections, we will begin by providing the details on the databas
 \hypertarget{database-schema}{%
 \subsection{Database Schema}\label{database-schema}}
 
-The peekbank database has two main sets of data: (1) metadata on the experiment design and participants and (2) timecourse looking data (Fig XX). Here, we will give an outline of the tables encoding this data, starting with metadata.
+The peekbank database has two main sets of data: (1) metadata on the experiment design and participants and (2) timecourse looking data (Fig XX).
+Here, we will give an outline of the tables encoding this data.
 
-Metadata can be separated into two parts: (1) subject-level demographics and (2) trial structure information. Subject-level information includes the \texttt{subjects} table, information about individuals who participated in the study, and the \texttt{administrations} table, information about runs of the experiment. In the case of longitudinal studies, multiple administrations of an experiment can be linked to a single subject or participant. The \texttt{subjects} table contains information at the subject level, such as a subject's sex and native language, and the \texttt{administrations} table includes information specific to a particular run of the experiment, such as the subject's age at the time of the experiment and the eyecoding method for that administration.
+\hypertarget{metadata}{%
+\subsubsection{Metadata}\label{metadata}}
 
-The \texttt{stimuli} and \texttt{trial\_types} tables store information about the experiment design. Stimuli are (label, image) mappings that are seen in the experiment. When the experiment includes multiple potential labels per image (e.g., in designs testing understanding of multiple languages or synonymy), images can have multiple rows in the \texttt{stimuli} table for unique labels as well as a row with no label to be used when the image appears solely as a distractor (and thus its label is ambiguous). The \texttt{trial\_types} table encodes information about each trial of the experiment including the target stimulus and location, the distractor stimulus and location, and the point of disambiguation for that trial. If this dataset used automatic eyetracking rather than manual coding, each trial type is additionally linked to a set of area of interest (x, y) coordinates, encoded in the \texttt{aoi\_region\_sets} table.
+Metadata can be separated into two parts: (1) subject-level demographics and (2) trial structure information.
+Subject-level information includes the \texttt{subjects} table, information about individuals who participated in the study, and the \texttt{administrations} table, information about runs of the experiment.
+The \texttt{subjects} table contains information at the subject level, such as a subject's sex and native language, and the \texttt{administrations} table includes information specific to a particular run of the experiment, such as the subject's age at the time of the experiment and the eyecoding method for that administration.
 
-Because individual trial types can be repeated multiple times within an administration, the order of the trials is encoded in the \texttt{trials} table. Each unique ordering that occurred in the experiment is encoded---for example, if every participant saw the same ordering, the trials table would only have as many rows as there were trials in the experiment; if there were many different orderings, the trials table would represent each ordering. The \texttt{trial\_id}, which links a trial type to the order it was presented in an administration, is attached to the time course looking data.
+The \texttt{stimuli} and \texttt{trial\_types} tables store information about the experiment design.
+Stimuli are (label, image) mappings that are seen in the experiment.
+The \texttt{trial\_types} table encodes information about each trial of the experiment including the target stimulus and location, the distractor stimulus and location, and the point of disambiguation for that trial.
+If this dataset used automatic eyetracking rather than manual coding, each trial type is additionally linked to a set of area of interest (x, y) coordinates, encoded in the \texttt{aoi\_region\_sets} table.
 
-Timecourse looking data is encoded in two tables: \texttt{aoi\_timepoints} and \texttt{xy\_timepoints}. The \texttt{aoi\_timepoints} table encodes time-stamped looks to areas of interest: looks to the target, looks to the distractor, looks to other places, and missing looks. All datasets have this table, and it is the centerpiece of the schema where looking behavior is recorded. Additionally, for eyetracking data that is automatically rather than manually coded, the \texttt{xy\_timepoints} table encodes the (x, y) coordinates of looks over the course of the experiment. Both the \texttt{aoi\_timepoints} and \texttt{xy\_timepoints} tables are resampled to a consistent sampling rate, as described below.
+Because individual trial types can be repeated multiple times within an administration, the order of the trials is encoded in the \texttt{trials} table.
+Each unique ordering that occurred in the experiment is encoded---for example, if every participant saw the same ordering, the trials table would only have as many rows as there were trials in the experiment; if there were many different orderings, the trials table would represent each ordering.
+The \texttt{trial\_id}, which links a trial type to the order it was presented in an administration, is attached to the time course looking data.
+
+\hypertarget{timecourse-data}{%
+\subsubsection{Timecourse data}\label{timecourse-data}}
+
+Timecourse looking data is encoded in two tables: \texttt{aoi\_timepoints} and \texttt{xy\_timepoints}.
+The \texttt{aoi\_timepoints} table encodes time-stamped looks to areas of interest: looks to the target, looks to the distractor, looks to other places, and missing looks.
+All datasets have this table, and it is the centerpiece of the schema where looking behavior is recorded.
+Additionally, for eyetracking data that is automatically rather than manually coded, the \texttt{xy\_timepoints} table encodes the (x, y) coordinates of looks over the course of the experiment.
+Both the \texttt{aoi\_timepoints} and \texttt{xy\_timepoints} tables are resampled to a consistent sampling rate, as described in the Import section below.
 
 \hypertarget{import}{%
 \subsection{Import}\label{import}}
 
-During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema. The following section is a description of the import process for peekbank. It serves as both a description of our method in importing the datasets already in the database, as well as a high-level overview of the import process for researchers looking to import their data in the future. First, we will describe the import of metadata, and second, we will describe import of the timecourse looking data, including processing functions in \texttt{peekds} for normalizing and resampling looking behavior.
+During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema.
+The following section is a description of the import process for peekbank.
+It serves as both a description of our method in importing the datasets already in the database, as well as a high-level overview of the import process for researchers looking to import their data in the future.
+First, we will describe the import of metadata, and second, we will describe import of the timecourse looking data, including processing functions in \texttt{peekds} for normalizing and resampling looking behavior.
+
+\hypertarget{metadata-1}{%
+\subsubsection{Metadata}\label{metadata-1}}
+
+Subject-level data is imported for all participants who have experiment data.
+In general, we import data without particular exclusions, including as many participants as possible in the database.
+The \texttt{subjects} and \texttt{administrations} tables separate information at the subject level from information about runs of the experiment, such that longitudinal studies have multiple administrations linked to each subject.
+
+The \texttt{stimuli} table has a row for each (word, image) pair, and thus is used slightly differently across different experiment designs.
+In most experiments, there is a one-to-one mapping between images and labels (e.g., each time an image of a dog appears it is referred to as ``dog'').
+For studies in which there are multiple potential labels per image (e.g., ``dog'' and ``chien'' are both used to refer to an image of a dog), images can have multiple rows in the \texttt{stimuli} table with unique labels as well as a row with no label to be used when the image appears solely as a distractor (and thus its label is ambiguous).
+This structure is useful for studies on synonymy or using multiple languages.
+For studies in which the same label refers to multiple images (e.g., the word ``dog'' refers to an image of a dalmatian and a poodle), the same label can have multiple rows in the \texttt{stimuli} table with unique images.
+The \texttt{trial\_types} table contains each pair of stimuli, a target and distractor, seen in the experiment.
+The \texttt{trial\_types} table links trial types to the \texttt{aoi\_region\_sets} table and the \texttt{trials} table.
+
+The \texttt{trials} table encodes each unique ordering of trial types seen in all runs of an experiment.
+For example, for experiments with a fixed trial order, the \texttt{trials} table will have as many rows as there are stimuli in the experiment; for experiments with a randomized trial order, there will be many rows linking the trial orderings to the trial types.
+The \texttt{trials} table links all experiment design information to the timecourse data.
+
+\hypertarget{timecourse-data-1}{%
+\subsubsection{Timecourse data}\label{timecourse-data-1}}
+
+Raw looking data is a series of looks to AOIs or to (x, y) coordinates on the experiment screen, linked to points in time.
+For data generated by eyetrackers, we typically have (x, y) coordinates at each time point, which will be encoded in the \texttt{xy\_timepoints} table.
+These looks will also be recoded into AOIs using the AOI coordinates in the \texttt{aoi\_region\_sets} table using the \texttt{add\_aois()} function in \texttt{peekds}, which will be encoded in the \texttt{aoi\_timepoints} table.
+For hand-coded data, we typically have a series of AOIs; these will be recoded into the categories in the Peekbank schema (target, distractor, other, and missing) and encoded in the \texttt{aoi\_timepoints} table, and these datasets will not have an \texttt{xy\_timepoints} table.
+
+Typically, timepoints in the \texttt{xy\_timepoints} table and \texttt{aoi\_timepoints} table need to be regularized to center each trial's time around the point of disambiguation--the time of target word onset in the trial.
+If time values run throughout the experiment rather than resetting to zero at the beginning of each trial, \texttt{rezero\_times()} is used to reset the time at each trial.
+After this, each trial's times are centered around the point of disambiguation using \texttt{normalize\_times()}.
+When these steps are complete, the time course is ready for resampling.
+
+To facilitate time course analysis and visualization across datasets, timecourse data must be resampled to a uniform sampling rate.
+To do this, we use the \texttt{resample()} function.
+During the resampling process, we interpolate using constant interpolation, selecting the looking location for the nearest time point in the original data for both \texttt{aoi\_timepoints} and \texttt{xy\_timepoints} data.
+Compared to linear interpolation (see e.g.~Wass et al., 2014), constant interpolation has the advantage that it does not introduce new look locations, so it is a more conservative method of resampling.
+
+After resampling, the final step of dataset import is validation.
+The \texttt{peekds} package offers functions to check the now processed data tables against the most updated database schema to ensure that all tables have the required fields and correct data types for database ingestion.
+In an effort to double check the data quality and to make sure that no errors are made in the importing script, we also create a time course plot based on our processed tables to replicate the results in the original paper in the validation step.
+
+\hypertarget{check-and-edit-resampling-section-for-ties-and-for-maximum-time-over-which-we-interpolate}{%
+\subsection{CHECK and edit resampling section for ties and for maximum time over which we interpolate}\label{check-and-edit-resampling-section-for-ties-and-for-maximum-time-over-which-we-interpolate}}
 
 \begin{figure}
 
-{\centering \includegraphics{peekbank-brm_files/figure-latex/fig-schema-1} 
+{\centering \includegraphics[width=7.31in,height=4.5in]{/Users/mikabr/Dropbox/projects/peekbank/peekbank-paper/brm/figures/schema_3} 
 
 }
 
@@ -289,7 +395,12 @@ attword & (Yurovsky \& Frank, 2017) & 288 & 25.5 & 13 - 59 & eye-tracking & Engl
 \caption{Overview over the datasets in the current database.} 
 \end{table}
 
-The database currently includes 11 looking-while-listening datasets comprising \emph{N}=1320 total participants (Table XX). Most datasets (10 out of 11 total) consist of data from monolingual native English speakers. They span a wide age spectrum with participants ranging from 8 to 84 months of age, and are balanced in terms of gender (48\% female). The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. Most studies focused on testing familiar items, but the database also includes studies with novel pseudowords. All data (and accompanying references) are openly available on the Open Science Framework (\url{https://osf.io/pr6wu/?view_only=07a3887eb7a24643bdc1b2612f2729de}).
+The database currently includes 11 looking-while-listening datasets comprising \emph{N}=1320 total participants (Table XX).
+Most datasets (10 out of 11 total) consist of data from monolingual native English speakers.
+They span a wide age spectrum with participants ranging from 8 to 84 months of age, and are balanced in terms of gender (48\% female).
+The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior.
+Most studies focused on testing familiar items, but the database also includes studies with novel pseudowords.
+All data (and accompanying references) are openly available on the Open Science Framework (\url{https://osf.io/pr6wu/?view_only=07a3887eb7a24643bdc1b2612f2729de}).
 
 How selected?
 Language coverage?
@@ -298,8 +409,7 @@ More details about lab and design variation?
 \hypertarget{versioning-expanding-the-database}{%
 \subsection{Versioning + Expanding the database}\label{versioning-expanding-the-database}}
 
-Information about versioning approach/ regularity of updates
-Steps for extending the database?
+Information about versioning approach/ regularity of updates Steps for extending the database?
 
 \hypertarget{interfacing-with-peekbank}{%
 \section{Interfacing with peekbank}\label{interfacing-with-peekbank}}
@@ -333,35 +443,29 @@ The Shiny app thus allows users to quickly inspect basic properties of Peekbanks
 \hypertarget{peekbankr}{%
 \subsection{Peekbankr}\label{peekbankr}}
 
-Functions:
-connect\_to\_peekbank():
-get\_datasets()
-get\_subjects()
-get\_administrations()
-get\_stimuli()
-get\_aoi\_timepoints()
-get\_trials()
-get\_trial\_types()
-get\_xy\_timepoints()
-get\_aoi\_region\_sets()
+Functions: connect\_to\_peekbank(): get\_datasets() get\_subjects() get\_administrations() get\_stimuli() get\_aoi\_timepoints() get\_trials() get\_trial\_types() get\_xy\_timepoints() get\_aoi\_region\_sets()
 
 \hypertarget{osf-site}{%
 \subsection{OSF site}\label{osf-site}}
 
-Stimuli
-Data in raw format (if some additional datum needed, e.g.~pupil size?)
+Stimuli Data in raw format (if some additional datum needed, e.g.~pupil size?)
 
 \hypertarget{peekbank-in-action}{%
 \section{Peekbank in Action}\label{peekbank-in-action}}
 
-We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis (e.g., Hardwicke et al., 2018) and also provides an easy way to explore looking-while-listening timecourse data in a standardized format. Our second example showss an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis can be used for optimizing the stimuli for new experiments.
+We provide two potential use-cases for Peekbank data.
+In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database.
+Our first example shows how we can replicate the analysis for a classic study.
+This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis (e.g., Hardwicke et al., 2018) and also provides an easy way to explore looking-while-listening timecourse data in a standardized format.
+Our second example showss an in-depth exploration of developmental changes in the recognition of particular words.
+Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis can be used for optimizing the stimuli for new experiments.
 
 \hypertarget{computational-reproducibility-example-swingley-aslin-2002}{%
 \subsection{Computational reproducibility example: Swingley \& Aslin (2002)}\label{computational-reproducibility-example-swingley-aslin-2002}}
 
-\includegraphics{peekbank-brm_files/figure-latex/unnamed-chunk-1-1.pdf}
+\includegraphics{peekbank-brm_files/figure-latex/swingley_acc-1.pdf}
 
-\includegraphics{peekbank-brm_files/figure-latex/unnamed-chunk-2-1.pdf}
+\includegraphics{peekbank-brm_files/figure-latex/swingley_subj-1.pdf}
 
 \hypertarget{item-analyses}{%
 \subsection{Item analyses}\label{item-analyses}}
@@ -375,22 +479,32 @@ ALso, item selection but maybe not yet?
 \hypertarget{links-to-parent-report-vocabulary-data}{%
 \subsection{Links to parent report vocabulary data}\label{links-to-parent-report-vocabulary-data}}
 
-\includegraphics{peekbank-brm_files/figure-latex/unnamed-chunk-6-1.pdf}
+\includegraphics{peekbank-brm_files/figure-latex/aoas-1.pdf}
 
 \hypertarget{discussion-conclusion}{%
 \section{Discussion/ Conclusion}\label{discussion-conclusion}}
 
-Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive. Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science (Bergmann et al., 2018; Frank, Braginsky, Yurovsky, \& Marchman, 2017; The ManyBabies Consortium, 2020). The Peekbank project expands on these efforts by building an infrastructure for aggregating eye-tracking data across studies, with a specific focus on the looking-while-listening paradigm. This paper presents an illustration of some of the key theoretical and methodological questions that can be addressed using Peekbank: generalizing across item-level variability in children's word recognition and providing data-driven guidance on methodological choices.
+Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive.
+Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science (Bergmann et al., 2018; Frank, Braginsky, Yurovsky, \& Marchman, 2017; The ManyBabies Consortium, 2020).
+The Peekbank project expands on these efforts by building an infrastructure for aggregating eye-tracking data across studies, with a specific focus on the looking-while-listening paradigm.
+This paper presents an illustration of some of the key theoretical and methodological questions that can be addressed using Peekbank: generalizing across item-level variability in children's word recognition and providing data-driven guidance on methodological choices.
 
-There are a number of limitations surrounding the current scope of the database. A priority in future work will be to expand the size of the database. With 11 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results. Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability. The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset comes from WEIRD populations; Muthukrishna et al., 2020). Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
-Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development. Gaze behavior has been at the core of many of the key advances in our understanding of infant cognition. Aggregating large datasets of infant looking behavior in a single, openly-accessible format promises to bring a fuller picture of infant cognitive development into view.
+There are a number of limitations surrounding the current scope of the database.
+A priority in future work will be to expand the size of the database.
+With 11 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results.
+Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability.
+The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset comes from WEIRD populations; Muthukrishna et al., 2020).
+Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
+Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development.
+Gaze behavior has been at the core of many of the key advances in our understanding of infant cognition.
+Aggregating large datasets of infant looking behavior in a single, openly-accessible format promises to bring a fuller picture of infant cognitive development into view.
 
 \hypertarget{acknowledgements}{%
 \section{Acknowledgements}\label{acknowledgements}}
 
 We would like to thank the labs and researchers that have made their data publicly available in the database.
 
-We used R (Version 4.0.3; R Core Team, 2020) and the R-packages \emph{dplyr} (Version 1.0.3; Wickham et al., 2021), \emph{extrafont} (Version 0.17; Winston Chang, 2014), \emph{forcats} (Version 0.5.0; Wickham, 2021a), \emph{ggplot2} (Version 3.3.3; Wickham, 2016), \emph{here} (Version 1.0.1; Müller, 2020), \emph{papaja} (Version 0.1.0.9997; Aust \& Barth, 2020), \emph{peekbankr} (Version 0.1.1.9001; Braginsky, MacDonald, \& Frank, 2021), \emph{plyr} (Version 1.8.6; Wickham et al., 2021; Wickham, 2011), \emph{png} (Version 0.1.7; Urbanek, 2013), \emph{pso} (Version 1.0.3; Bendtsen., 2012), \emph{purrr} (Version 0.3.4; Henry \& Wickham, 2020), \emph{readr} (Version 1.4.0; Wickham \& Hester, 2020), \emph{stringr} (Version 1.4.0; Wickham, 2019), \emph{tibble} (Version 3.0.5; Müller \& Wickham, 2021), \emph{tidyr} (Version 1.1.2; Wickham, 2021b), \emph{tidyverse} (Version 1.3.0; Wickham, Averick, et al., 2019), and \emph{xtable} (Version 1.8.4; Dahl, Scott, Roosen, Magnusson, \& Swinton, 2019) for all our analyses.
+We used R {[}Version 4.1.0; R Core Team (2020){]} and the R-packages \emph{dplyr} {[}Version 1.0.7; Wickham, François, Henry, and Müller (2021){]}, \emph{extrafont} {[}Version 0.17; Winston Chang (2014){]}, \emph{forcats} {[}Version 0.5.1; Wickham (2021a){]}, \emph{ggplot2} {[}Version 3.3.3; Wickham (2016){]}, \emph{here} {[}Version 1.0.1; Müller (2020){]}, \emph{papaja} {[}Version 0.1.0.9997; Aust and Barth (2020){]}, \emph{peekbankr} {[}Version 0.1.1.9002; Braginsky, MacDonald, and Frank (2021){]}, \emph{plyr} {[}Version 1.8.6; Wickham, François, Henry, and Müller (2021); Wickham (2011){]}, \emph{png} {[}Version 0.1.7; Urbanek (2013){]}, \emph{pso} (Bendtsen., 2012), \emph{purrr} {[}Version 0.3.4; Henry and Wickham (2020){]}, \emph{readr} {[}Version 1.4.0; Wickham and Hester (2020){]}, \emph{stringr} {[}Version 1.4.0; Wickham (2019){]}, \emph{tibble} {[}Version 3.1.2; Müller and Wickham (2021){]}, \emph{tidyr} {[}Version 1.1.3; Wickham (2021b){]}, \emph{tidyverse} {[}Version 1.3.1; Wickham et al. (2019){]}, and \emph{xtable} {[}Version 1.8.4; Dahl, Scott, Roosen, Magnusson, and Swinton (2019){]} for all our analyses.
 
 \newpage
 
@@ -402,8 +516,9 @@ We used R (Version 4.0.3; R Core Team, 2020) and the R-packages \emph{dplyr} (Ve
 \setlength{\leftskip}{0.5in}
 
 \hypertarget{refs}{}
+\begin{CSLReferences}{1}{0}
 \leavevmode\hypertarget{ref-R-papaja}{}%
-Aust, F., \& Barth, M. (2020). \emph{papaja: Create APA manuscripts with R Markdown}. Retrieved from \url{https://github.com/crsh/papaja}
+Aust, F., \& Barth, M. (2020). \emph{{papaja}: {Create} {APA} manuscripts with {R Markdown}}. Retrieved from \url{https://github.com/crsh/papaja}
 
 \leavevmode\hypertarget{ref-R-pso}{}%
 Bendtsen., C. (2012). \emph{Pso: Particle swarm optimization}. Retrieved from \url{https://CRAN.R-project.org/package=pso}
@@ -412,10 +527,10 @@ Bendtsen., C. (2012). \emph{Pso: Particle swarm optimization}. Retrieved from \u
 Braginsky, M., MacDonald, K., \& Frank, M. (2021). \emph{Peekbankr: Accessing the peekbank database}. Retrieved from \url{http://github.com/langcog/peekbankr}
 
 \leavevmode\hypertarget{ref-R-xtable}{}%
-Dahl, D. B., Scott, D., Roosen, C., Magnusson, A., \& Swinton, J. (2019). \emph{Xtable: Export tables to latex or html}. Retrieved from \url{https://CRAN.R-project.org/package=xtable}
+Dahl, D. B., Scott, D., Roosen, C., Magnusson, A., \& Swinton, J. (2019). \emph{Xtable: Export tables to LaTeX or HTML}. Retrieved from \url{https://CRAN.R-project.org/package=xtable}
 
 \leavevmode\hypertarget{ref-Hardwicke2018}{}%
-Hardwicke, T. E., Mathur, M. B., MacDonald, K., Nilsonne, G., Banks, G. C., Kidwell, M. C., \ldots{} Frank, M. C. (2018). Data availability, reusability, and analytic reproducibility: Evaluating the impact of a mandatory open data policy at the journal Cognition. \emph{Royal Society Open Science}, \emph{5}(8). \url{https://doi.org/10.1098/rsos.180448}
+Hardwicke, T. E., Mathur, M. B., MacDonald, K., Nilsonne, G., Banks, G. C., Kidwell, M. C., \ldots{} Frank, M. C. (2018). {Data availability, reusability, and analytic reproducibility: Evaluating the impact of a mandatory open data policy at the journal Cognition}. \emph{Royal Society Open Science}, \emph{5}(8). \url{https://doi.org/10.1098/rsos.180448}
 
 \leavevmode\hypertarget{ref-R-purrr}{}%
 Henry, L., \& Wickham, H. (2020). \emph{Purrr: Functional programming tools}. Retrieved from \url{https://CRAN.R-project.org/package=purrr}
@@ -430,13 +545,13 @@ Müller, K., \& Wickham, H. (2021). \emph{Tibble: Simple data frames}. Retrieved
 R Core Team. (2020). \emph{R: A language and environment for statistical computing}. Vienna, Austria: R Foundation for Statistical Computing. Retrieved from \url{https://www.R-project.org/}
 
 \leavevmode\hypertarget{ref-R-png}{}%
-Urbanek, S. (2013). \emph{Png: Read and write png images}. Retrieved from \url{https://CRAN.R-project.org/package=png}
+Urbanek, S. (2013). \emph{Png: Read and write PNG images}. Retrieved from \url{https://CRAN.R-project.org/package=png}
 
 \leavevmode\hypertarget{ref-R-plyr}{}%
 Wickham, H. (2011). The split-apply-combine strategy for data analysis. \emph{Journal of Statistical Software}, \emph{40}(1), 1--29. Retrieved from \url{http://www.jstatsoft.org/v40/i01/}
 
 \leavevmode\hypertarget{ref-R-ggplot2}{}%
-Wickham, H. (2016). \emph{Ggplot2: Elegant graphics for data analysis}. Springer-Verlag New York. Retrieved from \url{https://ggplot2.tidyverse.org}
+Wickham, H. (2016). \emph{ggplot2: Elegant graphics for data analysis}. Springer-Verlag New York. Retrieved from \url{https://ggplot2.tidyverse.org}
 
 \leavevmode\hypertarget{ref-R-stringr}{}%
 Wickham, H. (2019). \emph{Stringr: Simple, consistent wrappers for common string operations}. Retrieved from \url{https://CRAN.R-project.org/package=stringr}
@@ -448,7 +563,7 @@ Wickham, H. (2021a). \emph{Forcats: Tools for working with categorical variables
 Wickham, H. (2021b). \emph{Tidyr: Tidy messy data}. Retrieved from \url{https://CRAN.R-project.org/package=tidyr}
 
 \leavevmode\hypertarget{ref-R-tidyverse}{}%
-Wickham, H., Averick, M., Bryan, J., Chang, W., McGowan, L. D., François, R., \ldots{} Yutani, H. (2019). Welcome to the tidyverse. \emph{Journal of Open Source Software}, \emph{4}(43), 1686. \url{https://doi.org/10.21105/joss.01686}
+Wickham, H., Averick, M., Bryan, J., Chang, W., McGowan, L. D., François, R., \ldots{} Yutani, H. (2019). Welcome to the {tidyverse}. \emph{Journal of Open Source Software}, \emph{4}(43), 1686. \url{https://doi.org/10.21105/joss.01686}
 
 \leavevmode\hypertarget{ref-R-dplyr}{}%
 Wickham, H., François, R., Henry, L., \& Müller, K. (2021). \emph{Dplyr: A grammar of data manipulation}. Retrieved from \url{https://CRAN.R-project.org/package=dplyr}
@@ -458,6 +573,8 @@ Wickham, H., \& Hester, J. (2020). \emph{Readr: Read rectangular text data}. Ret
 
 \leavevmode\hypertarget{ref-R-extrafont}{}%
 Winston Chang. (2014). \emph{Extrafont: Tools for using fonts}. Retrieved from \url{https://CRAN.R-project.org/package=extrafont}
+
+\end{CSLReferences}
 
 \endgroup
 
