@@ -411,7 +411,7 @@ ggplot(accs, aes(x = t_norm, y = correct, col = condition))+
   geom_pointrange(aes(ymin = correct - ci, 
                       ymax = correct + ci)) +
   geom_hline(yintercept = .5, lty = 2, col = "black") + 
-  langcog::theme_mikabr() + 
+  # langcog::theme_mikabr() + 
   langcog::scale_color_solarized(name = "Age Group") + 
   #xlim(-500, 3000) + 
   xlab("Time from target word onset (msec)") + 
@@ -506,7 +506,7 @@ p <- ggplot(filter(target_word_data, n > 60),
   ylim(.35,1) + 
   facet_wrap(~english_stimulus_label) + 
   geom_hline(yintercept = .5, lty = 2, col = "black") + 
-  langcog::theme_mikabr() + 
+  # langcog::theme_mikabr() + 
   langcog::scale_color_solarized(name = "Age Group (months)") + 
   xlim(0, 4000) + 
   xlab("Time from target word onset (msec)") + 
