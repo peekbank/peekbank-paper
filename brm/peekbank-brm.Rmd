@@ -131,12 +131,13 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed,warning=F,
 
 # Introduction
 
-Across their first years of life, children learn words in their native tongues at a rapid pace (Frank, Braginsky, Yurovsky, & Marchman, 2021).
-[notes about the size/ pace]
-A key part of the word learning process is children’s emerging ability to rapidly process words and link them to relevant meanings – often referred to as word recognition. 
-Measuring early word recognition offers insight into children's early word representations and the processes supporting early language comprehension (Bergelson, 2020).
+Across their first years of life, children learn words in their native tongues at an accelerating pace (Frank, Braginsky, Yurovsky, & Marchman, 2021).
+Although many children will only produce their first word at around one year of age, they will be well on their way to understanding many common nouns [@Bergelson2012a].
+This gap between word production and comprehension persists for some time: at 18 months, children can produce on average 50 words, while they will already understand 150, on average [@hulit2002].
+Thus, understanding early word learning relies on measuring children’s emerging ability to process words and link them to relevant meanings – often referred to as word recognition. 
+Measuring early word recognition offers insight into children's early word representations and the processes supporting early language comprehension [@bergelson2020comprehension].
 Word recognition skills are also thought to build a foundation for children’s subsequent language development. 
-Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes (Bleses, Makransky, Dale, Højen, & Ari, 2016; Marchman et al., 2018).
+Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes [@Bleses2016; @Marchman2018].
 While word recognition is a central part of children's language development, mapping the trajectory of word recognition skills has remained elusive. 
 Studies investigating children's word recognition are typically limited in scope to experiments in individual labs involving small samples tested on a limited set of items.
 This limitation in scale makes it difficult to understand developmental changes in children's word knowledge at a broad scale.
