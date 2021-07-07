@@ -185,7 +185,7 @@ We report two analyses using the database and associated tools (N=1,233): (1) a 
 
 # Design and Technical Approach
 
-## Database Framework.
+## Database Framework
 
 ```{=html}
 <!-- 
@@ -195,43 +195,62 @@ why a unified format is need first, hence the data import and raw data processin
 -->
 ```
 
-One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared re-usable data format across individual experiments. Researcher conventions for structuring data vary, as do the technical specifications of different devices, rendering the task of integrating datasets from different labs and data sources difficult. Therefore, our first effort was developing a common, tidy format for the eye-tracking data in Peekbank to ease the process of conducting cross-dataset analyses [@Wickham2019]. All incoming datasets will be processed into this unified format and then ingested into the core database. 
+One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared data format across individual experiments.
+Researcher conventions for structuring data vary, as do the technical specifications of different devices (e.g., computer displays and eyetracking cameras), rendering the task of integrating datasets from different labs and data sources difficult.
+Therefore, our first effort was to develop a common tabular format to support analyses of all studies simultaneously.
+<!-- scm commented out for clarity -- this is unclear without defining "incoming" and "ingesting": All incoming datasets will be processed into this unified format and then ingested into the core database.--> 
 
-As illustrated in Figure \ \ref{fig:fig-framework-overview}, the Peekbank framework consists of three main components: (1) processing eye-tracking experimental datasets into a unified format; (2) populating a relational database; and (3) providing an interface to the database. These components are supported by three libraries. The peekds library (for the R language; R Development Core Team, 2020) helps researchers convert and validate existing datasets to use the relational format of the database. The peekbank module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by peekds. The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages over the internet. The peekbankr library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
+As illustrated in Figure \ref{fig:fig-framework-overview}, the Peekbank framework consists of three main components: (1) a set of tools to convert eye-tracking datasets into a unified format; (2) a relational database populated with data in this unified format and (3) a set of tools to retrieve data from this database.
+<!-- scm: the graph shows visualizations / shiny as a 4th top-level component --> 
+These components are supported by three libraries.
+The \texttt{peekds} library (for the R language; R Development Core Team, 2020) helps researchers convert existing datasets to use the standardized format of the database.
+The \texttt{peekbank} module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by \texttt{peekds}.
+The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages, and can be hosted on one machine and accessed by many others over the Internet.
+The \texttt{peekbankr} library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
+Most users will access data through this final libary, in which case the details of data formatting and processing are abstracted away from the user.
 
-In the following sections, we will begin by providing the details on the database’s scheme design and technical implementation on peekds. For users who are primarily interested in accessing the database can skip these details and focus on access through the peekbankr API and the web apps.
+In the following sections, we will begin by providing the details on the database’s organization (or \textit{schema}) and the technical implementation on \texttt{peekds}. 
+Users who are primarily interested in accessing the database can skip these details and focus on access through the \texttt{peekbankr} API and the web apps.
 
-```{r fig-framework-overview, fig.env = "figure", fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "Overview of the Peekbank data ecosystem. Peekbank tools are highlighted in green. *custom R packages."}
+```{r fig-framework-overview, fig.env = "figure", fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "Overview of the Peekbank data ecosystem. Peekbank tools are highlighted in green. *R packages introduced in this work."}
 knitr::include_graphics(here("brm/figures","peekbankflowchartv6.png"))
 ```
+<!-- scm: I switched "custom R packages" to "R packages introduced in this work" -->
 
 ## Database Schema
 
-The peekbank database has two main sets of data: (1) metadata on the experiment design and participants and (2) timecourse looking data (Fig XX).
+The peekbank database contains two major types of data: (1) timecourse looking data, detailing where on the screen a child is looking at a given point in time, or (2) metadata regarding the relevant experiment, participant, and trial (Fig XX).
+<!-- scm: what is this figure supposed to convey? -->
 Here, we will give an outline of the tables encoding this data.
-
-### Metadata
-
-Metadata can be separated into two parts: (1) subject-level demographics and (2) trial structure information.
-Subject-level information includes the `subjects` table, information about individuals who participated in the study, and the `administrations` table, information about runs of the experiment.
-The `subjects` table contains information at the subject level, such as a subject's sex and native language, and the `administrations` table includes information specific to a particular run of the experiment, such as the subject's age at the time of the experiment and the eyecoding method for that administration.
-
-The `stimuli` and `trial_types` tables store information about the experiment design.
-Stimuli are (label, image) mappings that are seen in the experiment.
-The `trial_types` table encodes information about each trial of the experiment including the target stimulus and location, the distractor stimulus and location, and the point of disambiguation for that trial.
-If this dataset used automatic eyetracking rather than manual coding, each trial type is additionally linked to a set of area of interest (x, y) coordinates, encoded in the `aoi_region_sets` table.
-
-Because individual trial types can be repeated multiple times within an administration, the order of the trials is encoded in the `trials` table.
-Each unique ordering that occurred in the experiment is encoded---for example, if every participant saw the same ordering, the trials table would only have as many rows as there were trials in the experiment; if there were many different orderings, the trials table would represent each ordering.
-The `trial_id`, which links a trial type to the order it was presented in an administration, is attached to the time course looking data.
+As is common in relational databases, records of similar types (e.g., participants, trials, experiments, coded looks at each timepoint) are grouped into tables, and records of various types are linked through numeric identifiers. 
 
 ### Timecourse data
 
 Timecourse looking data is encoded in two tables: `aoi_timepoints` and `xy_timepoints`.
-The `aoi_timepoints` table encodes time-stamped looks to areas of interest: looks to the target, looks to the distractor, looks to other places, and missing looks.
-All datasets have this table, and it is the centerpiece of the schema where looking behavior is recorded.
-Additionally, for eyetracking data that is automatically rather than manually coded, the `xy_timepoints` table encodes the (x, y) coordinates of looks over the course of the experiment.
+The `aoi_timepoints` table encode where a child is looking at each point in time, by specifying the coded area of interest (or ``AoI''): looks to the target, looks to the distractor, looks on the screen but away from target and distractor, and missing looks.
+All datasets must have this timecourse data, as it where children's looking behavior is actually recorded.
+For eyetracking experiments that are automatically rather than manually coded, the`xy_timepoints` table encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trail.
 Both the `aoi_timepoints` and `xy_timepoints` tables are resampled to a consistent sampling rate, as described in the Import section below.
+To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of \textit{dog} in ``can you find the \textit{dog}?'').
+
+### Metadata
+
+Each record in the timecourse data is linked to several metadata records.
+This metadata can be separated into three parts: (1) subject-level information (e.g., demographics) (2) experiment-level information (e.g., a subject's age for a specific experiment, or the particular eyetracker used to collect the data) and (3) trial information and experimental design (what images or videos were presented onscreen, and paired with which audio).
+Information about individuals who participate in one more studies, for example a subject's sex and first language, is recorded in the `subjects` table, while the `administrations` table contains information about a specific subject participating in a specific experiment.
+This division allows Peekbank to gracefully handle longitudinal designs: a single subject can be associated with many administrations.
+
+The `stimuli` and `trial_types` tables store information about trials, which in turn may reflect specifics of the experiment design.
+Stimuli are (label, image) mappings that are seen in the experiment.
+The `trial_types` table encodes information about each trial of the experiment, including the target stimulus and location, the distractor stimulus and location, and the point of disambiguation for that trial.
+If this dataset used automatic eyetracking rather than manual coding, each trial type is additionally linked to a set of area of interest (x, y) coordinates, encoded in the `aoi_region_sets` table.
+
+Because individual trial types can be repeated multiple times within an administration, the order of the trials is encoded in the `trials` table.
+Each unique ordering that occurred in the experiment is encoded in this table.
+For example, if every participant saw the same ordering, the trials table would only have as many rows as there were trials in the experiment; if there were many different orderings, the trials table would represent each ordering.
+The `trial_id`, which links a trial type to the order it was presented in an administration, is attached to the time course looking data.
+
+
 
 ## Import
 
@@ -242,6 +261,7 @@ First, we will describe the import of metadata, and second, we will describe imp
 
 ### Metadata
 
+<!--scm: there is some redundancy here with the above -->
 Subject-level data is imported for all participants who have experiment data.
 In general, we import data without particular exclusions, including as many participants as possible in the database.
 The `subjects` and `administrations` tables separate information at the subject level from information about runs of the experiment, such that longitudinal studies have multiple administrations linked to each subject.
