@@ -227,11 +227,11 @@ As is common in relational databases, records of similar types (e.g., participan
 ### Timecourse data
 
 Timecourse looking data is encoded in two tables: `aoi_timepoints` and `xy_timepoints`.
-The `aoi_timepoints` table encode where a child is looking at each point in time, by specifying the coded area of interest (or ``AoI''): looks to the target, looks to the distractor, looks on the screen but away from target and distractor, and missing looks.
-All datasets must have this timecourse data, as it where children's looking behavior is actually recorded.
-For eyetracking experiments that are automatically rather than manually coded, the`xy_timepoints` table encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trail.
+The `aoi_timepoints` table encodes where a child is looking at each point in time, by specifying the coded area of interest (AOI): looks to the target, looks to the distractor, looks on the screen but away from target and distractor, and missing looks.
+All datasets must include this timecourse data, as it represents the main record of children's looking behavior.
+For eyetracking experiments that are automatically rather than manually coded, the `xy_timepoints` table encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trial.
 Both the `aoi_timepoints` and `xy_timepoints` tables are resampled to a consistent sampling rate, as described in the Import section below.
-To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of \textit{dog} in ``can you find the \textit{dog}?'').
+To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of \textit{dog} in "can you find the \textit{dog}?").
 
 ### Metadata
 
