@@ -136,16 +136,16 @@ theme_update(panel.grid = ggplot2::element_blank(),
 
 # Introduction
 
-Across their first years of life, children learn words in their native tongues at an accelerating pace (Frank, Braginsky, Yurovsky, & Marchman, 2021).
-Although many children will only produce their first word at around one year of age, they will be well on their way to understanding many common nouns [@Bergelson2012a].
-This gap between word production and comprehension persists for some time: at 18 months, children can produce on average 50 words, while they will already understand 150, on average [@hulit2002].
-Thus, understanding early word learning relies on measuring children’s emerging ability to process words and link them to relevant meanings – often referred to as word recognition. 
-Measuring early word recognition offers insight into children's early word representations and the processes supporting early language comprehension [@bergelson2020comprehension].
+Across their first years of life, children learn words at an accelerating pace (Frank, Braginsky, Yurovsky, & Marchman, 2021).
+Although many children will only produce their first word at around one year of age, they show signs of understanding many common nouns (e.g., "mommy") and phrases (e.g., "Let's go bye-bye!") much earlier in development [@Bergelson2012a].
+However, the processes involved in early word understanding are less directly apparent in children's behaviors and are less accessible to observation than developments in speech production (Fernald, Perfors & Marchman, 2006). 
+To understand speech, children must process the incoming auditory signal and link that signal to relevant meanings – a process often referred to as word recognition. 
+Measuring early word recognition offers insight into children's early word representations and as well as the speed and efficiency with which children comprehend language in real time, as the speech signal unfolds [@bergelson2020comprehension; @fernald1998].
 Word recognition skills are also thought to build a foundation for children’s subsequent language development. 
-Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes [@Bleses2016; @Marchman2018].
-While word recognition is a central part of children's language development, mapping the trajectory of word recognition skills has remained elusive. 
+Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes [@Bleses2016; @Marchman2018]. 
+One explanation for this relationship is that efficiency of word recognition facilitates subsequent word learning: the faster children are at processing speech, the more efficiently they can learn from the input in their environment [@Fernald2012a].
 
-Studies investigating children's word recognition are typically limited in scope to experiments in individual labs involving small samples tested on a limited set of items.
+While word recognition is a central part of children's language development, mapping the trajectory of word recognition skills has remained elusive. Studies investigating children's word recognition are typically limited in scope to experiments in individual labs involving small samples tested on a limited set of items.
 This limitation in scale makes it difficult to understand developmental changes in children's word knowledge at a broad scale.
 Peekbank provides an openly accessible database of eye-tracking data of children's word recognition, with the primary goal of facilitating the study of developmental changes in children's word knowledge and recognition speed.
 

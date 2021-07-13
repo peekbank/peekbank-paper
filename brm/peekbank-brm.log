@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  8 JUL 2021 17:05
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  13 JUL 2021 14:08
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -918,7 +918,7 @@ LaTeX Font Info:    Try loading font information for T1+lmtt on input line 273.
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 ) [7]
 </Users/martinzettersten/GitHub/peekbank-paper/brm/figures/peekbankflowchartv6.
-pdf, id=59, 1300.86pt x 1734.48pt>
+pdf, id=58, 1300.86pt x 1734.48pt>
 File: /Users/martinzettersten/GitHub/peekbank-paper/brm/figures/peekbankflowcha
 rtv6.pdf Graphic file (type pdf)
 <use /Users/martinzettersten/GitHub/peekbank-paper/brm/figures/peekbankflowchar
@@ -926,11 +926,14 @@ tv6.pdf>
 Package pdftex.def Info: /Users/martinzettersten/GitHub/peekbank-paper/brm/figu
 res/peekbankflowchartv6.pdf  used on input line 284.
 (pdftex.def)             Requested size: 243.91064pt x 325.2142pt.
-[8] [9 </Users/martinzettersten/GitHub/peekbank-paper/brm/figures/peekbankflowc
-hartv6.pdf>] [10] [11]
-Underfull \vbox (badness 5331) has occurred while \output is active []
 
-[12]
+Underfull \vbox (badness 3803) has occurred while \output is active []
+
+[8]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[9 </Users/martinzettersten/GitHub/peekbank-paper/brm/figures/peekbankflowchart
+v6.pdf>] [10] [11] [12]
 </Users/martinzettersten/GitHub/peekbank-paper/brm/figures/schema_3.png, id=121
 , 1200.6675pt x 1414.1925pt>
 File: /Users/martinzettersten/GitHub/peekbank-paper/brm/figures/schema_3.png Gr
@@ -948,13 +951,8 @@ Overfull \hbox (0.67538pt too wide) in paragraph at lines 415--417
  [][] 
  []
 
-
-Underfull \vbox (badness 5077) has occurred while \output is active []
-
-[13 </Users/martinzettersten/GitHub/peekbank-paper/brm/figures/schema_3.png>]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-[14] [15] [16]
+[13] [14 </Users/martinzettersten/GitHub/peekbank-paper/brm/figures/schema_3.pn
+g>] [15] [16]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 487.
 
@@ -990,23 +988,23 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 [19] [20 <./peekbank-brm_files/figure-latex/aoas-1.pdf>] [21] [22] [23] [24] [2
 5] AED endfloat: Processing end Figures and Tables [26]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 691.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 691.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 694.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 694.
 (./peekbank-brm.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 691.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 691.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 694.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 694.
 
 LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 17208 strings out of 492649
- 255501 string characters out of 6129622
- 394206 words of memory out of 5000000
+ 17211 strings out of 492649
+ 255541 string characters out of 6129622
+ 395207 words of memory out of 5000000
  20592 multiletter control sequences out of 15000+600000
- 69883 words of font info for 100 fonts, out of 8000000 for 9000
+ 70012 words of font info for 101 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 43i,11n,47p,2251b,475s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 43i,11n,47p,2251b,471s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}</usr/local/
 texlive/2018/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/local/texlive/20
 18/texmf-dist/fonts/type1/public/lm/lmr12.pfb></usr/local/texlive/2018/texmf-di
@@ -1015,10 +1013,10 @@ e1/public/lm/lmr9.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm
 /lmri12.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmss8.pfb
 ></usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmtk10.pfb></usr/loc
 al/texlive/2018/texmf-dist/fonts/type1/public/lm/lmtt12.pfb>
-Output written on peekbank-brm.pdf (26 pages, 1056784 bytes).
+Output written on peekbank-brm.pdf (26 pages, 1057588 bytes).
 PDF statistics:
- 434 PDF objects out of 1000 (max. 8388607)
- 374 compressed objects within 4 object streams
- 125 named destinations out of 1000 (max. 500000)
+ 435 PDF objects out of 1000 (max. 8388607)
+ 375 compressed objects within 4 object streams
+ 126 named destinations out of 1000 (max. 500000)
  6381 words of extra memory for PDF output out of 10000 (max. 10000000)
 
