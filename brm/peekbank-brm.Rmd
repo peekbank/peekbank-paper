@@ -3,16 +3,10 @@ title             : "Peekbank: Exploring children's word recognition through an 
 shorttitle        : "Peekbank repository for developmental eye-tracking data"
 author: 
   - name          : "Peekbank team"
-    affiliation   : "2"
-    corresponding : yes    # Define only one corresponding author
-    address       : "Postal address"
-    email         : "my@email.com"
-    role:         # Contributorship roles (e.g., CRediT, https://casrai.org/credit/)
-      - Conceptualization
-      - Writing - Original Draft Preparation
-      - Writing - Review & Editing
   - name          : "Martin Zettersten"
     affiliation   : "1"
+    corresponding : yes
+    email         : "martincz@princeton.edu"
   - name          : "Claire Bergey"
     affiliation   : "2"
   - name          : "Naiti S. Bhatt"
@@ -74,9 +68,6 @@ affiliation:
     institution   : "Dept. of Psychology, UC San Diego"
   - id            : "11"
     institution   : "Dept. of Psychological and Brain Sciences, Indiana University"
-authornote: |
-  Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
-  Enter author note here.
 abstract: |
   The ability to rapidly recognize words and link them to referents in context is central to children’s early language development. 
   This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants’ fixation on a target object (vs. a distractor) after hearing a target label. 
@@ -98,7 +89,11 @@ draft             : no
 figsintext        : yes
 documentclass     : "apa6"
 classoption       : "man"
-output            : papaja::apa6_pdf
+output:
+  papaja::apa6_pdf:
+    highlight: tango
+header-includes:
+    - \usepackage{setspace}
 editor_options: 
   markdown: 
     wrap: sentence
@@ -111,26 +106,21 @@ library(here)
 library(tidyverse)
 library(peekbankr)
 library(xtable)
-# library(extrafont)
-# extrafont::font_import()
-# extrafont::loadfonts()
-# r_refs("peekbank.bib")
-```
 
-```{r analysis-preferences}
-# Seed for random number generation
-set.seed(42)
 knitr::opts_chunk$set(cache = TRUE, cache.extra = knitr::rand_seed,
-                      echo = FALSE, warning = FALSE, message = FALSE)
-theme_set(theme_bw())
-# .font <- "Source Sans Pro"
+                      echo = FALSE, warning = FALSE, message = FALSE,
+                      fig.env = "figure*")
+
 theme_set(theme_bw(base_size = 14))
 theme_update(panel.grid = ggplot2::element_blank(),
              strip.background = ggplot2::element_blank(),
              legend.key = ggplot2::element_blank(),
              panel.border = ggplot2::element_blank(),
              axis.line = ggplot2::element_line(),
-             strip.text = ggplot2::element_text(face = "bold"))
+             strip.text = ggplot2::element_text(face = "bold"),
+             legend.position = "bottom")
+
+set.seed(42)
 ```
 
 # Introduction
@@ -160,7 +150,7 @@ For example, the looking-while-listening paradigm has been used to uncover early
 
 While the looking-while-listening paradigm has been highly fruitful in advancing understanding of early word knowledge, fundamental questions remain both about the trajectory of children's word recognition ability and the nature of the method itself.
 One central question is how to measure developmental change in word recognition.
-A key idea in the language learning literature is that processing speed - the ability to quickly link a word with its referent - supports language learning.
+A key idea in the language learning literature is that processing speed -- the ability to quickly link a word with its referent -- supports language learning.
 Age-related changes in speed of processing are thought to accelerate infants' subsequent language learning: the faster infants are able to process incoming speech input, the better able they become to learn from their language environment.
 
 Similarly, longitudinal analyses have found that individual differences in word recognition speed predict linguistic and cognitive outcomes later in childhood [e.g., @marchman2008]. 
@@ -199,19 +189,19 @@ Researcher conventions for structuring data vary, as do the technical specificat
 Therefore, our first effort was to develop a common tabular format to support analyses of all studies simultaneously.
 <!-- scm commented out for clarity -- this is unclear without defining "incoming" and "ingesting": All incoming datasets will be processed into this unified format and then ingested into the core database.--> 
 
-As illustrated in Figure \ref{fig:fig-framework-overview}, the Peekbank framework consists of three main components: (1) a set of tools to convert eye-tracking datasets into a unified format; (2) a relational database populated with data in this unified format and (3) a set of tools to retrieve data from this database.
+As illustrated in Figure \@ref(fig:fig-framework-overview), the Peekbank framework consists of three main components: (1) a set of tools to convert eye-tracking datasets into a unified format; (2) a relational database populated with data in this unified format and (3) a set of tools to retrieve data from this database.
 <!-- scm: the graph shows visualizations / shiny as a 4th top-level component --> 
 These components are supported by three libraries.
-The \texttt{peekds} library (for the R language; [@R-base] helps researchers convert existing datasets to use the standardized format of the database.
-The \texttt{peekbank} module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by \texttt{peekds}.
+The `peekds` library (for the R language; [@R-base] helps researchers convert existing datasets to use the standardized format of the database.
+The `peekbank` module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by `peekds`.
 The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages, and can be hosted on one machine and accessed by many others over the Internet.
-The \texttt{peekbankr} library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
+The `peekbankr` library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
 Most users will access data through this final library, in which case the details of data formatting and processing are abstracted away from the user.
 
-In the following sections, we will begin by providing the details on the database’s organization (or \textit{schema}) and the technical implementation on \texttt{peekds}. 
-Users who are primarily interested in accessing the database can skip these details and focus on access through the \texttt{peekbankr} API and the web apps.
+In the following sections, we will begin by providing the details on the database’s organization (or _schema_) and the technical implementation on `peekds`.
+Users who are primarily interested in accessing the database can skip these details and focus on access through the `peekbankr` API and the web apps.
 
-```{r fig-framework-overview, fig.env = "figure", fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "Overview of the Peekbank data ecosystem. Peekbank tools are highlighted in green. *R packages introduced in this work."}
+```{r fig-framework-overview, fig.env = "figure", fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "Overview of the Peekbank data ecosystem. Peekbank tools are highlighted in green. * indicates R packages introduced in this work."}
 knitr::include_graphics(here("brm/figures","peekbankflowchartv6.png"))
 ```
 <!-- scm: I switched "custom R packages" to "R packages introduced in this work" -->
@@ -230,7 +220,7 @@ The `aoi_timepoints` table encodes where a child is looking at each point in tim
 All datasets must include this timecourse data, as it represents the main record of children's looking behavior.
 For eyetracking experiments that are automatically rather than manually coded, the `xy_timepoints` table encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trial.
 Both the `aoi_timepoints` and `xy_timepoints` tables are resampled to a consistent sampling rate, as described in the Import section below.
-To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of \textit{dog} in "can you find the \textit{dog}?").
+To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of _dog_ in "can you find the _dog_?").
 
 ### Metadata
 
@@ -300,7 +290,7 @@ In an effort to double check the data quality and to make sure that no errors ar
 
 ## CHECK and edit resampling section for ties and for maximum time over which we interpolate
 
-```{r fig-schema, fig.env = "figure", fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "The Peekbank schema. Each square represents a table in the relational database."}
+```{r fig-schema, fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "The Peekbank schema. Each square represents a table in the relational database."}
 knitr::include_graphics(here("brm/figures","schema_3.png"))
 ```
 
@@ -310,23 +300,23 @@ knitr::include_graphics(here("brm/figures","schema_3.png"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 iso_codes <- read_csv(here("brm","data","iso_language_codes.csv"))
 
-dataset_unique_subj <- dataset_info %>%
+dataset_unique_subj <- dataset_info |>
   distinct(subject_id,sex)
 
-summarize_novel_familiar <- aoi_data_joined %>%
-  group_by(dataset_name,stimulus_novelty) %>%
-  summarize(n=n()) %>%
-  left_join(dataset_name_mapping) %>%
-  pivot_wider(id_cols=dataset_rename,names_from = stimulus_novelty,values_from=n) %>%
-  group_by(dataset_rename) %>%
+summarize_novel_familiar <- aoi_data_joined |>
+  group_by(dataset_name,stimulus_novelty) |>
+  summarize(n=n()) |>
+  left_join(dataset_name_mapping) |>
+  pivot_wider(id_cols=dataset_rename,names_from = stimulus_novelty,values_from=n) |>
+  group_by(dataset_rename) |>
   summarize(
     has_familiar = ifelse(is.na(familiar)|familiar==0,0,1),
     has_novel=ifelse(is.na(novel)|novel==0,0,1)
   )
 
-summarize_datasets <- dataset_info %>%
-  left_join(dataset_name_mapping) %>%
-  group_by(dataset_rename, apa_cite) %>%
+summarize_datasets <- dataset_info |>
+  left_join(dataset_name_mapping) |>
+  group_by(dataset_rename, apa_cite) |>
   summarize(
     #num_admin=length(unique(administration_id)),
     num_subj=length(unique(subject_id)),
@@ -335,58 +325,58 @@ summarize_datasets <- dataset_info %>%
     min_age_months = round(min(age, na.rm = TRUE),0), 
     max_age_months = round(max(age, na.rm = TRUE),0),
     method=unique(coding_method)[1],
-    native_language = names(which.max(table(native_language)))) %>%
+    native_language = names(which.max(table(native_language)))) |>
   # mutate(
   #   percent_female = case_when(
   #     is.nan(percent_female) ~ "N/A",
   #     TRUE ~ paste0(percent_female*100,"%"))
-  # ) %>%
+  # ) |>
   mutate(
     method=case_when(
       method=="manual gaze coding" ~ "manual coding",
       method=="eyetracking" ~ "eye-tracking",
       method=="preprocessed eyetracking" ~ "eye-tracking",
       TRUE ~ method)
-  ) %>%
+  ) |>
     #split language into multiple columns (only two expected; expand if dataset acquires more)
-  separate(native_language,into=c("native_language_1","native_language_2"),sep=", ") %>%
+  separate(native_language,into=c("native_language_1","native_language_2"),sep=", ") |>
   #join based on ISO standard
-  left_join(iso_codes,by=c("native_language_1"="iso_code")) %>%
-  left_join(iso_codes,by=c("native_language_2"="iso_code")) %>%
+  left_join(iso_codes,by=c("native_language_1"="iso_code")) |>
+  left_join(iso_codes,by=c("native_language_2"="iso_code")) |>
   rename(
     language_name_1 = language_name.x,
     language_name_2 = language_name.y
-  ) %>%
+  ) |>
   #clean up some naming issues
   mutate(
     language_name_1 = case_when(
       language_name_1 == "Spanish; Castilian" ~ "Spanish",
       TRUE ~ language_name_1
-    )) %>%
+    )) |>
   #unite names
   mutate(
     language = case_when(
       !is.na(language_name_2) ~ paste(language_name_1,language_name_2,sep=", "),
-      TRUE ~ language_name_1)) %>%
+      TRUE ~ language_name_1)) |>
   # native language special cases
   mutate(
     language = case_when(
       dataset_rename == "tseltal" ~ "Tseltal",
-      TRUE ~ language)) %>%
+      TRUE ~ language)) |>
   #convert age range into one column
-  mutate(age_range_months= paste(min_age_months,max_age_months,sep=" - ")) %>%
+  mutate(age_range_months= paste(min_age_months,max_age_months,sep=" - ")) |>
   mutate(
    apa_cite=case_when(
       is.na(apa_cite) ~ "unpublished",
       TRUE ~ apa_cite
-  )) %>%
-  select(dataset_rename,apa_cite, num_subj,avg_age,age_range_months,method,language) %>%
+  )) |>
+  select(dataset_rename,apa_cite, num_subj,avg_age,age_range_months,method,language) |>
   arrange(dataset_rename)
 
 saveRDS(summarize_datasets, here("brm", "data", "summarize_datasets.rds"))
 
-# summarize_dataset_by_age_bin <- dataset_info %>%
-#   left_join(dataset_name_mapping) %>%
+# summarize_dataset_by_age_bin <- dataset_info |>
+#   left_join(dataset_name_mapping) |>
 #   mutate(
 #     age_bin = case_when(
 #       age <= 24 ~ "(12,24]",
@@ -394,31 +384,30 @@ saveRDS(summarize_datasets, here("brm", "data", "summarize_datasets.rds"))
 #       age <=48 ~ "(36,48]",
 #       age<=60 ~ "(48,60]"
 #     )
-#   ) %>%
-#   group_by(dataset_rename,age_bin) %>%
+#   ) |>
+#   group_by(dataset_rename,age_bin) |>
 #   summarize(
 #     num_subj=length(unique(subject_id)))
 ```
 
-```{r dataset-table, num.cols.cap=1, results="asis"}
+```{r dataset-table}
 summarize_datasets <- readRDS(here("brm", "data", "summarize_datasets.rds"))
-tab1 <- xtable::xtable(summarize_datasets, digits=c(1), 
-                       caption = "Overview over the datasets in the current database.")
-
-names(tab1) <- c("Dataset Name", "Citation","N","Mean Age (mos.)","Age Range (mos.)", "Method", "Language")
-
-align(tab1) <- c("llrrrrrr")
-
-print(tab1, type="latex", comment = F,include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont",
-scalebox=0.85)
+summarize_datasets |>
+  mutate(apa_cite = str_remove_all(apa_cite, "[()]"),
+         age_range_months = str_replace(age_range_months, " - ", "–")) |>
+  knitr::kable(col.names = c("Dataset name", "Citation", "N", "Mean age (mos.)",
+                             "Age range (mos.)", "Method", "Language"),
+               caption = "Overview of the datasets in the current database.",
+               digits = 1, booktabs = TRUE, linesep = "") |>
+   kableExtra::kable_styling(latex_options = "scale_down")
 ```
 
-The database currently includes 11 looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table XX).
+The database currently includes 11 looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table \@ref(tab:dataset-table)).
 Most datasets (10 out of 11 total) consist of data from monolingual native English speakers.
 They span a wide age spectrum with participants ranging from 8 to 84 months of age, and are balanced in terms of gender (48% female).
 The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior.
 Most studies focused on testing familiar items, but the database also includes studies with novel pseudowords.
-All data (and accompanying references) are openly available on the Open Science Framework (<https://osf.io/pr6wu/?view_only=07a3887eb7a24643bdc1b2612f2729de>).
+All data (and accompanying references) are openly available on the Open Science Framework (osf.io/pr6wu).
 
 How selected?
 Language coverage?
@@ -433,8 +422,8 @@ Information about versioning approach/ regularity of updates Steps for extending
 ## Shiny App
 
 One goal of the Peekbank project is to allow a wide range of users to easily explore and learn from the database.
-We therefore have created an interactive web application -- \texttt{peekbank-shiny} -- that allows users to quickly and easily create informative visualizations of individual datasets and aggregated data.
-\texttt{peekbank-shiny} is built using Shiny, a software package for creating web apps using R.
+We therefore have created an interactive web application -- `peekbank-shiny` -- that allows users to quickly and easily create informative visualizations of individual datasets and aggregated data.
+`peekbank-shiny` is built using Shiny, a software package for creating web apps using R.
 The Shiny app allows users to create commonly used visualizations of looking-while-listening data, based on data from the Peekbank database.
 Specifically, users can visualize
 
@@ -449,7 +438,18 @@ The Shiny app thus allows users to quickly inspect basic properties of Peekbanks
 
 ## Peekbankr
 
-Functions: connect_to_peekbank(): get_datasets() get_subjects() get_administrations() get_stimuli() get_aoi_timepoints() get_trials() get_trial_types() get_xy_timepoints() get_aoi_region_sets()
+Functions:
+
+- `connect_to_peekbank()`
+- `get_datasets()`
+- `get_subjects()`
+- `get_administrations()`
+- `get_stimuli()`
+- `get_aoi_timepoints()`
+- `get_trials()`
+- `get_trial_types()`
+- `get_xy_timepoints()`
+- `get_aoi_region_sets()`
 
 ## OSF site
 
@@ -463,23 +463,28 @@ We provide two potential use-cases for Peekbank data. In each case, we provide s
 
 @swingley2000 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. "oppel" (close mispronunciation) or "opel" (distant mispronunciation) instead of "apple" (correct condition). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. 
 
+\singlespacing
 ```{r swingley_data, echo = TRUE, eval = FALSE}
-aoi_timepoints <- peekbankr::get_aoi_timepoints(dataset_name = "swingley_aslin_2002")
-administrations <- peekbankr::get_administrations(dataset_name = "swingley_aslin_2002")
-trial_types <- peekbankr::get_trial_types(dataset_name = "swingley_aslin_2002")
-trials <- peekbankr::get_trials(dataset_name = "swingley_aslin_2002")
+library(peekbankr)
+aoi_timepoints <- get_aoi_timepoints(dataset_name = "swingley_aslin_2002")
+administrations <- get_administrations(dataset_name = "swingley_aslin_2002")
+trial_types <- get_trial_types(dataset_name = "swingley_aslin_2002")
+trials <- get_trials(dataset_name = "swingley_aslin_2002")
 ```
+\doublespacing
 
 We begin by retrieving the relevant tables from the database, `aoi_timepoints`, `administrations`, `trial_types`, and `trials`. As discussed above, each of these can be downloaded using a simple API call through `peekbankr`, which returns dataframes that include ID fields. These ID fields allow for easy joining of the data into a single dataframe containing all the information necessary for the analysis.  
 
+\singlespacing
 ```{r swingley_joins, echo=TRUE, eval = FALSE}
-swingley_data <- aoi_timepoints %>%
-  left_join(administrations) %>%
-  left_join(trials) %>%
-  left_join(trial_types) %>%
-  filter(condition != "filler") %>%
-  mutate(condition = ifelse(condition == "cp", "Correct","Mispronunciation"))
+swingley_data <- aoi_timepoints |>
+  left_join(administrations) |>
+  left_join(trials) |>
+  left_join(trial_types) |>
+  filter(condition != "filler") |>
+  mutate(condition = if_else(condition == "cp", "Correct", "Mispronounced"))
 ```
+\doublespacing
 
 
 ```{r save_swingley, eval = FALSE}
@@ -492,58 +497,67 @@ swingley_data <- readRDS(here("brm", "data", "swingley_data.rds"))
 
 As the code above shows, once the data are joined, condition information for each timepoint is present and so we can easily filter out filler trials and set up the conditions for further analysis. For simplicity, here we combine both mispronunciation conditions since this manipulation showed no effect in the original paper. 
 
+\singlespacing
 ```{r swingley_analysis, echo=TRUE}
-accuracies <- swingley_data  %>%
-  group_by(t_norm, administration_id, condition) %>% 
+accuracies <- swingley_data  |>
+  group_by(condition, t_norm, administration_id) |> 
   summarize(correct = mean(aoi == "target") / 
-              mean(aoi %in% c("target","distractor"))) %>%
-  group_by(t_norm, condition) %>% 
-  summarize(ci = 1.96 * sd(correct) / sqrt(length(correct)), 
-            mean_correct = mean(correct))
+              mean(aoi %in% c("target","distractor"))) |>
+  group_by(condition, t_norm) |> 
+  summarize(mean_correct = mean(correct),
+            ci = 1.96 * sd(correct) / sqrt(n()))
+```
+\doublespacing
+
+
+```{r swingley_fig_code, echo = FALSE, eval = FALSE}
+# ggplot(swingley_accuracies, aes(x = t_norm, y = mean_correct, color = condition)) +
+#   geom_hline(yintercept = .5, lty = 2, col = "black") + 
+#   geom_vline(xintercept = 0, lty = 3, col = "black") + 
+#   # geom_vline(xintercept = 367) +
+#   # geom_vline(xintercept = 2000) +
+#   # geom_polygon(data = data.frame(t_norm = c(367,367,2000,2000),                               mean_correct=c(0, 1, 1, 0)),
+#   #              aes(col=NULL),
+#   #              fill="gray", alpha = 0.4) +
+#   geom_pointrange(aes(ymin = mean_correct - ci, 
+#                       ymax = mean_correct + ci), 
+#                   position = position_dodge(width = 10)) +
+#   ylab("Proportion looking at correct image") + 
+#   xlab("Time from target word onset (msec)") + 
+#   theme_bw() +
+#   langcog::scale_color_solarized(name = "Condition") + 
+#   theme(legend.position = "bottom") +
+#   coord_cartesian(xlim = c(-500,3000), ylim = c(0.4,0.8))
 ```
 
+The final step in our analysis is to create a summary dataframe using `dplyr` commands. We first group the data by timestep, participant, and condition and compute the proportion looking at the correct image. We then summarize again, averaging across participants, computing both means and 95% confidence intervals (via the  approximation of 1.96 times the standard error of the mean). The resulting dataframe can be used for visualization of the time-course of looking.
 
-
-```{r swingley_fig, fig.cap="Proportion looking at the correct referent by time from the point of disambiguation (the onset of the target noun). Colors show the two pronunciation conditions; points give means and ranges show 95\\% confidence intervals. The dotted line shows the point of disambiguation and the dashed line shows chance performance."}
-ggplot(accuracies, aes(x = t_norm, y = mean_correct, col = condition))+
-  geom_hline(yintercept = .5, lty = 2, col = "black") + 
-  geom_vline(xintercept = 0, lty = 3, col = "black") + 
-  # geom_vline(xintercept = 367) +
-  # geom_vline(xintercept = 2000) +
-  # geom_polygon(data = data.frame(t_norm = c(367,367,2000,2000),                               mean_correct=c(0, 1, 1, 0)),
-  #              aes(col=NULL),
-  #              fill="gray", alpha = 0.4) +
-  geom_pointrange(aes(ymin = mean_correct - ci, 
-                      ymax = mean_correct + ci), 
-                  position = position_dodge(width = 10)) +
-  ylab("Prop. Looking at Correct Image") + 
-  xlab("Time from Target Word Onset (msec)") + 
-  theme_bw() +
-  langcog::scale_color_solarized(name = "Condition") + 
-  theme(legend.position = "bottom") +
-  coord_cartesian(xlim = c(-500,3000), ylim = c(0.4,0.8))
+\singlespacing
+```{r swingley, echo=TRUE, fig.cap="Proportion looking at the correct referent by time from the point of disambiguation (the onset of the target noun). Colors show the two pronunciation conditions; points give means and ranges show 95\\% confidence intervals. The dotted line shows the point of disambiguation and the dashed line shows chance performance.", fig.env="figure*"}
+ggplot(accuracies, aes(x = t_norm, y = mean_correct, color = condition)) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "black") +
+  geom_vline(xintercept = 0, linetype = "dotted", color = "black") +
+  geom_pointrange(aes(ymin = mean_correct - ci,
+                      ymax = mean_correct + ci)) +
+  labs(x = "Time from target word onset (msec)",
+       y = "Proportion looking at correct image",
+       color = "Condition") +
+  lims(x = c(-500, 3000))
 ```
+\doublespacing
 
-The final step in our analysis is to create a summary dataframe using `dplyr` commands. We first group the data by timestep, participant, and condition and compute the proportion looking at the correct image. We then summarize again, averaging across participants, computing both means and 95% confidence intervals (via the  approximation of 1.96 times the standard error of the mean). The resulting dataframe can be used for visualization of the time-course of looking. 
-
-```{r swingley_fig_code, echo = TRUE, eval = FALSE}
-ggplot(accuracies, aes(x = t_norm, y = mean_correct, col = condition))+
-  geom_pointrange(aes(ymin = mean_correct - ci, 
-                      ymax = mean_correct + ci))
-```
-
-Figure \ref{fig:swingley_fig} shows the average time course of looking for the two conditions, as produced by the code above (styling commands are removed for clarity of presentation, but are available in the Markdwon). Looks after the correctly pronounced noun appeared both faster (deviating from chance earlier) and more accurate (showing a higher asymptote). Overall, this example demonstrates the ability to produce this visualization in just a few lines of code.
+Figure \@ref(fig:swingley) shows the average time course of looking for the two conditions, as produced by the code above. Looks after the correctly pronounced noun appeared both faster (deviating from chance earlier) and more accurate (showing a higher asymptote). Overall, this example demonstrates the ability to produce this visualization in just a few lines of code.
 
 ```{r eval=FALSE}
-subject_accuracy <- swingley_data   %>%
-  group_by(administration_id, lab_age, condition,trial_id) %>% 
-  filter(t_norm >=367 & t_norm>=2000) %>%
+subject_accuracy <- swingley_data   |>
+  group_by(administration_id, lab_age, condition,trial_id) |> 
+  filter(t_norm >=367 & t_norm>=2000) |>
   summarise(correct = mean(aoi == "target") / 
-              mean(aoi %in% c("target","distractor"))) %>%
-  group_by(administration_id, lab_age, condition) %>% 
+              mean(aoi %in% c("target","distractor"))) |>
+  group_by(administration_id, lab_age, condition) |> 
   summarize(accuracy = mean(correct,na.rm=TRUE))
-subject_mp_effect <- subject_accuracy %>%
-  group_by(administration_id, lab_age) %>%
+subject_mp_effect <- subject_accuracy |>
+  group_by(administration_id, lab_age) |>
   summarize(
     mp_effect=accuracy[condition=="Correct"]-accuracy[condition=="Mispronunciation"]
   )
@@ -570,11 +584,11 @@ all_administrations <- get_administrations()
 all_trial_types <- get_trial_types() 
 all_trials <- get_trials()  
 
-aoi_data_joined <- all_aoi_timepoints %>%
-  right_join(all_administrations) %>%
-  right_join(all_trials) %>%
-  right_join(all_trial_types) %>%
-  mutate(stimulus_id = target_id) %>%
+aoi_data_joined <- all_aoi_timepoints |>
+  right_join(all_administrations) |>
+  right_join(all_trials) |>
+  right_join(all_trial_types) |>
+  mutate(stimulus_id = target_id) |>
   right_join(all_stimuli)
 
 aoi_data_joined <- aoi_data_joined |>
@@ -588,11 +602,11 @@ aoi_data_joined <- readRDS(here("brm","data","aoi_data_joined.rds"))
 ```
 
 ```{r item_counts, eval=FALSE}
-item_counts <- aoi_data_joined %>%
-  group_by(administration_id, english_stimulus_label) %>%
-  count() %>%
-  group_by(english_stimulus_label) %>%
-  count() %>%
+item_counts <- aoi_data_joined |>
+  group_by(administration_id, english_stimulus_label) |>
+  count() |>
+  group_by(english_stimulus_label) |>
+  count() |>
   mutate(english_stimulus_label = fct_reorder(english_stimulus_label, n))
 
 ggplot(filter(item_counts, n > 80), 
@@ -605,14 +619,14 @@ ggplot(filter(item_counts, n > 80),
 target_words <- c("book","dog","car","frog","apple",
                   "shoe","kitty","cookie","carrot","birdie","banana","ball")
 
-target_word_data <- aoi_data_joined %>%
-  filter(english_stimulus_label %in% target_words) %>%
-  mutate(age_group = cut(age, breaks = seq(12,48,6))) %>%
-  filter(!is.na(age_group)) %>%
-  group_by(t_norm, administration_id, age_group, english_stimulus_label) %>% 
+target_word_data <- aoi_data_joined |>
+  filter(english_stimulus_label %in% target_words) |>
+  mutate(age_group = cut(age, breaks = seq(12,48,6))) |>
+  filter(!is.na(age_group)) |>
+  group_by(t_norm, administration_id, age_group, english_stimulus_label) |> 
   summarise(correct = mean(aoi == "target") / 
-              mean(aoi %in% c("target","distractor"), na.rm=TRUE)) %>%
-  group_by(t_norm, age_group, english_stimulus_label) %>% 
+              mean(aoi %in% c("target","distractor"), na.rm=TRUE)) |>
+  group_by(t_norm, age_group, english_stimulus_label) |> 
   summarise(ci = 1.96 * sd(correct, na.rm=TRUE) / sqrt(length(correct)), 
             correct = mean(correct, na.rm=TRUE), 
             n = n()) 
@@ -638,20 +652,20 @@ p <- ggplot(filter(target_word_data, n > 60),
 ## Links to parent report vocabulary data
 
 ```{r get_aoas, eval=FALSE}
-items <- wordbankr::get_item_data(language = "English (American)") %>%
+items <- wordbankr::get_item_data(language = "English (American)") |>
   filter(definition %in% target_words)
 ws_data <- wordbankr::get_instrument_data(language = "English (American)", 
                                           form = "WS", 
                                           administrations = TRUE, 
-                                          items = items$item_id[items$form == "WS"]) %>%
+                                          items = items$item_id[items$form == "WS"]) |>
   right_join(items)
 wg_data <- wordbankr::get_instrument_data(language = "English (American)", 
                                           form = "WG", 
                                           administrations = TRUE, 
-                                          items = items$item_id[items$form == "WG"]) %>%
+                                          items = items$item_id[items$form == "WG"]) |>
   right_join(items)
 
-wordbank_data <- bind_rows(ws_data, wg_data) %>%
+wordbank_data <- bind_rows(ws_data, wg_data) |>
   mutate(produces = value == "produces", 
          form = "both", 
          num_item_id = definition, # stupid stuff to make fit_aoa work on joint data
@@ -668,11 +682,11 @@ saveRDS(aoas, here("brm","data","aoas.rds"))
 ```{r aoas}
 aoas <- readRDS(here("brm","data","aoas.rds"))
 
-wb_pb <- target_word_data %>%
-  filter(t_norm > 300, t_norm < 3000, n > 20) %>%
-  group_by(age_group, english_stimulus_label) %>%
-  summarise(accuracy = mean(correct)) %>%
-  left_join(select(aoas, definition, aoa) %>% 
+wb_pb <- target_word_data |>
+  filter(t_norm > 300, t_norm < 3000, n > 20) |>
+  group_by(age_group, english_stimulus_label) |>
+  summarise(accuracy = mean(correct)) |>
+  left_join(select(aoas, definition, aoa) |> 
               rename(english_stimulus_label = definition))
 
 ggplot(wb_pb, 
