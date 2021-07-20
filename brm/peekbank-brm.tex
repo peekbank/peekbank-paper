@@ -5,8 +5,8 @@
 \documentclass[
   english,
   man,floatsintext]{apa6}
+\usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
@@ -40,7 +40,7 @@
   pdftitle={Peekbank: Exploring children's word recognition through an open, large-scale repository for developmental eye-tracking data},
   pdfauthor={Peekbank team2, Martin Zettersten1, Claire Bergey2, Naiti S. Bhatt3, Veronica Boyce4, Mika Braginsky5, Alexandra Carstensen4, Benny deMayo1, George Kachergis4, Molly Lewis6, Bria Long4, Kyle MacDonald7, Jessica Mankewitz4, Stephan Meylan5,8, Annissa N. Saleh9, Rose M. Schneider10, Angeline Sin Mei Tsui4, Sarp Uner8, Tian Linger Xu11, Daniel Yurovsky6, \& Michael C. Frank1},
   pdflang={en-EN},
-  pdfkeywords={keywords},
+  pdfkeywords={tools; processing; analysis / usage examples},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
@@ -84,7 +84,7 @@
 \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\usepackage{graphicx,grffile}
+\usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
@@ -125,9 +125,9 @@
 
 % Create new environments so endfloat can handle them
 % \newenvironment{ltable}
-%   {\begin{landscape}\begin{center}\begin{threeparttable}}
-%   {\end{threeparttable}\end{center}\end{landscape}}
-\newenvironment{lltable}{\begin{landscape}\begin{center}\begin{ThreePartTable}}{\end{ThreePartTable}\end{center}\end{landscape}}
+%   {\begin{landscape}\centering\begin{threeparttable}}
+%   {\end{threeparttable}\end{landscape}}
+\newenvironment{lltable}{\begin{landscape}\centering\begin{ThreePartTable}}{\end{ThreePartTable}\end{landscape}}
 
 % Enables adjusting longtable caption width to table width
 % Solution found at http://golatex.de/longtable-mit-caption-so-breit-wie-die-tabelle-t15767.html
@@ -152,7 +152,7 @@
   {}{\typeout{Failed to patch title.}}
 \makeatother
 \shorttitle{Peekbank repository for developmental eye-tracking data}
-\keywords{keywords\newline\indent Word count: X}
+\keywords{tools; processing; analysis / usage examples\newline\indent Word count: X}
 \DeclareDelayedFloatFlavor{ThreePartTable}{table}
 \DeclareDelayedFloatFlavor{lltable}{table}
 \DeclareDelayedFloatFlavor*{longtable}{table}
@@ -168,8 +168,34 @@
   \usepackage{polyglossia}
   \setmainlanguage[]{english}
 \else
-  \usepackage[shorthands=off,main=english]{babel}
+  \usepackage[main=english]{babel}
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
 \fi
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1 \everypar{\setlength{\hangindent}{\cslhangindent}}\ignorespaces\fi
+  % set entry spacing
+  \ifnum #2 > 0
+  \setlength{\parskip}{#2\baselineskip}
+  \fi
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 \title{Peekbank: Exploring children's word recognition through an open, large-scale repository for developmental eye-tracking data}
 \author{Peekbank team\textsuperscript{2}, Martin Zettersten\textsuperscript{1}, Claire Bergey\textsuperscript{2}, Naiti S. Bhatt\textsuperscript{3}, Veronica Boyce\textsuperscript{4}, Mika Braginsky\textsuperscript{5}, Alexandra Carstensen\textsuperscript{4}, Benny deMayo\textsuperscript{1}, George Kachergis\textsuperscript{4}, Molly Lewis\textsuperscript{6}, Bria Long\textsuperscript{4}, Kyle MacDonald\textsuperscript{7}, Jessica Mankewitz\textsuperscript{4}, Stephan Meylan\textsuperscript{5,8}, Annissa N. Saleh\textsuperscript{9}, Rose M. Schneider\textsuperscript{10}, Angeline Sin Mei Tsui\textsuperscript{4}, Sarp Uner\textsuperscript{8}, Tian Linger Xu\textsuperscript{11}, Daniel Yurovsky\textsuperscript{6}, \& Michael C. Frank\textsuperscript{1}}
@@ -194,7 +220,6 @@ The ability to rapidly recognize words and link them to referents in context is 
 This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants' fixation on a target object (vs.~a distractor) after hearing a target label.
 We present a large-scale, open database of infant and toddler eye-tracking data from looking-while-listening tasks.
 The goal of this effort is to address theoretical and methodological challenges in measuring vocabulary development.
-{[}tools; processing; analysis/ usage examples{]}
 }
 
 
@@ -206,8 +231,8 @@ The goal of this effort is to address theoretical and methodological challenges 
 \section{Introduction}\label{introduction}}
 
 Across their first years of life, children learn words at an accelerating pace (Frank, Braginsky, Yurovsky, \& Marchman, 2021).
-Although many children will only produce their first word at around one year of age, they show signs of understanding many common nouns (e.g., \enquote{mommy}) and phrases (e.g., \enquote{Let's go bye-bye!}) much earlier in development (Bergelson \& Swingley, 2012).
-However, the processes involved in early word understanding are less directly apparent in children's behaviors and are less accessible to observation than developments in speech production (Fernald, Perfors \& Marchman, 2006).
+Although many children will only produce their first word at around one year of age, they show signs of understanding many common nouns (e.g., ``mommy'') and phrases (e.g., ``Let's go bye-bye!'') much earlier in development (Bergelson \& Swingley, 2012).
+However, the processes involved in early word understanding are less directly apparent in children's behaviors and are less accessible to observation than developments in speech production (Fernald, Zangl, Portillo, \& Marchman, 2008).
 To understand speech, children must process the incoming auditory signal and link that signal to relevant meanings -- a process often referred to as word recognition.
 Measuring early word recognition offers insight into children's early word representations and as well as the speed and efficiency with which children comprehend language in real time, as the speech signal unfolds (Bergelson, 2020; Fernald, Pinto, Swingley, Weinberg, \& McRoberts, 1998).
 Word recognition skills are also thought to build a foundation for children's subsequent language development.
@@ -219,9 +244,9 @@ This limitation in scale makes it difficult to understand developmental changes 
 Peekbank provides an openly accessible database of eye-tracking data of children's word recognition, with the primary goal of facilitating the study of developmental changes in children's word knowledge and recognition speed.
 
 \hypertarget{the-looking-while-listening-paradigm}{%
-\subsection{\texorpdfstring{The \enquote{Looking-While-Listening} Paradigm}{The ``Looking-While-Listening'' Paradigm}}\label{the-looking-while-listening-paradigm}}
+\subsection{The ``Looking-While-Listening'' Paradigm}\label{the-looking-while-listening-paradigm}}
 
-Word recognition is traditionally studied in the \enquote{looking-while-listening} paradigm (alternatively referred to as the intermodal preferential looking procedure; Fernald, Zangl, Portillo, \& Marchman, 2008; Hirsh-Pasek, Cauley, Golinkoff, \& Gordon, 1987).
+Word recognition is traditionally studied in the ``looking-while-listening'' paradigm {[}alternatively referred to as the intermodal preferential looking procedure; Fernald, Zangl, Portillo, and Marchman (2008); Hirsh-Pasek, Cauley, Golinkoff, and Gordon (1987){]}.
 In such studies, infants listen to a sentence prompting a specific referent (e.g., Look at the dog!) while viewing two images on the screen (e.g., an image of a dog -- the target image -- and an image of a duck -- the distractor image).
 Infants' word recognition is measured in terms of how quickly and accurately they fixate on the correct target image after hearing its label.
 Past research has used this same basic method to study a wide range of questions in language development.
@@ -245,7 +270,7 @@ Measuring developmental change therefore requires large-scale datasets with a ra
 
 A second question relates to evaluating methodological best practices.
 In particular, many fundamental analytic decisions vary substantially across studies, and different decisions may lead to different inferences about children's word recognition.
-For example, researchers vary in how they select time windows for analysis, transform the dependent measure of target fixations, and model the time course of word recognition (Csibra, Hernik, Mascaro, Tatone, \& Lengyel, 2016; Fernald et al., 2008; Huang \& Snedeker, 2020).
+For example, researchers vary in how they select time windows for analysis, transform the dependent measure of target fixations, and model the time course of word recognition (Csibra, Hernik, Mascaro, Tatone, \& Lengyel, 2016; Fernald, Zangl, Portillo, \& Marchman, 2008; Huang \& Snedeker, 2020).
 This problem is made more complex by the fact that many of these decisions depend on a variety of design-related and participant-related factors (e.g., infant age).
 Establishing best practices therefore requires a large database of infant word recognition studies varying across such factors, in order to test the potential consequences of methodological decisions on study results.
 
@@ -270,18 +295,18 @@ Therefore, our first effort was to develop a common tabular format to support an
 
 As illustrated in Figure \ref{fig:fig-framework-overview}, the Peekbank framework consists of three main components: (1) a set of tools to convert eye-tracking datasets into a unified format; (2) a relational database populated with data in this unified format and (3) a set of tools to retrieve data from this database.
 These components are supported by three libraries.
-The \texttt{peekds} library (for the R language; R Development Core Team, 2020) helps researchers convert existing datasets to use the standardized format of the database.
+The \texttt{peekds} library (for the R language; (\textbf{rcoreteam2020?}) helps researchers convert existing datasets to use the standardized format of the database.
 The \texttt{peekbank} module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by \texttt{peekds}.
 The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages, and can be hosted on one machine and accessed by many others over the Internet.
 The \texttt{peekbankr} library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
-Most users will access data through this final libary, in which case the details of data formatting and processing are abstracted away from the user.
+Most users will access data through this final library, in which case the details of data formatting and processing are abstracted away from the user.
 
 In the following sections, we will begin by providing the details on the database's organization (or \textit{schema}) and the technical implementation on \texttt{peekds}.
 Users who are primarily interested in accessing the database can skip these details and focus on access through the \texttt{peekbankr} API and the web apps.
 
 \begin{figure}
 
-{\centering \includegraphics[width=18in,height=4.5in]{/Users/martinzettersten/GitHub/peekbank-paper/brm/figures/peekbankflowchartv6} 
+{\centering \includegraphics[width=18in,height=4.5in]{/Users/mikabr/Dropbox/projects/peekbank/peekbank-paper/brm/figures/peekbankflowchartv6} 
 
 }
 
@@ -303,7 +328,7 @@ The \texttt{aoi\_timepoints} table encodes where a child is looking at each poin
 All datasets must include this timecourse data, as it represents the main record of children's looking behavior.
 For eyetracking experiments that are automatically rather than manually coded, the \texttt{xy\_timepoints} table encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trial.
 Both the \texttt{aoi\_timepoints} and \texttt{xy\_timepoints} tables are resampled to a consistent sampling rate, as described in the Import section below.
-To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of \textit{dog} in \enquote{can you find the \textit{dog}?}).
+To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of \textit{dog} in ``can you find the \textit{dog}?'').
 
 \hypertarget{metadata}{%
 \subsubsection{Metadata}\label{metadata}}
@@ -339,10 +364,10 @@ In general, we import data without particular exclusions, including as many part
 The \texttt{subjects} and \texttt{administrations} tables separate information at the subject level from information about runs of the experiment, such that longitudinal studies have multiple administrations linked to each subject.
 
 The \texttt{stimuli} table has a row for each (word, image) pair, and thus is used slightly differently across different experiment designs.
-In most experiments, there is a one-to-one mapping between images and labels (e.g., each time an image of a dog appears it is referred to as \enquote{dog}).
-For studies in which there are multiple potential labels per image (e.g., \enquote{dog} and \enquote{chien} are both used to refer to an image of a dog), images can have multiple rows in the \texttt{stimuli} table with unique labels as well as a row with no label to be used when the image appears solely as a distractor (and thus its label is ambiguous).
+In most experiments, there is a one-to-one mapping between images and labels (e.g., each time an image of a dog appears it is referred to as ``dog'').
+For studies in which there are multiple potential labels per image (e.g., ``dog'' and ``chien'' are both used to refer to an image of a dog), images can have multiple rows in the \texttt{stimuli} table with unique labels as well as a row with no label to be used when the image appears solely as a distractor (and thus its label is ambiguous).
 This structure is useful for studies on synonymy or using multiple languages.
-For studies in which the same label refers to multiple images (e.g., the word \enquote{dog} refers to an image of a dalmatian and a poodle), the same label can have multiple rows in the \texttt{stimuli} table with unique images.
+For studies in which the same label refers to multiple images (e.g., the word ``dog'' refers to an image of a dalmatian and a poodle), the same label can have multiple rows in the \texttt{stimuli} table with unique images.
 The \texttt{trial\_types} table contains each pair of stimuli, a target and distractor, seen in the experiment.
 The \texttt{trial\_types} table links trial types to the \texttt{aoi\_region\_sets} table and the \texttt{trials} table.
 
@@ -377,15 +402,15 @@ In an effort to double check the data quality and to make sure that no errors ar
 
 \begin{figure}
 
-{\centering \includegraphics[width=7.31in,height=4.5in]{/Users/martinzettersten/GitHub/peekbank-paper/brm/figures/schema_3} 
+{\centering \includegraphics[width=7.31in,height=4.5in]{/Users/mikabr/Dropbox/projects/peekbank/peekbank-paper/brm/figures/schema_3} 
 
 }
 
 \caption{The Peekbank schema. Each square represents a table in the relational database.}\label{fig:fig-schema}
 \end{figure}
 
-\hypertarget{current-data-sources.}{%
-\subsection{Current Data Sources.}\label{current-data-sources.}}
+\hypertarget{current-data-sources}{%
+\subsection{Current Data Sources}\label{current-data-sources}}
 
 \begin{table}[ht]
 \centering
@@ -449,13 +474,13 @@ Specifically, users can visualize
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  the time course of looking data in a profile plot depicting infant target looking across trial time,
+  the time course of looking data in a profile plot depicting infant target looking across trial time
 \item
-  overall accuracy (proportion target looking) within a specified analysis window,
+  overall accuracy (proportion target looking) within a specified analysis window
 \item
-  reaction times (speed of fixating the target image) in response to a target label, and
+  reaction times (speed of fixating the target image) in response to a target label
 \item
-  an onset-contingent plot, which shows the time course of participant looking as a function of their look location at the onset of the target label.
+  an onset-contingent plot, which shows the time course of participant looking as a function of their look location at the onset of the target label
 \end{enumerate}
 
 Users are given various customization options for each of these visualizations, e.g., choosing which datasets to include in the plots, controlling the age range of participants, splitting the visualizations by age bins, and controlling the analysis window for time course analyses.
@@ -477,17 +502,17 @@ Stimuli Data in raw format (if some additional datum needed, e.g.~pupil size?)
 
 We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis (e.g., Hardwicke et al., 2018) and also provides an easy way to explore looking-while-listening timecourse data in a standardized format. Our second example shows an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis can be used for optimizing the stimuli for new experiments.
 
-\hypertarget{computational-reproducibility-example-swingley-aslin-2002}{%
-\subsection{Computational reproducibility example: Swingley \& Aslin (2002)}\label{computational-reproducibility-example-swingley-aslin-2002}}
+\hypertarget{computational-reproducibility-example-swingley2000}{%
+\subsection{Computational reproducibility example: Swingley and Aslin (2000)}\label{computational-reproducibility-example-swingley2000}}
 
-({\textbf{???}}) investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g.~\enquote{oppel} (close mispronunciation) or \enquote{opel} (distant mispronunciation) instead of \enquote{apple} (correct condition). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result.
+Swingley and Aslin (2000) investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g.~``oppel'' (close mispronunciation) or ``opel'' (distant mispronunciation) instead of ``apple'' (correct condition). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{aoi_timepoints <-}\StringTok{ }\NormalTok{peekbankr}\OperatorTok{::}\KeywordTok{get_aoi_timepoints}\NormalTok{(}\DataTypeTok{dataset_name =} \StringTok{"swingley_aslin_2002"}\NormalTok{)}
-\NormalTok{administrations <-}\StringTok{ }\NormalTok{peekbankr}\OperatorTok{::}\KeywordTok{get_administrations}\NormalTok{(}\DataTypeTok{dataset_name =} \StringTok{"swingley_aslin_2002"}\NormalTok{)}
-\NormalTok{trial_types <-}\StringTok{ }\NormalTok{peekbankr}\OperatorTok{::}\KeywordTok{get_trial_types}\NormalTok{(}\DataTypeTok{dataset_name =} \StringTok{"swingley_aslin_2002"}\NormalTok{)}
-\NormalTok{trials <-}\StringTok{ }\NormalTok{peekbankr}\OperatorTok{::}\KeywordTok{get_trials}\NormalTok{(}\DataTypeTok{dataset_name =} \StringTok{"swingley_aslin_2002"}\NormalTok{)}
+\NormalTok{aoi\_timepoints }\OtherTok{\textless{}{-}}\NormalTok{ peekbankr}\SpecialCharTok{::}\FunctionTok{get\_aoi\_timepoints}\NormalTok{(}\AttributeTok{dataset\_name =} \StringTok{"swingley\_aslin\_2002"}\NormalTok{)}
+\NormalTok{administrations }\OtherTok{\textless{}{-}}\NormalTok{ peekbankr}\SpecialCharTok{::}\FunctionTok{get\_administrations}\NormalTok{(}\AttributeTok{dataset\_name =} \StringTok{"swingley\_aslin\_2002"}\NormalTok{)}
+\NormalTok{trial\_types }\OtherTok{\textless{}{-}}\NormalTok{ peekbankr}\SpecialCharTok{::}\FunctionTok{get\_trial\_types}\NormalTok{(}\AttributeTok{dataset\_name =} \StringTok{"swingley\_aslin\_2002"}\NormalTok{)}
+\NormalTok{trials }\OtherTok{\textless{}{-}}\NormalTok{ peekbankr}\SpecialCharTok{::}\FunctionTok{get\_trials}\NormalTok{(}\AttributeTok{dataset\_name =} \StringTok{"swingley\_aslin\_2002"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -495,12 +520,12 @@ We begin by retrieving the relevant tables from the database, \texttt{aoi\_timep
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{swingley_data <-}\StringTok{ }\NormalTok{aoi_timepoints }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{left_join}\NormalTok{(administrations) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{left_join}\NormalTok{(trials) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{left_join}\NormalTok{(trial_types) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{filter}\NormalTok{(condition }\OperatorTok{!=}\StringTok{ "filler"}\NormalTok{) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{condition =} \KeywordTok{ifelse}\NormalTok{(condition }\OperatorTok{==}\StringTok{ "cp"}\NormalTok{, }\StringTok{"Correct"}\NormalTok{,}\StringTok{"Mispronunciation"}\NormalTok{))}
+\NormalTok{swingley\_data }\OtherTok{\textless{}{-}}\NormalTok{ aoi\_timepoints }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{left\_join}\NormalTok{(administrations) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{left\_join}\NormalTok{(trials) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{left\_join}\NormalTok{(trial\_types) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(condition }\SpecialCharTok{!=} \StringTok{"filler"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{condition =} \FunctionTok{ifelse}\NormalTok{(condition }\SpecialCharTok{==} \StringTok{"cp"}\NormalTok{, }\StringTok{"Correct"}\NormalTok{,}\StringTok{"Mispronunciation"}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -508,13 +533,13 @@ As the code above shows, once the data are joined, condition information for eac
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{accuracies <-}\StringTok{ }\NormalTok{swingley_data  }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{group_by}\NormalTok{(t_norm, administration_id, condition) }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{correct =} \KeywordTok{mean}\NormalTok{(aoi }\OperatorTok{==}\StringTok{ "target"}\NormalTok{) }\OperatorTok{/}\StringTok{ }
-\StringTok{              }\KeywordTok{mean}\NormalTok{(aoi }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"target"}\NormalTok{,}\StringTok{"distractor"}\NormalTok{))) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{group_by}\NormalTok{(t_norm, condition) }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{ci =} \FloatTok{1.96} \OperatorTok{*}\StringTok{ }\KeywordTok{sd}\NormalTok{(correct) }\OperatorTok{/}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(}\KeywordTok{length}\NormalTok{(correct)), }
-            \DataTypeTok{mean_correct =} \KeywordTok{mean}\NormalTok{(correct))}
+\NormalTok{accuracies }\OtherTok{\textless{}{-}}\NormalTok{ swingley\_data  }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(t\_norm, administration\_id, condition) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{correct =} \FunctionTok{mean}\NormalTok{(aoi }\SpecialCharTok{==} \StringTok{"target"}\NormalTok{) }\SpecialCharTok{/} 
+              \FunctionTok{mean}\NormalTok{(aoi }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"target"}\NormalTok{,}\StringTok{"distractor"}\NormalTok{))) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(t\_norm, condition) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{ci =} \FloatTok{1.96} \SpecialCharTok{*} \FunctionTok{sd}\NormalTok{(correct) }\SpecialCharTok{/} \FunctionTok{sqrt}\NormalTok{(}\FunctionTok{length}\NormalTok{(correct)), }
+            \AttributeTok{mean\_correct =} \FunctionTok{mean}\NormalTok{(correct))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -528,9 +553,9 @@ The final step in our analysis is to create a summary dataframe using \texttt{dp
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(accuracies, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ t_norm, }\DataTypeTok{y =}\NormalTok{ mean_correct, }\DataTypeTok{col =}\NormalTok{ condition))}\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_pointrange}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{ymin =}\NormalTok{ mean_correct }\OperatorTok{-}\StringTok{ }\NormalTok{ci, }
-                      \DataTypeTok{ymax =}\NormalTok{ mean_correct }\OperatorTok{+}\StringTok{ }\NormalTok{ci))}
+\FunctionTok{ggplot}\NormalTok{(accuracies, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ t\_norm, }\AttributeTok{y =}\NormalTok{ mean\_correct, }\AttributeTok{col =}\NormalTok{ condition))}\SpecialCharTok{+}
+  \FunctionTok{geom\_pointrange}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{ymin =}\NormalTok{ mean\_correct }\SpecialCharTok{{-}}\NormalTok{ ci, }
+                      \AttributeTok{ymax =}\NormalTok{ mean\_correct }\SpecialCharTok{+}\NormalTok{ ci))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -554,7 +579,7 @@ ALso, item selection but maybe not yet?
 \section{Discussion/ Conclusion}\label{discussion-conclusion}}
 
 Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive.
-Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science (Bergmann et al., 2018; Frank, Braginsky, Yurovsky, \& Marchman, 2017; The ManyBabies Consortium, 2020).
+Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science (Bergmann et al. (2018); Frank, Braginsky, Yurovsky, and Marchman (2017); The ManyBabies Consortium (2020){]}.
 The Peekbank project expands on these efforts by building an infrastructure for aggregating eye-tracking data across studies, with a specific focus on the looking-while-listening paradigm.
 This paper presents an illustration of some of the key theoretical and methodological questions that can be addressed using Peekbank: generalizing across item-level variability in children's word recognition and providing data-driven guidance on methodological choices.
 
@@ -562,7 +587,7 @@ There are a number of limitations surrounding the current scope of the database.
 A priority in future work will be to expand the size of the database.
 With 11 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results.
 Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability.
-The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset comes from WEIRD populations; Muthukrishna et al., 2020).
+The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset comes from WEIRD populations; (Muthukrishna et al., 2020).
 Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
 
 Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development.
@@ -574,7 +599,7 @@ Aggregating large datasets of infant looking behavior in a single, openly-access
 
 We would like to thank the labs and researchers that have made their data publicly available in the database.
 
-We used R (Version 4.0.3; R Core Team, 2020) and the R-packages \emph{dplyr} (Version 1.0.3; Wickham et al., 2021), \emph{extrafont} (Version 0.17; Winston Chang, 2014), \emph{forcats} (Version 0.5.0; Wickham, 2021a), \emph{ggplot2} (Version 3.3.3; Wickham, 2016), \emph{here} (Version 1.0.1; Müller, 2020), \emph{papaja} (Version 0.1.0.9997; Aust \& Barth, 2020), \emph{peekbankr} (Version 0.1.1.9001; Braginsky, MacDonald, \& Frank, 2021), \emph{plyr} (Version 1.8.6; Wickham et al., 2021; Wickham, 2011), \emph{png} (Version 0.1.7; Urbanek, 2013), \emph{pso} (Version 1.0.3; Bendtsen., 2012), \emph{purrr} (Version 0.3.4; Henry \& Wickham, 2020), \emph{readr} (Version 1.4.0; Wickham \& Hester, 2020), \emph{stringr} (Version 1.4.0; Wickham, 2019), \emph{tibble} (Version 3.0.5; Müller \& Wickham, 2021), \emph{tidyr} (Version 1.1.2; Wickham, 2021b), \emph{tidyverse} (Version 1.3.0; Wickham, Averick, et al., 2019), and \emph{xtable} (Version 1.8.4; Dahl, Scott, Roosen, Magnusson, \& Swinton, 2019) for all our analyses.
+We used R {[}Version 4.1.0; R Core Team (2020){]} for all our analyses.
 
 \newpage
 
@@ -586,68 +611,60 @@ We used R (Version 4.0.3; R Core Team, 2020) and the R-packages \emph{dplyr} (Ve
 \setlength{\leftskip}{0.5in}
 
 \hypertarget{refs}{}
-\leavevmode\hypertarget{ref-R-papaja}{}%
-Aust, F., \& Barth, M. (2020). \emph{papaja: Create APA manuscripts with R Markdown}. Retrieved from \url{https://github.com/crsh/papaja}
-
-\leavevmode\hypertarget{ref-R-pso}{}%
-Bendtsen., C. (2012). \emph{Pso: Particle swarm optimization}. Retrieved from \url{https://CRAN.R-project.org/package=pso}
-
-\leavevmode\hypertarget{ref-bergelson2020comprehension}{}%
+\begin{CSLReferences}{1}{0}
+\leavevmode\hypertarget{ref-bergelson2020}{}%
 Bergelson, E. (2020). The comprehension boost in early word learning: Older infants are better learners. \emph{Child Development Perspectives}, \emph{14}(3), 142--149.
 
-\leavevmode\hypertarget{ref-Bergelson2012a}{}%
-Bergelson, E., \& Swingley, D. (2012). At 6-9 months, human infants know the meanings of many common nouns. \emph{PNAS}, \emph{109}(9), 3253--3258.
+\leavevmode\hypertarget{ref-bergelson2012}{}%
+Bergelson, E., \& Swingley, D. (2012). {At 6-9 months, human infants know the meanings of many common nouns.} \emph{PNAS}, \emph{109}(9), 3253--3258.
 
-\leavevmode\hypertarget{ref-Bleses2016}{}%
-Bleses, D., Makransky, G., Dale, P. S., Højen, A., \& Ari, B. A. (2016). Early productive vocabulary predicts academic achievement 10 years later. \emph{Applied Psycholinguistics}, \emph{37}(6), 1461--1476.
+\leavevmode\hypertarget{ref-bergmann2018}{}%
+Bergmann, C., Tsuji, S., Piccinini, P. E., Lewis, M. L., Braginsky, M., Frank, M. C., \& Cristia, A. (2018). {Promoting replicability in developmental research through meta-analyses: Insights from language acquisition research}. \emph{Child Development}, \emph{89}(6), 1996--2009.
 
-\leavevmode\hypertarget{ref-R-peekbankr}{}%
-Braginsky, M., MacDonald, K., \& Frank, M. (2021). \emph{Peekbankr: Accessing the peekbank database}. Retrieved from \url{http://github.com/langcog/peekbankr}
+\leavevmode\hypertarget{ref-bleses2016}{}%
+Bleses, D., Makransky, G., Dale, P. S., Højen, A., \& Ari, B. A. (2016). {Early productive vocabulary predicts academic achievement 10 years later}. \emph{Applied Psycholinguistics}, \emph{37}(6), 1461--1476.
 
-\leavevmode\hypertarget{ref-Csibra2016}{}%
-Csibra, G., Hernik, M., Mascaro, O., Tatone, D., \& Lengyel, M. (2016). Statistical treatment of looking-time data. \emph{Developmental Psychology}, \emph{52}(4), 521--536.
+\leavevmode\hypertarget{ref-csibra2016}{}%
+Csibra, G., Hernik, M., Mascaro, O., Tatone, D., \& Lengyel, M. (2016). {Statistical treatment of looking-time data}. \emph{Developmental Psychology}, \emph{52}(4), 521--536.
 
-\leavevmode\hypertarget{ref-R-xtable}{}%
-Dahl, D. B., Scott, D., Roosen, C., Magnusson, A., \& Swinton, J. (2019). \emph{Xtable: Export tables to latex or html}. Retrieved from \url{https://CRAN.R-project.org/package=xtable}
-
-\leavevmode\hypertarget{ref-Fernald2012a}{}%
-Fernald, A., \& Marchman, V. A. (2012). Individual differences in lexical processing at 18 months predict vocabulary growth in typically developing and late-talking toddlers. \emph{Child Development}, \emph{83}(1), 203--222.
+\leavevmode\hypertarget{ref-fernald2012}{}%
+Fernald, A., \& Marchman, V. A. (2012). {Individual differences in lexical processing at 18 months predict vocabulary growth in typically developing and late-talking toddlers.} \emph{Child Development}, \emph{83}(1), 203--222.
 
 \leavevmode\hypertarget{ref-fernald1998}{}%
 Fernald, A., Pinto, J. P., Swingley, D., Weinberg, A., \& McRoberts, G. W. (1998). Rapid gains in speed of verbal processing by infants in the 2nd year. \emph{Psychological Science}, \emph{9}(3), 228--231.
 
-\leavevmode\hypertarget{ref-Fernald2008}{}%
-Fernald, A., Zangl, R., Portillo, A. L., \& Marchman, V. A. (2008). Looking while listening: Using eye movements to monitor spoken language comprehension by infants and young children. In I. A. Sekerina, E. M. Fernandez, \& H. Clahsen (Eds.), \emph{Developmental psycholinguistics: On-line methods in children's language processing} (pp. 97--135). Amsterdam: John Benjamins.
+\leavevmode\hypertarget{ref-fernald2008}{}%
+Fernald, A., Zangl, R., Portillo, A. L., \& Marchman, V. A. (2008). {Looking while listening: Using eye movements to monitor spoken language comprehension by infants and young children}. In I. A. Sekerina, E. M. Fernandez, \& H. Clahsen (Eds.), \emph{Developmental psycholinguistics: On-line methods in children's language processing} (pp. 97--135). Amsterdam: John Benjamins.
 
-\leavevmode\hypertarget{ref-Golinkoff2013}{}%
-Golinkoff, R. M., Ma, W., Song, L., \& Hirsh-Pasek, K. (2013). Twenty-five years using the intermodal preferential looking paradigm to study language acquisition: What have we learned? \emph{Perspectives on Psychol. Science}, \emph{8}(3), 316--339.
+\leavevmode\hypertarget{ref-frank2017}{}%
+Frank, M. C., Braginsky, M., Yurovsky, D., \& Marchman, V. A. (2017). {Wordbank: An open repository for developmental vocabulary data}. \emph{Journal of Child Language}, \emph{44}(3), 677--694.
 
-\leavevmode\hypertarget{ref-Hardwicke2018}{}%
-Hardwicke, T. E., Mathur, M. B., MacDonald, K., Nilsonne, G., Banks, G. C., Kidwell, M. C., \ldots{} Frank, M. C. (2018). Data availability, reusability, and analytic reproducibility: Evaluating the impact of a mandatory open data policy at the journal Cognition. \emph{Royal Society Open Science}, \emph{5}(8). \url{https://doi.org/10.1098/rsos.180448}
+\leavevmode\hypertarget{ref-frank2021}{}%
+Frank, M. C., Braginsky, M., Yurovsky, D., \& Marchman, V. A. (2021). \emph{{Variability and Consistency in Early Language Learning: The Wordbank Project}}. Cambridge, MA: MIT Press.
 
-\leavevmode\hypertarget{ref-R-purrr}{}%
-Henry, L., \& Wickham, H. (2020). \emph{Purrr: Functional programming tools}. Retrieved from \url{https://CRAN.R-project.org/package=purrr}
+\leavevmode\hypertarget{ref-golinkoff2013}{}%
+Golinkoff, R. M., Ma, W., Song, L., \& Hirsh-Pasek, K. (2013). {Twenty-five years using the intermodal preferential looking paradigm to study language acquisition: What have we learned?} \emph{Perspectives on Psychol. Science}, \emph{8}(3), 316--339.
 
-\leavevmode\hypertarget{ref-Hirsh-Pasek1987}{}%
-Hirsh-Pasek, K., Cauley, K. M., Golinkoff, R. M., \& Gordon, L. (1987). The eyes have it: Lexical and syntactic comprehension in a new paradigm. \emph{Journal of Child Language}, \emph{14}(1), 23--45.
+\leavevmode\hypertarget{ref-hardwicke2018}{}%
+Hardwicke, T. E., Mathur, M. B., MacDonald, K., Nilsonne, G., Banks, G. C., Kidwell, M. C., \ldots{} Frank, M. C. (2018). {Data availability, reusability, and analytic reproducibility: Evaluating the impact of a mandatory open data policy at the journal Cognition}. \emph{Royal Society Open Science}, \emph{5}(8). \url{https://doi.org/10.1098/rsos.180448}
 
-\leavevmode\hypertarget{ref-Huang2020}{}%
-Huang, Y., \& Snedeker, J. (2020). Evidence from the visual world paradigm raises questions about unaccusativity and growth curve analyses. \emph{Cognition}, \emph{200}, 104251.
+\leavevmode\hypertarget{ref-hirshpasek1987}{}%
+Hirsh-Pasek, K., Cauley, K. M., Golinkoff, R. M., \& Gordon, L. (1987). {The eyes have it: Lexical and syntactic comprehension in a new paradigm}. \emph{Journal of Child Language}, \emph{14}(1), 23--45.
 
-\leavevmode\hypertarget{ref-Lew-Williams2007}{}%
-Lew-Williams, C., \& Fernald, A. (2007). Young children learning Spanish make rapid use of grammatical gender in spoken word recognition. \emph{Psychological Science}, \emph{18}(3), 193--198.
+\leavevmode\hypertarget{ref-huang2020}{}%
+Huang, Y., \& Snedeker, J. (2020). {Evidence from the visual world paradigm raises questions about unaccusativity and growth curve analyses}. \emph{Cognition}, \emph{200}, 104251.
 
-\leavevmode\hypertarget{ref-Marchman2008}{}%
-Marchman, V. A., \& Fernald, A. (2008). Speed of word recognition and vocabulary knowledge in infancy predict cognitive and language outcomes in later childhood. \emph{Developmental Science}, \emph{11}(3), F9--16.
+\leavevmode\hypertarget{ref-lewwilliams2007}{}%
+Lew-Williams, C., \& Fernald, A. (2007). {Young children learning Spanish make rapid use of grammatical gender in spoken word recognition}. \emph{Psychological Science}, \emph{18}(3), 193--198.
 
-\leavevmode\hypertarget{ref-Marchman2018}{}%
-Marchman, V. A., Loi, E. C., Adams, K. A., Ashland, M., Fernald, A., \& Feldman, H. M. (2018). Speed of language comprehension at 18 months old predicts school-relevant outcomes at 54 months old in children born preterm. \emph{Journal of Dev. \& Behav. Pediatrics}, \emph{39}(3), 246--253.
+\leavevmode\hypertarget{ref-marchman2008}{}%
+Marchman, V. A., \& Fernald, A. (2008). {Speed of word recognition and vocabulary knowledge in infancy predict cognitive and language outcomes in later childhood.} \emph{Developmental Science}, \emph{11}(3), F9--16.
 
-\leavevmode\hypertarget{ref-R-here}{}%
-Müller, K. (2020). \emph{Here: A simpler way to find your files}. Retrieved from \url{https://CRAN.R-project.org/package=here}
+\leavevmode\hypertarget{ref-marchman2018}{}%
+Marchman, V. A., Loi, E. C., Adams, K. A., Ashland, M., Fernald, A., \& Feldman, H. M. (2018). {Speed of language comprehension at 18 months old predicts school-relevant outcomes at 54 months old in children born preterm}. \emph{Journal of Dev. {\&} Behav. Pediatrics}, \emph{39}(3), 246--253.
 
-\leavevmode\hypertarget{ref-R-tibble}{}%
-Müller, K., \& Wickham, H. (2021). \emph{Tibble: Simple data frames}. Retrieved from \url{https://CRAN.R-project.org/package=tibble}
+\leavevmode\hypertarget{ref-muthukrishna2020}{}%
+Muthukrishna, M., Bell, A. V., Henrich, J., Curtin, C. M., Gedranovich, A., McInerney, J., \& Thue, B. (2020). {Beyond Western, Educated, Industrial, Rich, and Democratic (WEIRD) Psychology: Measuring and Mapping Scales of Cultural and Psychological Distance}. \emph{Psychological Science}, \emph{31}(6), 678--701.
 
 \leavevmode\hypertarget{ref-peter2019}{}%
 Peter, M. S., Durrant, S., Jessop, A., Bidgood, A., Pine, J. M., \& Rowland, C. F. (2019). Does speed of processing or vocabulary size predict later language growth in toddlers? \emph{Cognitive Psychology}, \emph{115}, 101238.
@@ -655,38 +672,13 @@ Peter, M. S., Durrant, S., Jessop, A., Bidgood, A., Pine, J. M., \& Rowland, C. 
 \leavevmode\hypertarget{ref-R-base}{}%
 R Core Team. (2020). \emph{R: A language and environment for statistical computing}. Vienna, Austria: R Foundation for Statistical Computing. Retrieved from \url{https://www.R-project.org/}
 
-\leavevmode\hypertarget{ref-Swingley2000}{}%
-Swingley, D., \& Aslin, R. N. (2000). Spoken word recognition and lexical representation in very young children. \emph{Cognition}, \emph{76}(2), 147--166.
+\leavevmode\hypertarget{ref-swingley2000}{}%
+Swingley, D., \& Aslin, R. N. (2000). {Spoken word recognition and lexical representation in very young children.} \emph{Cognition}, \emph{76}(2), 147--166.
 
-\leavevmode\hypertarget{ref-R-png}{}%
-Urbanek, S. (2013). \emph{Png: Read and write png images}. Retrieved from \url{https://CRAN.R-project.org/package=png}
+\leavevmode\hypertarget{ref-manybabies2020}{}%
+The ManyBabies Consortium. (2020). {Quantifying sources of variability in infancy research using the infant-directed speech preference}. \emph{Advances in Methods and Practices in Psychological Science}, \emph{3}(1), 24--52.
 
-\leavevmode\hypertarget{ref-R-plyr}{}%
-Wickham, H. (2011). The split-apply-combine strategy for data analysis. \emph{Journal of Statistical Software}, \emph{40}(1), 1--29. Retrieved from \url{http://www.jstatsoft.org/v40/i01/}
-
-\leavevmode\hypertarget{ref-R-ggplot2}{}%
-Wickham, H. (2016). \emph{Ggplot2: Elegant graphics for data analysis}. Springer-Verlag New York. Retrieved from \url{https://ggplot2.tidyverse.org}
-
-\leavevmode\hypertarget{ref-R-stringr}{}%
-Wickham, H. (2019). \emph{Stringr: Simple, consistent wrappers for common string operations}. Retrieved from \url{https://CRAN.R-project.org/package=stringr}
-
-\leavevmode\hypertarget{ref-R-forcats}{}%
-Wickham, H. (2021a). \emph{Forcats: Tools for working with categorical variables (factors)}. Retrieved from \url{https://CRAN.R-project.org/package=forcats}
-
-\leavevmode\hypertarget{ref-R-tidyr}{}%
-Wickham, H. (2021b). \emph{Tidyr: Tidy messy data}. Retrieved from \url{https://CRAN.R-project.org/package=tidyr}
-
-\leavevmode\hypertarget{ref-R-tidyverse}{}%
-Wickham, H., Averick, M., Bryan, J., Chang, W., McGowan, L. D., François, R., \ldots{} Yutani, H. (2019). Welcome to the tidyverse. \emph{Journal of Open Source Software}, \emph{4}(43), 1686. \url{https://doi.org/10.21105/joss.01686}
-
-\leavevmode\hypertarget{ref-R-dplyr}{}%
-Wickham, H., François, R., Henry, L., \& Müller, K. (2021). \emph{Dplyr: A grammar of data manipulation}. Retrieved from \url{https://CRAN.R-project.org/package=dplyr}
-
-\leavevmode\hypertarget{ref-R-readr}{}%
-Wickham, H., \& Hester, J. (2020). \emph{Readr: Read rectangular text data}. Retrieved from \url{https://CRAN.R-project.org/package=readr}
-
-\leavevmode\hypertarget{ref-R-extrafont}{}%
-Winston Chang. (2014). \emph{Extrafont: Tools for using fonts}. Retrieved from \url{https://CRAN.R-project.org/package=extrafont}
+\end{CSLReferences}
 
 \endgroup
 

@@ -81,12 +81,11 @@ abstract: |
   The ability to rapidly recognize words and link them to referents in context is central to children’s early language development. 
   This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants’ fixation on a target object (vs. a distractor) after hearing a target label. 
   We present a large-scale, open database of infant and toddler eye-tracking data from looking-while-listening tasks. 
-  The goal of this effort is to address theoretical and methodological challenges in measuring vocabulary development. 
-  [tools; processing; analysis/ usage examples]
-  
+  The goal of this effort is to address theoretical and methodological challenges in measuring vocabulary development.
+
   
   <!-- https://tinyurl.com/ybremelq -->
-keywords          : "keywords"
+keywords          : "tools; processing; analysis / usage examples"
 wordcount         : "X"
 bibliography      : ["peekbank.bib"]
 floatsintext      : no
@@ -136,14 +135,14 @@ theme_update(panel.grid = ggplot2::element_blank(),
 
 # Introduction
 
-Across their first years of life, children learn words at an accelerating pace (Frank, Braginsky, Yurovsky, & Marchman, 2021).
-Although many children will only produce their first word at around one year of age, they show signs of understanding many common nouns (e.g., "mommy") and phrases (e.g., "Let's go bye-bye!") much earlier in development [@Bergelson2012a].
-However, the processes involved in early word understanding are less directly apparent in children's behaviors and are less accessible to observation than developments in speech production (Fernald, Perfors & Marchman, 2006). 
+Across their first years of life, children learn words at an accelerating pace [@frank2021].
+Although many children will only produce their first word at around one year of age, they show signs of understanding many common nouns (e.g., "mommy") and phrases (e.g., "Let's go bye-bye!") much earlier in development [@bergelson2012].
+However, the processes involved in early word understanding are less directly apparent in children's behaviors and are less accessible to observation than developments in speech production [@fernald2008].
 To understand speech, children must process the incoming auditory signal and link that signal to relevant meanings – a process often referred to as word recognition. 
-Measuring early word recognition offers insight into children's early word representations and as well as the speed and efficiency with which children comprehend language in real time, as the speech signal unfolds [@bergelson2020comprehension; @fernald1998].
+Measuring early word recognition offers insight into children's early word representations and as well as the speed and efficiency with which children comprehend language in real time, as the speech signal unfolds [@bergelson2020; @fernald1998].
 Word recognition skills are also thought to build a foundation for children’s subsequent language development. 
-Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes [@Bleses2016; @Marchman2018]. 
-One explanation for this relationship is that efficiency of word recognition facilitates subsequent word learning: the faster children are at processing speech, the more efficiently they can learn from the input in their environment [@Fernald2012a].
+Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes [@bleses2016; @marchman2018]. 
+One explanation for this relationship is that efficiency of word recognition facilitates subsequent word learning: the faster children are at processing speech, the more efficiently they can learn from the input in their environment [@fernald2012].
 
 While word recognition is a central part of children's language development, mapping the trajectory of word recognition skills has remained elusive. Studies investigating children's word recognition are typically limited in scope to experiments in individual labs involving small samples tested on a limited set of items.
 This limitation in scale makes it difficult to understand developmental changes in children's word knowledge at a broad scale.
@@ -151,11 +150,11 @@ Peekbank provides an openly accessible database of eye-tracking data of children
 
 
 ## The “Looking-While-Listening” Paradigm
-Word recognition is traditionally studied in the “looking-while-listening” paradigm [alternatively referred to as the intermodal preferential looking procedure; @Fernald2008; @Hirsh-Pasek1987]. 
+Word recognition is traditionally studied in the “looking-while-listening” paradigm [alternatively referred to as the intermodal preferential looking procedure; @fernald2008; @hirshpasek1987]. 
 In such studies, infants listen to a sentence prompting a specific referent (e.g., Look at the dog!) while viewing two images on the screen (e.g., an image of a dog – the target image – and an image of a duck – the distractor image). 
 Infants’ word recognition is measured in terms of how quickly and accurately they fixate on the correct target image after hearing its label. 
 Past research has used this same basic method to study a wide range of questions in language development. 
-For example, the looking-while-listening paradigm has been used to uncover early knowledge of nouns in infants’ early noun knowledge, phonological representations of words, prediction during language processing, and individual differences in language development [@Bergelson2012a; @Golinkoff2013; @Lew-Williams2007; @Marchman2018; @Swingley2000].
+For example, the looking-while-listening paradigm has been used to uncover early knowledge of nouns in infants’ early noun knowledge, phonological representations of words, prediction during language processing, and individual differences in language development [@bergelson2012; @golinkoff2013; @lewwilliams2007; @marchman2018; @swingley2000].
 
 ## Measuring developmental change in word recognition
 
@@ -164,7 +163,7 @@ One central question is how to measure developmental change in word recognition.
 A key idea in the language learning literature is that processing speed - the ability to quickly link a word with its referent - supports language learning.
 Age-related changes in speed of processing are thought to accelerate infants' subsequent language learning: the faster infants are able to process incoming speech input, the better able they become to learn from their language environment.
 
-Similarly, longitudinal analyses have found that individual differences in word recognition speed predict linguistic and cognitive outcomes later in childhood [e.g., @Marchman2008]. 
+Similarly, longitudinal analyses have found that individual differences in word recognition speed predict linguistic and cognitive outcomes later in childhood [e.g., @marchman2008]. 
 However, measuring increases in the speed and accuracy of word recognition faces the challenge of distinguishing developmental changes in word recognition skill from changes in knowledge of specific words. 
 This problem is particularly thorny in child development, since the number of items that can be tested within a single session is limited and items must be selected in an age-appropriate manner [@peter2019]. 
 Measuring developmental change therefore requires large-scale datasets with a range of items, in order to generalize age-related changes across words.
@@ -172,7 +171,7 @@ Measuring developmental change therefore requires large-scale datasets with a ra
 ## Developing methodological best-practices
 A second question relates to evaluating methodological best practices. 
 In particular, many fundamental analytic decisions vary substantially across studies, and different decisions may lead to different inferences about children’s word recognition. 
-For example, researchers vary in how they select time windows for analysis, transform the dependent measure of target fixations, and model the time course of word recognition [@Csibra2016; @Fernald2008; @Huang2020]. 
+For example, researchers vary in how they select time windows for analysis, transform the dependent measure of target fixations, and model the time course of word recognition [@csibra2016; @fernald2008; @huang2020]. 
 This problem is made more complex by the fact that many of these decisions depend on a variety of design-related and participant-related factors (e.g., infant age). 
 Establishing best practices therefore requires a large database of infant word recognition studies varying across such factors, in order to test the potential consequences of methodological decisions on study results.
 
@@ -203,11 +202,11 @@ Therefore, our first effort was to develop a common tabular format to support an
 As illustrated in Figure \ref{fig:fig-framework-overview}, the Peekbank framework consists of three main components: (1) a set of tools to convert eye-tracking datasets into a unified format; (2) a relational database populated with data in this unified format and (3) a set of tools to retrieve data from this database.
 <!-- scm: the graph shows visualizations / shiny as a 4th top-level component --> 
 These components are supported by three libraries.
-The \texttt{peekds} library (for the R language; R Development Core Team, 2020) helps researchers convert existing datasets to use the standardized format of the database.
+The \texttt{peekds} library (for the R language; [@R-base] helps researchers convert existing datasets to use the standardized format of the database.
 The \texttt{peekbank} module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by \texttt{peekds}.
 The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages, and can be hosted on one machine and accessed by many others over the Internet.
 The \texttt{peekbankr} library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
-Most users will access data through this final libary, in which case the details of data formatting and processing are abstracted away from the user.
+Most users will access data through this final library, in which case the details of data formatting and processing are abstracted away from the user.
 
 In the following sections, we will begin by providing the details on the database’s organization (or \textit{schema}) and the technical implementation on \texttt{peekds}. 
 Users who are primarily interested in accessing the database can skip these details and focus on access through the \texttt{peekbankr} API and the web apps.
@@ -305,7 +304,7 @@ In an effort to double check the data quality and to make sure that no errors ar
 knitr::include_graphics(here("brm/figures","schema_3.png"))
 ```
 
-## Current Data Sources.
+## Current Data Sources
 
 ```{r eval=FALSE}
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
@@ -439,10 +438,10 @@ We therefore have created an interactive web application -- \texttt{peekbank-shi
 The Shiny app allows users to create commonly used visualizations of looking-while-listening data, based on data from the Peekbank database.
 Specifically, users can visualize
 
-1.  the time course of looking data in a profile plot depicting infant target looking across trial time,
-2.  overall accuracy (proportion target looking) within a specified analysis window,
-3.  reaction times (speed of fixating the target image) in response to a target label, and
-4.  an onset-contingent plot, which shows the time course of participant looking as a function of their look location at the onset of the target label.
+1. the time course of looking data in a profile plot depicting infant target looking across trial time
+2. overall accuracy (proportion target looking) within a specified analysis window
+3. reaction times (speed of fixating the target image) in response to a target label
+4. an onset-contingent plot, which shows the time course of participant looking as a function of their look location at the onset of the target label
 
 Users are given various customization options for each of these visualizations, e.g., choosing which datasets to include in the plots, controlling the age range of participants, splitting the visualizations by age bins, and controlling the analysis window for time course analyses.
 Plots are then updated in real time to reflect users' customization choices, and users are given options to share the visualizations they created.
@@ -458,11 +457,11 @@ Stimuli Data in raw format (if some additional datum needed, e.g. pupil size?)
 
 # Peekbank in Action
 
-We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis [e.g., @Hardwicke2018] and also provides an easy way to explore looking-while-listening timecourse data in a standardized format. Our second example shows an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis can be used for optimizing the stimuli for new experiments. 
+We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis [e.g., @hardwicke2018] and also provides an easy way to explore looking-while-listening timecourse data in a standardized format. Our second example shows an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis can be used for optimizing the stimuli for new experiments. 
 
-## Computational reproducibility example: Swingley & Aslin (2002)
+## Computational reproducibility example: @swingley2000
 
-@swingley2002 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. "oppel" (close mispronunciation) or "opel" (distant mispronunciation) instead of "apple" (correct condition). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. 
+@swingley2000 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. "oppel" (close mispronunciation) or "opel" (distant mispronunciation) instead of "apple" (correct condition). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. 
 
 ```{r swingley_data, echo = TRUE, eval = FALSE}
 aoi_timepoints <- peekbankr::get_aoi_timepoints(dataset_name = "swingley_aslin_2002")
@@ -686,7 +685,7 @@ ggplot(wb_pb,
 # Discussion/ Conclusion
 
 Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive.
-Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science (Bergmann et al., 2018; Frank, Braginsky, Yurovsky, & Marchman, 2017; The ManyBabies Consortium, 2020).
+Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science (@bergmann2018; @frank2017; @manybabies2020].
 The Peekbank project expands on these efforts by building an infrastructure for aggregating eye-tracking data across studies, with a specific focus on the looking-while-listening paradigm.
 This paper presents an illustration of some of the key theoretical and methodological questions that can be addressed using Peekbank: generalizing across item-level variability in children's word recognition and providing data-driven guidance on methodological choices.
 
@@ -694,7 +693,7 @@ There are a number of limitations surrounding the current scope of the database.
 A priority in future work will be to expand the size of the database.
 With 11 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results.
 Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability.
-The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset comes from WEIRD populations; Muthukrishna et al., 2020).
+The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset comes from WEIRD populations; [@muthukrishna2020].
 Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
 
 Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development.
