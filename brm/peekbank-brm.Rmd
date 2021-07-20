@@ -438,7 +438,7 @@ Stimuli Data in raw format (if some additional datum needed, e.g. pupil size?)
 
 # Peekbank in Action
 
-We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis [e.g., @Hardwicke2018] and also provides an easy way to explore looking-while-listening timecourse data in a standardized format. Our second example shows an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis can be used for optimizing the stimuli for new experiments. 
+We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis [e.g., @Hardwicke2018] and also provides an easy way to explore looking-while-listening timecourse data in a standardized format. Our second example shows an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis could in principle be used for optimizing the stimuli for new experiments, especially as the Peekbank dataset grows and gains coverage over a great number of items. 
 
 ## Computational reproducibility example: Swingley & Aslin (2002)
 
@@ -538,14 +538,12 @@ ggplot(subject_mp_effect,aes(lab_age,mp_effect))+
 
 ## Item analyses
 
-To illustrate the power of aggregating data across multiple datasets, we,
+A second use case for Peekbank is to examine item-level variation in word recognition. While individual datasets rarely have enough statistical power to show reliable developmental differences within items. To illustrate the power of aggregating data across multiple datasets, we select the four words with the most data available across studies and ages (apple, book, dog, and frog) and show average recognition trajectories. 
 
-aspirational goal -
+Our first step is to collect and join the data from the relevant tables including timepoint data, trial and stimulus data, and administration data (for participant ages). We join thsse into a single dataframe for easy access; this dataframe is a common starting point for analyses of item-level data. 
 
-ALso, item selection but maybe not yet?
-
-```{r all_data, eval=FALSE}
-all_aoi_timepoints <- get_aoi_timepoints(rle=FALSE)
+```{r all_data, eval=FALSE, echo = TRUE}
+all_aoi_timepoints <- get_aoi_timepoints()
 all_stimuli <- get_stimuli()
 all_administrations <- get_administrations()
 all_trial_types <- get_trial_types() 
@@ -556,14 +554,15 @@ aoi_data_joined <- all_aoi_timepoints %>%
   right_join(all_trials) %>%
   right_join(all_trial_types) %>%
   mutate(stimulus_id = target_id) %>%
-  right_join(all_stimuli)
-
-aoi_data_joined <- aoi_data_joined |>
+  right_join(all_stimuli) %>%
   select(administration_id, english_stimulus_label, age, t_norm, aoi)
+```
+
+```{r save_aoi_data_joined}
 saveRDS(aoi_data_joined, here("brm","data","aoi_data_joined.rds"))
 ```
 
-```{r load_peekbank}
+```{r load_aoi_data_joined}
 dataset_info <- readRDS(here("brm","data","dataset_info.rds"))
 aoi_data_joined <- readRDS(here("brm","data","aoi_data_joined.rds"))
 ```
@@ -582,13 +581,14 @@ ggplot(filter(item_counts, n > 80),
   coord_flip()
 ```
 
-```{r target_word_data}
-target_words <- c("book","dog","car","frog","apple",
-                  "shoe","kitty","cookie","carrot","birdie","banana","ball")
+Next we select a set of four target words (chosen based on having more than children contributing data for each across several one-year age groups). We create age groups, aggregate, and compute timepoint-by-timepoint confidence intervals using the $z$ approximation. 
+
+```{r target_word_data, eecho = TRUE}
+target_words <- c("book","dog","frog","apple")
 
 target_word_data <- aoi_data_joined %>%
   filter(english_stimulus_label %in% target_words) %>%
-  mutate(age_group = cut(age, breaks = seq(12,48,6))) %>%
+  mutate(age_group = cut(age, breaks = seq(12,48,12))) %>%
   filter(!is.na(age_group)) %>%
   group_by(t_norm, administration_id, age_group, english_stimulus_label) %>% 
   summarise(correct = mean(aoi == "target") / 
@@ -599,69 +599,38 @@ target_word_data <- aoi_data_joined %>%
             n = n()) 
 ```
 
+
 ```{r target_word_plot}
-p <- ggplot(filter(target_word_data, n > 60), 
+ggplot(target_word_data, 
        aes(x = t_norm, y = correct, col = age_group)) + 
   geom_line() + 
   geom_linerange(aes(ymin = correct - ci, ymax = correct + ci), 
                  alpha = .2) + 
-  ylim(.35,1) + 
+  ylim(.2,1) + 
   facet_wrap(~english_stimulus_label) + 
   geom_hline(yintercept = .5, lty = 2, col = "black") + 
+  geom_vline(xintercept = 0, lty = 3, col = "black") + 
   # langcog::theme_mikabr() + 
-  langcog::scale_color_solarized(name = "Age Group (months)") + 
-  xlim(0, 4000) + 
+  langcog::scale_color_solarized(name = "Age (months)") + 
+  xlim(-500, 2000) + 
   xlab("Time from target word onset (msec)") + 
   ylab("Proportion correct") + 
   theme(legend.position = "bottom")
 ```
 
-## Links to parent report vocabulary data
+Finally, we plot the data as time-courses split by age. Our plotting code is shown below (with styling commands again removed for clarity). Figure \@ref{target_word_plot} shows the resulting plot, with time courses for each of three (rather coarse) age bins. Although some baseline effects ared visible across items, we still see clear and consistent increases in looking to the target, with the increase appearing earlier and in many cases asymptoting at a higher level for older children. On the other hand, this simple averaging approach ignores study-to-study variation (perhaps responsible for the baseline effects we see in the "apple"
+and "frog" items especially. In future work, we hope to introduce model-based analytic methods that use mixed effects regression to factor out study-level and individual-level variance in order to recover developmental effects more appropriately [see e.g. @zettersten2021 for a prototype of such an analysis]. 
 
-```{r get_aoas, eval=FALSE}
-items <- wordbankr::get_item_data(language = "English (American)") %>%
-  filter(definition %in% target_words)
-ws_data <- wordbankr::get_instrument_data(language = "English (American)", 
-                                          form = "WS", 
-                                          administrations = TRUE, 
-                                          items = items$item_id[items$form == "WS"]) %>%
-  right_join(items)
-wg_data <- wordbankr::get_instrument_data(language = "English (American)", 
-                                          form = "WG", 
-                                          administrations = TRUE, 
-                                          items = items$item_id[items$form == "WG"]) %>%
-  right_join(items)
-
-wordbank_data <- bind_rows(ws_data, wg_data) %>%
-  mutate(produces = value == "produces", 
-         form = "both", 
-         num_item_id = definition, # stupid stuff to make fit_aoa work on joint data
-         item_id = definition) 
-
-aoas <- wordbankr::fit_aoa(wordbank_data, 
-                           measure = "produces", 
-                           method = "glmrob",
-                           age_min = 8, 
-                           age_max = 36)
-saveRDS(aoas, here("brm","data","aoas.rds"))
+```{r target_word_plot, echo = TRUE, eval = FALSE}
+ggplot(target_word_data, 
+       aes(x = t_norm, y = correct, col = age_group)) + 
+  geom_line() + 
+  geom_linerange(aes(ymin = correct - ci, ymax = correct + ci), 
+                 alpha = .2) + 
+  facet_wrap(~english_stimulus_label) 
 ```
 
-```{r aoas}
-aoas <- readRDS(here("brm","data","aoas.rds"))
 
-wb_pb <- target_word_data %>%
-  filter(t_norm > 300, t_norm < 3000, n > 20) %>%
-  group_by(age_group, english_stimulus_label) %>%
-  summarise(accuracy = mean(correct)) %>%
-  left_join(select(aoas, definition, aoa) %>% 
-              rename(english_stimulus_label = definition))
-
-ggplot(wb_pb, 
-       aes(x = aoa, y = accuracy, col = english_stimulus_label))+
-  geom_point() + 
-  facet_wrap(~age_group)+
-  geom_smooth(aes(group = 1), method = "lm")
-```
 
 # Discussion/ Conclusion
 
