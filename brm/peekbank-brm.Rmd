@@ -616,7 +616,7 @@ ggplot(filter(item_counts, n > 80),
 
 Next we select a set of four target words (chosen based on having more than children contributing data for each across several one-year age groups). We create age groups, aggregate, and compute timepoint-by-timepoint confidence intervals using the $z$ approximation. 
 
-```{r target_word_data, eecho = TRUE}
+```{r target_word_data, echo = TRUE}
 target_words <- c("book","dog","frog","apple")
 
 target_word_data <- aoi_data_joined |>
@@ -633,7 +633,7 @@ target_word_data <- aoi_data_joined |>
 ```
 
 
-```{r target_word_plot}
+```{r target-word-plot, fig.cap="Add caption here."}
 ggplot(target_word_data, 
        aes(x = t_norm, y = correct, col = age_group)) + 
   geom_line() + 
@@ -651,7 +651,7 @@ ggplot(target_word_data,
   theme(legend.position = "bottom")
 ```
 
-Finally, we plot the data as time-courses split by age. Our plotting code is shown below (with styling commands again removed for clarity). Figure \@ref{target_word_plot} shows the resulting plot, with time courses for each of three (rather coarse) age bins. Although some baseline effects ared visible across items, we still see clear and consistent increases in looking to the target, with the increase appearing earlier and in many cases asymptoting at a higher level for older children. On the other hand, this simple averaging approach ignores study-to-study variation (perhaps responsible for the baseline effects we see in the "apple"
+Finally, we plot the data as time-courses split by age. Our plotting code is shown below (with styling commands again removed for clarity). Figure \@ref(fig:target-word-plot) shows the resulting plot, with time courses for each of three (rather coarse) age bins. Although some baseline effects ared visible across items, we still see clear and consistent increases in looking to the target, with the increase appearing earlier and in many cases asymptoting at a higher level for older children. On the other hand, this simple averaging approach ignores study-to-study variation (perhaps responsible for the baseline effects we see in the "apple"
 and "frog" items especially. In future work, we hope to introduce model-based analytic methods that use mixed effects regression to factor out study-level and individual-level variance in order to recover developmental effects more appropriately [see e.g. @zettersten2021 for a prototype of such an analysis]. 
 
 ```{r target_word_plot_demo, echo = TRUE, eval = FALSE}
@@ -687,7 +687,7 @@ Aggregating large datasets of infant looking behavior in a single, openly-access
 
 We would like to thank the labs and researchers that have made their data publicly available in the database.
 
-We used `r cite_r("peekbank.bib")` for all our analyses.
+<!-- We used `r cite_r("peekbank.bib")` for all our analyses. -->
 
 \newpage
 
