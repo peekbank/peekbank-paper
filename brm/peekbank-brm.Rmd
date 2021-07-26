@@ -73,7 +73,6 @@ abstract: |
   This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants’ fixation on a target object (vs. a distractor) after hearing a target label. 
   We present a large-scale, open database of infant and toddler eye-tracking data from looking-while-listening tasks. 
   The goal of this effort is to address theoretical and methodological challenges in measuring vocabulary development.
-
   
   <!-- https://tinyurl.com/ybremelq -->
 keywords          : "tools; processing; analysis / usage examples"
@@ -189,13 +188,13 @@ Researcher conventions for structuring data vary, as do the technical specificat
 Therefore, our first effort was to develop a common tabular format to support analyses of all studies simultaneously.
 <!-- scm commented out for clarity -- this is unclear without defining "incoming" and "ingesting": All incoming datasets will be processed into this unified format and then ingested into the core database.--> 
 
-As illustrated in Figure \@ref(fig:fig-framework-overview), the Peekbank framework consists of three main components: (1) a set of tools to convert eye-tracking datasets into a unified format; (2) a relational database populated with data in this unified format and (3) a set of tools to retrieve data from this database.
+As illustrated in Figure \@ref(fig:fig-framework-overview), the Peekbank framework consists of four main components: (1) a set of tools to convert eye-tracking datasets into a unified format; (2) a relational database populated with data in this unified format and (3) a set of tools to retrieve data from this database (4) a web app (using the Shiny framework) for visualizing the data.
 <!-- scm: the graph shows visualizations / shiny as a 4th top-level component --> 
 These components are supported by three libraries.
 The `peekds` library (for the R language; [@R-base] helps researchers convert existing datasets to use the standardized format of the database.
 The `peekbank` module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by `peekds`.
 The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages, and can be hosted on one machine and accessed by many others over the Internet.
-The `peekbankr` library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing data in Peekbank.
+The `peekbankr` library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing the tabular data stored in Peekbank.
 Most users will access data through this final library, in which case the details of data formatting and processing are abstracted away from the user.
 
 In the following sections, we will begin by providing the details on the database’s organization (or _schema_) and the technical implementation on `peekds`.
@@ -415,7 +414,10 @@ More details about lab and design variation?
 
 ## Versioning + Expanding the database
 
-Information about versioning approach/ regularity of updates Steps for extending the database?
+The content of Peekbank will change as we add additional datasets and revise previous ones. 
+To facilitate reproducibility of analyses, we use a versioning system where successive releases are assigned a name reflecting the year and version, e.g., `2021.1`.
+By default, users will interact with the most recent version of the database available, though `peekbankr` API allows researchers to run analyses against any previous version of the database.
+For users with intensive use-cases, each version of the database may be downloaded as a compressed .sql file and installed on a local MySQL server.
 
 # Interfacing with peekbank
 
