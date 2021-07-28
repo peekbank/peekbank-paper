@@ -122,8 +122,6 @@ theme_update(panel.grid = ggplot2::element_blank(),
 set.seed(42)
 ```
 
-# Introduction
-
 Across their first years of life, children learn words at an accelerating pace [@frank2021].
 Although many children will only produce their first word at around one year of age, they show signs of understanding many common nouns (e.g., "mommy") and phrases (e.g., "Let's go bye-bye!") much earlier in development [@bergelson2012].
 However, the processes involved in early word understanding are less directly apparent in children's behaviors and are less accessible to observation than developments in speech production [@fernald2008].
@@ -133,33 +131,34 @@ Word recognition skills are also thought to build a foundation for children’s 
 Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes [@bleses2016; @marchman2018]. 
 One explanation for this relationship is that efficiency of word recognition facilitates subsequent word learning: the faster children are at processing speech, the more efficiently they can learn from the input in their environment [@fernald2012].
 
-While word recognition is a central part of children's language development, mapping the trajectory of word recognition skills has remained elusive. Studies investigating children's word recognition are typically limited in scope to experiments in individual labs involving small samples tested on a limited set of items.
-This limitation in scale makes it difficult to understand developmental changes in children's word knowledge at a broad scale.
+While word recognition is a central part of children's language development, mapping the trajectory of word recognition skills has remained elusive. Studies investigating children's word recognition are typically limited in scope to experiments in individual labs involving small samples tested on a small set of items.
+This limitation makes it difficult to understand developmental changes in children's word knowledge at a broad scale.
 Peekbank provides an openly accessible database of eye-tracking data of children's word recognition, with the primary goal of facilitating the study of developmental changes in children's word knowledge and recognition speed.
 
 
 ## The “Looking-While-Listening” Paradigm
 Word recognition is traditionally studied in the “looking-while-listening” paradigm [alternatively referred to as the intermodal preferential looking procedure; @fernald2008; @hirshpasek1987]. 
-In such studies, infants listen to a sentence prompting a specific referent (e.g., Look at the dog!) while viewing two images on the screen (e.g., an image of a dog – the target image – and an image of a duck – the distractor image). 
+In such studies, infants listen to a sentence prompting a specific referent (e.g., Look at the dog!) while viewing two images on the screen (e.g., an image of a dog – the target image – and an image of a bird – the distractor image). 
 Infants’ word recognition is measured in terms of how quickly and accurately they fixate on the correct target image after hearing its label. 
 Past research has used this same basic method to study a wide range of questions in language development. 
-For example, the looking-while-listening paradigm has been used to uncover early knowledge of nouns in infants’ early noun knowledge, phonological representations of words, prediction during language processing, and individual differences in language development [@bergelson2012; @golinkoff2013; @lewwilliams2007; @marchman2018; @swingley2000].
+For example, the looking-while-listening paradigm has been used to investigate early noun knowledge, phonological representations of words, prediction during language processing, and individual differences in language development [@bergelson2012; @golinkoff2013; @lewwilliams2007; @marchman2018; @swingley2000].
+
+**TO DO: ALIGN CHALLENGES WITH tidybits/ use cases**
+- computational reproducibility and teaching
+- item-level analyses
 
 ## Measuring developmental change in word recognition
-
-While the looking-while-listening paradigm has been highly fruitful in advancing understanding of early word knowledge, fundamental questions remain both about the trajectory of children's word recognition ability and the nature of the method itself.
-One central question is how to measure developmental change in word recognition.
-A key idea in the language learning literature is that processing speed -- the ability to quickly link a word with its referent -- supports language learning.
-Age-related changes in speed of processing are thought to accelerate infants' subsequent language learning: the faster infants are able to process incoming speech input, the better able they become to learn from their language environment.
-
-Similarly, longitudinal analyses have found that individual differences in word recognition speed predict linguistic and cognitive outcomes later in childhood [e.g., @marchman2008]. 
-However, measuring increases in the speed and accuracy of word recognition faces the challenge of distinguishing developmental changes in word recognition skill from changes in knowledge of specific words. 
-This problem is particularly thorny in child development, since the number of items that can be tested within a single session is limited and items must be selected in an age-appropriate manner [@peter2019]. 
-Measuring developmental change therefore requires large-scale datasets with a range of items, in order to generalize age-related changes across words.
+While the looking-while-listening paradigm has been highly fruitful in advancing understanding of early word knowledge, fundamental questions remain.
+One central question is how to accurately capture developmental change in the speed and accuracy of word recognition. 
+There is ample evidence demonstrating that infants get faster and more accurate in word recognition over the first few years of life [e.g., @fernald1998].
+However, precisely measuring developmental increases in the speed and accuracy of word recognition remains challenging due to the difficulty of distinguishing developmental changes in word recognition skill from changes in knowledge of specific words. 
+This problem is particularly thorny in studies with young children, since the number of items that can be tested within a single session is limited and items must be selected in an age-appropriate manner [@peter2019]. 
+One way to overcome this challenge is to measure word recognition across development in a large-scale dataset with a wide range of items. 
+A sufficiently large dataset would allow researchers to estimate developmental change in word recognition speed and accuracy while generalizing across changes related to specific words.
 
 ## Developing methodological best-practices
 A second question relates to evaluating methodological best practices. 
-In particular, many fundamental analytic decisions vary substantially across studies, and different decisions may lead to different inferences about children’s word recognition. 
+In particular, many fundamental analytic decisions vary substantially across studies, and different decisions may lead to researchers drawing different inferences about children’s word recognition. 
 For example, researchers vary in how they select time windows for analysis, transform the dependent measure of target fixations, and model the time course of word recognition [@csibra2016; @fernald2008; @huang2020]. 
 This problem is made more complex by the fact that many of these decisions depend on a variety of design-related and participant-related factors (e.g., infant age). 
 Establishing best practices therefore requires a large database of infant word recognition studies varying across such factors, in order to test the potential consequences of methodological decisions on study results.
@@ -299,23 +298,23 @@ knitr::include_graphics(here("brm/figures","schema_3.png"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 iso_codes <- read_csv(here("brm","data","iso_language_codes.csv"))
 
-dataset_unique_subj <- dataset_info |>
+dataset_unique_subj <- dataset_info %>%
   distinct(subject_id,sex)
 
-summarize_novel_familiar <- aoi_data_joined |>
-  group_by(dataset_name,stimulus_novelty) |>
-  summarize(n=n()) |>
-  left_join(dataset_name_mapping) |>
-  pivot_wider(id_cols=dataset_rename,names_from = stimulus_novelty,values_from=n) |>
-  group_by(dataset_rename) |>
+summarize_novel_familiar <- aoi_data_joined %>%
+  group_by(dataset_name,stimulus_novelty) %>%
+  summarize(n=n()) %>%
+  left_join(dataset_name_mapping) %>%
+  pivot_wider(id_cols=dataset_rename,names_from = stimulus_novelty,values_from=n) %>%
+  group_by(dataset_rename) %>%
   summarize(
     has_familiar = ifelse(is.na(familiar)|familiar==0,0,1),
     has_novel=ifelse(is.na(novel)|novel==0,0,1)
   )
 
-summarize_datasets <- dataset_info |>
-  left_join(dataset_name_mapping) |>
-  group_by(dataset_rename, apa_cite) |>
+summarize_datasets <- dataset_info %>%
+  left_join(dataset_name_mapping) %>%
+  group_by(dataset_rename, apa_cite) %>%
   summarize(
     #num_admin=length(unique(administration_id)),
     num_subj=length(unique(subject_id)),
@@ -324,58 +323,58 @@ summarize_datasets <- dataset_info |>
     min_age_months = round(min(age, na.rm = TRUE),0), 
     max_age_months = round(max(age, na.rm = TRUE),0),
     method=unique(coding_method)[1],
-    native_language = names(which.max(table(native_language)))) |>
+    native_language = names(which.max(table(native_language)))) %>%
   # mutate(
   #   percent_female = case_when(
   #     is.nan(percent_female) ~ "N/A",
   #     TRUE ~ paste0(percent_female*100,"%"))
-  # ) |>
+  # ) %>%
   mutate(
     method=case_when(
       method=="manual gaze coding" ~ "manual coding",
       method=="eyetracking" ~ "eye-tracking",
       method=="preprocessed eyetracking" ~ "eye-tracking",
       TRUE ~ method)
-  ) |>
+  ) %>%
     #split language into multiple columns (only two expected; expand if dataset acquires more)
-  separate(native_language,into=c("native_language_1","native_language_2"),sep=", ") |>
+  separate(native_language,into=c("native_language_1","native_language_2"),sep=", ") %>%
   #join based on ISO standard
-  left_join(iso_codes,by=c("native_language_1"="iso_code")) |>
-  left_join(iso_codes,by=c("native_language_2"="iso_code")) |>
+  left_join(iso_codes,by=c("native_language_1"="iso_code")) %>%
+  left_join(iso_codes,by=c("native_language_2"="iso_code")) %>%
   rename(
     language_name_1 = language_name.x,
     language_name_2 = language_name.y
-  ) |>
+  ) %>%
   #clean up some naming issues
   mutate(
     language_name_1 = case_when(
       language_name_1 == "Spanish; Castilian" ~ "Spanish",
       TRUE ~ language_name_1
-    )) |>
+    )) %>%
   #unite names
   mutate(
     language = case_when(
       !is.na(language_name_2) ~ paste(language_name_1,language_name_2,sep=", "),
-      TRUE ~ language_name_1)) |>
+      TRUE ~ language_name_1)) %>%
   # native language special cases
   mutate(
     language = case_when(
       dataset_rename == "tseltal" ~ "Tseltal",
-      TRUE ~ language)) |>
+      TRUE ~ language)) %>%
   #convert age range into one column
-  mutate(age_range_months= paste(min_age_months,max_age_months,sep=" - ")) |>
+  mutate(age_range_months= paste(min_age_months,max_age_months,sep=" - ")) %>%
   mutate(
    apa_cite=case_when(
       is.na(apa_cite) ~ "unpublished",
       TRUE ~ apa_cite
-  )) |>
-  select(dataset_rename,apa_cite, num_subj,avg_age,age_range_months,method,language) |>
+  )) %>%
+  select(dataset_rename,apa_cite, num_subj,avg_age,age_range_months,method,language) %>%
   arrange(dataset_rename)
 
 saveRDS(summarize_datasets, here("brm", "data", "summarize_datasets.rds"))
 
-# summarize_dataset_by_age_bin <- dataset_info |>
-#   left_join(dataset_name_mapping) |>
+# summarize_dataset_by_age_bin <- dataset_info %>%
+#   left_join(dataset_name_mapping) %>%
 #   mutate(
 #     age_bin = case_when(
 #       age <= 24 ~ "(12,24]",
@@ -383,21 +382,21 @@ saveRDS(summarize_datasets, here("brm", "data", "summarize_datasets.rds"))
 #       age <=48 ~ "(36,48]",
 #       age<=60 ~ "(48,60]"
 #     )
-#   ) |>
-#   group_by(dataset_rename,age_bin) |>
+#   ) %>%
+#   group_by(dataset_rename,age_bin) %>%
 #   summarize(
 #     num_subj=length(unique(subject_id)))
 ```
 
 ```{r dataset-table}
 summarize_datasets <- readRDS(here("brm", "data", "summarize_datasets.rds"))
-summarize_datasets |>
+summarize_datasets %>%
   mutate(apa_cite = str_remove_all(apa_cite, "[()]"),
-         age_range_months = str_replace(age_range_months, " - ", "–")) |>
+         age_range_months = str_replace(age_range_months, " - ", "–")) %>%
   knitr::kable(col.names = c("Dataset name", "Citation", "N", "Mean age (mos.)",
                              "Age range (mos.)", "Method", "Language"),
                caption = "Overview of the datasets in the current database.",
-               digits = 1, booktabs = TRUE, linesep = "") |>
+               digits = 1, booktabs = TRUE, linesep = "") %>%
    kableExtra::kable_styling(latex_options = "scale_down")
 ```
 
@@ -479,11 +478,11 @@ We begin by retrieving the relevant tables from the database, `aoi_timepoints`, 
 
 \singlespacing
 ```{r swingley_joins, echo=TRUE, eval = FALSE}
-swingley_data <- aoi_timepoints |>
-  left_join(administrations) |>
-  left_join(trials) |>
-  left_join(trial_types) |>
-  filter(condition != "filler") |>
+swingley_data <- aoi_timepoints %>%
+  left_join(administrations) %>%
+  left_join(trials) %>%
+  left_join(trial_types) %>%
+  filter(condition != "filler") %>%
   mutate(condition = if_else(condition == "cp", "Correct", "Mispronounced"))
 ```
 \doublespacing
@@ -501,11 +500,11 @@ As the code above shows, once the data are joined, condition information for eac
 
 \singlespacing
 ```{r swingley_analysis, echo=TRUE}
-accuracies <- swingley_data  |>
-  group_by(condition, t_norm, administration_id) |> 
+accuracies <- swingley_data  %>%
+  group_by(condition, t_norm, administration_id) %>% 
   summarize(correct = mean(aoi == "target") / 
-              mean(aoi %in% c("target","distractor"))) |>
-  group_by(condition, t_norm) |> 
+              mean(aoi %in% c("target","distractor"))) %>%
+  group_by(condition, t_norm) %>% 
   summarize(mean_correct = mean(correct),
             ci = 1.96 * sd(correct) / sqrt(n()))
 ```
@@ -551,15 +550,15 @@ ggplot(accuracies, aes(x = t_norm, y = mean_correct, color = condition)) +
 Figure \@ref(fig:swingley) shows the average time course of looking for the two conditions, as produced by the code above. Looks after the correctly pronounced noun appeared both faster (deviating from chance earlier) and more accurate (showing a higher asymptote). Overall, this example demonstrates the ability to produce this visualization in just a few lines of code.
 
 ```{r eval=FALSE}
-subject_accuracy <- swingley_data   |>
-  group_by(administration_id, lab_age, condition,trial_id) |> 
-  filter(t_norm >=367 & t_norm>=2000) |>
+subject_accuracy <- swingley_data   %>%
+  group_by(administration_id, lab_age, condition,trial_id) %>% 
+  filter(t_norm >=367 & t_norm>=2000) %>%
   summarise(correct = mean(aoi == "target") / 
-              mean(aoi %in% c("target","distractor"))) |>
-  group_by(administration_id, lab_age, condition) |> 
+              mean(aoi %in% c("target","distractor"))) %>%
+  group_by(administration_id, lab_age, condition) %>% 
   summarize(accuracy = mean(correct,na.rm=TRUE))
-subject_mp_effect <- subject_accuracy |>
-  group_by(administration_id, lab_age) |>
+subject_mp_effect <- subject_accuracy %>%
+  group_by(administration_id, lab_age) %>%
   summarize(
     mp_effect=accuracy[condition=="Correct"]-accuracy[condition=="Mispronunciation"]
   )
@@ -584,12 +583,12 @@ all_administrations <- get_administrations()
 all_trial_types <- get_trial_types() 
 all_trials <- get_trials()  
 
-aoi_data_joined <- all_aoi_timepoints |>
-  right_join(all_administrations) |>
-  right_join(all_trials) |>
-  right_join(all_trial_types) |>
-  mutate(stimulus_id = target_id) |>
-  right_join(all_stimuli) |>
+aoi_data_joined <- all_aoi_timepoints %>%
+  right_join(all_administrations) %>%
+  right_join(all_trials) %>%
+  right_join(all_trial_types) %>%
+  mutate(stimulus_id = target_id) %>%
+  right_join(all_stimuli) %>%
   select(administration_id, english_stimulus_label, age, t_norm, aoi)
 ```
 
@@ -603,11 +602,11 @@ aoi_data_joined <- readRDS(here("brm","data","aoi_data_joined.rds"))
 ```
 
 ```{r item_counts, eval=FALSE}
-item_counts <- aoi_data_joined |>
-  group_by(administration_id, english_stimulus_label) |>
-  count() |>
-  group_by(english_stimulus_label) |>
-  count() |>
+item_counts <- aoi_data_joined %>%
+  group_by(administration_id, english_stimulus_label) %>%
+  count() %>%
+  group_by(english_stimulus_label) %>%
+  count() %>%
   mutate(english_stimulus_label = fct_reorder(english_stimulus_label, n))
 
 ggplot(filter(item_counts, n > 80), 
@@ -621,14 +620,14 @@ Next we select a set of four target words (chosen based on having more than chil
 ```{r target_word_data, echo = TRUE}
 target_words <- c("book","dog","frog","apple")
 
-target_word_data <- aoi_data_joined |>
-  filter(english_stimulus_label %in% target_words) |>
-  mutate(age_group = cut(age, breaks = seq(12,48,12))) |>
-  filter(!is.na(age_group)) |>
-  group_by(t_norm, administration_id, age_group, english_stimulus_label) |> 
+target_word_data <- aoi_data_joined %>%
+  filter(english_stimulus_label %in% target_words) %>%
+  mutate(age_group = cut(age, breaks = seq(12,48,12))) %>%
+  filter(!is.na(age_group)) %>%
+  group_by(t_norm, administration_id, age_group, english_stimulus_label) %>% 
   summarise(correct = mean(aoi == "target") / 
-              mean(aoi %in% c("target","distractor"), na.rm=TRUE)) |>
-  group_by(t_norm, age_group, english_stimulus_label) |> 
+              mean(aoi %in% c("target","distractor"), na.rm=TRUE)) %>%
+  group_by(t_norm, age_group, english_stimulus_label) %>% 
   summarise(ci = 1.96 * sd(correct, na.rm=TRUE) / sqrt(length(correct)), 
             correct = mean(correct, na.rm=TRUE), 
             n = n()) 
