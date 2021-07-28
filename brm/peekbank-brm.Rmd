@@ -144,6 +144,10 @@ Infants’ word recognition is measured in terms of how quickly and accurately t
 Past research has used this same basic method to study a wide range of questions in language development. 
 For example, the looking-while-listening paradigm has been used to investigate early noun knowledge, phonological representations of words, prediction during language processing, and individual differences in language development [@bergelson2012; @golinkoff2013; @lewwilliams2007; @marchman2018; @swingley2000].
 
+**TO DO: ALIGN CHALLENGES WITH tidybits/ use cases**
+- computational reproducibility and teaching
+- item-level analyses
+
 ## Measuring developmental change in word recognition
 While the looking-while-listening paradigm has been highly fruitful in advancing understanding of early word knowledge, fundamental questions remain.
 One central question is how to accurately capture developmental change in the speed and accuracy of word recognition. 
