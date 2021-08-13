@@ -189,12 +189,12 @@ Therefore, our first effort was to develop a common tabular format to support an
 
 As illustrated in Figure \@ref(fig:fig-framework-overview), the Peekbank framework consists of four main components: (1) a set of tools to convert eye-tracking datasets into a unified format, (2) a relational database populated with data in this unified format, (3) a set of tools to retrieve data from this database, and (4) a web app (using the Shiny framework) for visualizing the data.
 <!-- scm: the graph shows visualizations / shiny as a 4th top-level component --> 
-These components are supported by three libraries.
-The `peekds` library (for the R language; @R-base) helps researchers convert existing datasets to use the standardized format of the database.
+These components are supported by three packages.
+The `peekds` package (for the R language; @R-base) helps researchers convert existing datasets to use the standardized format of the database.
 The `peekbank` module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by `peekds`.
 The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages, and can be hosted on one machine and accessed by many others over the Internet.
-The `peekbankr` library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing the tabular data stored in Peekbank.
-Most users will access data through this final library, in which case the details of data formatting and processing are abstracted away from the user.
+The `peekbankr` package (R) provides an application programming interface, or API, that offers high-level abstractions for accessing the tabular data stored in Peekbank.
+Most users will access data through this final package, in which case the details of data formatting and processing are abstracted away from the user.
 
 In the following sections, we will begin by providing the details on the database’s organization (or _schema_) and the technical implementation on `peekds`.
 Users who are primarily interested in accessing the database can skip these details and focus on access through the `peekbankr` API and the web apps.
@@ -489,16 +489,17 @@ The `peekbankr` API offers a way for users to access data from the database and 
 
 Functions:
 
-- `connect_to_peekbank()`
-- `get_datasets()`
-- `get_subjects()`
-- `get_administrations()`
-- `get_stimuli()`
-- `get_aoi_timepoints()`
-- `get_trials()`
-- `get_trial_types()`
-- `get_xy_timepoints()`
-- `get_aoi_region_sets()`
+- `connect_to_peekbank()` opens a connection with the Peekbank database to allow tables to be downloaded with the following functions 
+- `get_datasets()` gives each dataset name and its citation information 
+- `get_subjects()` gives information about persistent subject identifiers (e.g., native languages, sex) 
+- `get_administrations()` gives information about specific experimental administrations (e.g., subject age, monitor size, gaze coding method) 
+- `get_stimuli()` gives information about word–image pairings that appeared in experiments  
+- `get_trial_types()` gives information about pairings of stimuli that appeared in the experiment (e.g., point of disambiguation, target and distractor stimuli, condition, language) 
+- `get_trials()` gives the trial orderings for each administration, linking trial types to the trial IDs used in time course data 
+- `get_aoi_region_sets()` gives coordinate regions for each area of interest (AOI)  linked to trial type IDs 
+- `get_xy_timepoints()` gives time course data for each subject's looking behavior in each trial, as (x, y) coordinates on the experiment monitor 
+- `get_aoi_timepoints()` gives time course data for each subject's looking behavior in each trial, coded into areas of interest 
+
 
 ## OSF site
 
