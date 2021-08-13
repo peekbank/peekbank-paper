@@ -202,12 +202,11 @@ Users who are primarily interested in accessing the database can skip these deta
 ```{r fig-framework-overview, fig.env = "figure", fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "Overview of the Peekbank data ecosystem. Peekbank tools are highlighted in green. * indicates R packages introduced in this work."}
 knitr::include_graphics(here("brm/figures","peekbankflowchartv6.png"))
 ```
-<!-- scm: I switched "custom R packages" to "R packages introduced in this work" -->
 
 ## Database Schema
 
-The peekbank database contains two major types of data: (1) timecourse looking data, detailing where on the screen a child is looking at a given point in time, and (2) metadata regarding the relevant experiment, participant, and trial (Fig. \@ref(fig:fig-schema)).
-<!-- scm: what is this figure supposed to convey? -->
+The peekbank database contains two major types of data: (1) metadata regarding the relevant experiment, participant, and trial, and (2) timecourse looking data, detailing where on the screen a child is looking at a given point in time (Fig. \@ref(fig:fig-schema)).
+
 Here, we will give an outline of the tables encoding this data.
 As is common in relational databases, records of similar types (e.g., participants, trials, experiments, coded looks at each timepoint) are grouped into tables, and records of various types are linked through numeric identifiers. 
 
@@ -215,20 +214,12 @@ As is common in relational databases, records of similar types (e.g., participan
 knitr::include_graphics(here("brm/figures","schema_3.png"))
 ```
 
-### Timecourse data
-
-Timecourse looking data is encoded in two tables: `aoi_timepoints` and `xy_timepoints`.
-The `aoi_timepoints` table encodes where a child is looking at each point in time, by specifying the coded area of interest (AOI): looks to the target, looks to the distractor, looks on the screen but away from target and distractor, and missing looks.
-All datasets must include this timecourse data, as it represents the main record of children's looking behavior.
-For eyetracking experiments that are automatically rather than manually coded, the `xy_timepoints` table additionally encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trial.
-Both the `aoi_timepoints` and `xy_timepoints` tables are resampled to a consistent sampling rate, as described in the Import section below.
-To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of _dog_ in "Can you find the _dog_?").
-
 ### Metadata
 
-Each record in the timecourse data is linked to several metadata records.
-This metadata can be separated into three parts: (1) subject-level information (e.g., demographics) (2) experiment-level information (e.g., a subject's age for a specific experiment, or the particular eyetracker used to collect the data) and (3) trial information and experimental design (what images or videos were presented onscreen, and paired with which audio).
-Information about individuals who participate in one more studies, for example a subject's sex and first language, is recorded in the `subjects` table, while the `administrations` table contains information about a specific subject participating in a specific experiment.
+We encode the metadata available for each study and participation in the database.
+<!-- jm: need a better intro -->
+This metadata can be separated into three parts: (1) subject-level information (e.g., demographics) (2) experiment-level information (e.g., a subject's age for a specific experiment, or the particular eyetracker used to collect the data) and (3) trial information and experimental design (e.g., what images or videos were presented onscreen, and paired with which audio).
+Information about individuals who participate in one or more studies (e.g, a subject's sex and first language), is recorded in the `subjects` table, while the `administrations` table contains information about a subject's participation in a single administration of a study (e.g, a subject's age of participation or the eyetracker that was used).
 This division allows Peekbank to gracefully handle longitudinal designs: a single subject can be associated with many administrations.
 
 The `stimuli` and `trial_types` tables store information about trials, which in turn may reflect specifics of the experiment design.
@@ -240,6 +231,15 @@ Because individual trial types can be repeated multiple times within an administ
 Each unique ordering that occurred in the experiment is encoded in this table.
 The `trial_id`, which links a trial type to the order it was presented in an administration, is attached to the timecourse looking data.
 
+
+### Timecourse data
+
+Timecourse looking data is encoded in two tables: `aoi_timepoints` and `xy_timepoints`.
+The `aoi_timepoints` table encodes where a child is looking at each point in time, by specifying the coded area of interest (AOI): looks to the target, looks to the distractor, looks on the screen but away from target and distractor, and missing looks.
+All datasets must include this timecourse data, as it represents the main record of children's looking behavior.
+For eyetracking experiments that are automatically rather than manually coded, the `xy_timepoints` table additionally encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trial.
+Both the `aoi_timepoints` and `xy_timepoints` tables are resampled to a consistent sampling rate, as described in the Import section below.
+To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of _dog_ in "Can you find the _dog_?").
 
 
 ## Import
@@ -301,13 +301,42 @@ Currently, the import process is carried out by the Peekbank team using data off
 ## Current Data Sources
 
 ```{r eval=FALSE}
+t_range <- c(-1000,3000)
+datasets <- get_datasets()
+administrations <- get_administrations()
+subjects <- get_subjects()
+aoi_timepoints <- get_aoi_timepoints()
+stimuli <- get_stimuli()
+trial_types <- get_trial_types()
+trials <- get_trials()
+
+dataset_info <- administrations %>%
+  right_join(datasets) %>%
+  right_join(subjects) 
+
+overall_aoi_data_joined <- aoi_timepoints %>%
+  right_join(administrations) %>%
+  right_join(trials) %>%
+  right_join(trial_types) %>%
+  right_join(datasets) %>%
+  mutate(stimulus_id = target_id) %>%
+  right_join(stimuli) %>%
+  filter(t_norm > t_range[1],
+         t_norm < t_range[2])
+
+saveRDS(overall_aoi_data_joined, here("brm","data","overall_aoi_data_joined.Rds"))
+saveRDS(dataset_info,here("brm","data","dataset_info.Rds"))
+```
+
+``` {r eval=FALSE}
+aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 iso_codes <- read_csv(here("brm","data","iso_language_codes.csv"))
 
 dataset_unique_subj <- dataset_info %>%
   distinct(subject_id,sex)
 
-summarize_novel_familiar <- aoi_data_joined %>%
+summarize_novel_familiar <- overall_aoi_data_joined %>%
   group_by(dataset_name,stimulus_novelty) %>%
   summarize(n=n()) %>%
   left_join(dataset_name_mapping) %>%
@@ -317,6 +346,8 @@ summarize_novel_familiar <- aoi_data_joined %>%
     has_familiar = ifelse(is.na(familiar)|familiar==0,0,1),
     has_novel=ifelse(is.na(novel)|novel==0,0,1)
   )
+
+saveRDS(summarize_novel_familiar, here("brm", "data", "summarize_novel_familiar.rds"))
 
 summarize_datasets <- dataset_info %>%
   left_join(dataset_name_mapping) %>%
@@ -395,6 +426,11 @@ saveRDS(summarize_datasets, here("brm", "data", "summarize_datasets.rds"))
 ```
 
 ```{r dataset-table}
+dataset_info <- readRDS(here("brm","data","dataset_info.Rds"))
+summarize_novel_familiar <- readRDS(here("brm", "data", "summarize_novel_familiar.rds"))
+dataset_unique_subj <- dataset_info %>%
+  distinct(subject_id,sex)
+
 summarize_datasets <- readRDS(here("brm", "data", "summarize_datasets.rds"))
 summarize_datasets %>%
   mutate(apa_cite = str_remove_all(apa_cite, "[()]"),
@@ -406,12 +442,16 @@ summarize_datasets %>%
    kableExtra::kable_styling(latex_options = "scale_down")
 ```
 
-The database currently includes 11 looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table \@ref(tab:dataset-table)).
-Most datasets (10 out of 11 total) consist of data from monolingual native English speakers.
-They span a wide age spectrum with participants ranging from 8 to 84 months of age, and are balanced in terms of gender (48% female).
-The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior.
-Most studies focused on testing familiar items, but the database also includes studies with novel pseudowords.
-All data (and accompanying references) are openly available on the Open Science Framework (osf.io/pr6wu).
+---
+nocite: | 
+  @Pomper2016; @Yurovsky2013; @Byers-Heinlein2017; @Frank2016; @Casillas2017; @Adams2018; @Potter2019; @Mahr2015; @Pomper2019; @Garrison2020; @Perry2017; @Swingley2002; @Yurovsky2017
+...
+
+The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table 1).
+Most datasets (`r sum(summarize_datasets$language=="English")` out of `r length(summarize_datasets$language)` total) consist of data from monolingual native English speakers. 
+They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),2)*100`% female). 
+The datasets vary across a number of design-related dimensions, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. 
+All studies tested familiar items, but the database also includes `r sum(summarize_novel_familiar$has_novel)` datasets that tested novel pseudo-words in addition to familiar words. All data are openly available on the Open Science Framework (https://osf.io/pr6wu/).
 
 How selected?
 Language coverage?
@@ -463,6 +503,155 @@ Functions:
 ## OSF site
 
 Stimuli Data in raw format (if some additional datum needed, e.g. pupil size?)
+
+# Peekbank: General Descriptives
+
+[Accuracy, Reaction Times, Item variability?]
+
+## Overall Word Recognition Accuracy
+
+```{r computing accuracy, eval=FALSE}
+aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
+dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
+#set variables for analysis window range
+t_min <- 367
+t_max <- 2000
+
+### summarize the data by trial ###
+by_trial_means <- aoi_data_joined %>%
+  #window of analysis
+  filter(t_norm > t_min, t_norm < t_max) %>%
+  mutate(age_binned = cut(age, seq(12,60,12))) %>%
+  rename(target_label = english_stimulus_label) %>%
+  group_by(dataset_name,subject_id, trial_id, stimulus_novelty,target_label,
+           age, age_binned) %>%
+  summarise(prop_looking = sum(aoi == "target", na.rm = TRUE) / 
+              (sum(aoi == "target", na.rm=TRUE) + 
+                 sum(aoi=="distractor", na.rm=TRUE)),
+            prop_missing = mean(aoi == "missing", na.rm = TRUE))
+
+#Filter the data to trials where there is sufficient looking data (target or distractor looking on at least 2/3 of the trial)
+by_trial_means <- by_trial_means %>%
+  ungroup() %>%
+  filter(prop_missing < 1/3) %>%
+  mutate(age_centered = age - mean(age,na.rm=TRUE))
+
+unique_stimuli <- by_trial_means %>%
+  ungroup() %>%
+  select(dataset_name,target_label) %>%
+  distinct() %>%
+  group_by(dataset_name) %>%
+  summarize(
+    unique_items=n()
+  )
+
+### summarize the data by participant ###
+#collapsing across stimulus novelty
+by_participant_means <- by_trial_means %>%
+  ungroup() %>%
+  group_by(dataset_name,subject_id) %>%
+  summarize(
+    trial_n=n(),
+    unique_items=length(unique(target_label)),
+    avg_prop_looking=mean(prop_looking,na.rm=TRUE),
+    # avg_prop_looking_ci=qt(0.975, trial_n-1)*sd(prop_looking,na.rm=TRUE)/sqrt(trial_n),
+    # avg_prop_looking_lower_ci=avg_prop_looking-avg_prop_looking_ci,
+    # avg_prop_looking_upper_ci=avg_prop_looking+avg_prop_looking_ci,
+    age=mean(age,na.rm=TRUE)
+  ) 
+#grouping by stimulus novelty
+by_participant_means_novelty <- by_trial_means %>%
+  ungroup() %>%
+  group_by(dataset_name,subject_id,stimulus_novelty) %>%
+  summarize(
+    trial_n=n(),
+    avg_prop_looking=mean(prop_looking,na.rm=TRUE),
+    age=mean(age,na.rm=TRUE)
+  )
+
+### summarize means across participants ###
+#collapsing across stimulus novelty
+dataset_means <- by_participant_means %>%
+  ungroup() %>%
+  group_by(dataset_name) %>%
+  summarize(
+    N=n(),
+    mean_age=round(mean(age,na.rm=TRUE),0),
+    min_age=round(min(age,na.rm=TRUE),0),
+    max_age=round(max(age,na.rm=TRUE),0),
+    prop_looking=mean(avg_prop_looking,na.rm=TRUE),
+    prop_looking_ci=qt(0.975, N-1)*sd(avg_prop_looking,na.rm=TRUE)/sqrt(N),
+    prop_looking_lower_ci=prop_looking-prop_looking_ci,
+    prop_looking_upper_ci=prop_looking+prop_looking_ci,
+  ) %>%
+  select(-prop_looking_ci) %>%
+  left_join(unique_stimuli) %>%
+  relocate(unique_items,.after=N)
+
+saveRDS(dataset_means, here("brm", "data", "dataset_means.rds"))
+
+#grouping by stimulus novelty
+#(not currently used in the paper)
+dataset_means_novelty <- by_participant_means_novelty %>%
+  ungroup() %>%
+  group_by(dataset_name,stimulus_novelty) %>%
+  summarize(
+    N=n(),
+    mean_age=round(mean(age,na.rm=TRUE),0),
+    min_age=round(min(age,na.rm=TRUE),0),
+    max_age=round(max(age,na.rm=TRUE),0),
+    prop_looking=mean(avg_prop_looking,na.rm=TRUE),
+    prop_looking_ci=qt(0.975, N-1)*sd(avg_prop_looking,na.rm=TRUE)/sqrt(N),
+    prop_looking_lower_ci=prop_looking-prop_looking_ci,
+    prop_looking_upper_ci=prop_looking+prop_looking_ci,
+  ) %>%
+  select(-prop_looking_ci)
+saveRDS(dataset_means_novelty, here("brm", "data", "dataset_means_novelty.rds"))
+
+overall_novelty <- by_participant_means_novelty %>%
+  group_by(stimulus_novelty) %>%
+  summarize(
+    N=n(),
+    prop_looking=mean(avg_prop_looking,na.rm=TRUE),
+    prop_looking_ci=qt(0.975, N-1)*sd(avg_prop_looking,na.rm=TRUE)/sqrt(N),
+    prop_looking_lower_ci=prop_looking-prop_looking_ci,
+    prop_looking_upper_ci=prop_looking+prop_looking_ci
+  )
+saveRDS(overall_novelty, here("brm", "data", "overall_novelty.rds"))
+```
+
+```{r xtable2, num.cols.cap=1, results="asis"}
+overall_novelty <- readRDS(here("brm", "data", "overall_novelty.rds"))
+dataset_means <- readRDS(here("brm", "data", "dataset_means.rds"))
+dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
+
+#editing in preparation of depicting the dataset means in a table
+dataset_means <- dataset_means %>%
+  left_join(dataset_name_mapping) %>%
+  select(dataset_rename,unique_items,prop_looking,prop_looking_lower_ci,prop_looking_upper_ci) %>%
+  arrange(dataset_rename) %>%
+  mutate(ci=paste0("[",round(prop_looking_lower_ci,2),", ",round(prop_looking_upper_ci,2),"]")) %>%
+  select(-prop_looking_lower_ci,-prop_looking_upper_ci)
+
+#setting up table
+tab2 <- xtable::xtable(dataset_means, digits=c(0,0,0,2,0), 
+                       caption = "Average proportion target looking in each dataset.")
+
+names(tab2) <- c("Dataset Name", "Unique Items","Prop. Target", "95% CI")
+print(tab2, type="latex", comment = F, table.placement = "H",include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont")
+```
+
+In general, participants demonstrated robust, above-chance word recognition in each dataset (chance=0.5). 
+Table 2 shows the average proportion of target looking within a standard critical window of 367-2000ms after the onset of the label for each dataset [@Swingley2000]. 
+Proportion target looking was generally higher for familiar words (*M* = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="familiar")$N`) than for novel words learned during the experiment (*M* = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="novel")$N`). 
+
+## Item-level variability
+```{r items, set.cap.width=T, fig.cap = "Item-level variability in proportion target looking within each dataset (chance=0.5). Time is centered on the onset of the target label (vertical line). Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines."}
+img <- png::readPNG(here("brm","figures","peekbank_item_vis.png"))
+grid::grid.raster(img)
+```
+
+Figure \@ref(fig:items) gives an overview of the variability in accuracy for individual words in each dataset. The number of unique target labels and their associated accuracy vary widely across datasets. 
 
 # Peekbank in Action
 
