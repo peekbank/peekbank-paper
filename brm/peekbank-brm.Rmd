@@ -206,7 +206,7 @@ knitr::include_graphics(here("brm/figures","peekbankflowchartv6.png"))
 
 ## Database Schema
 
-The peekbank database contains two major types of data: (1) timecourse looking data, detailing where on the screen a child is looking at a given point in time, and (2) metadata regarding the relevant experiment, participant, and trial (Fig. \@ref(fig:fig-schema)).
+The peekbank database contains two major types of data: (1) metadata regarding the relevant experiment, participant, and trial, and (2) timecourse looking data, detailing where on the screen a child is looking at a given point in time (Fig. \@ref(fig:fig-schema)).
 <!-- scm: what is this figure supposed to convey? -->
 Here, we will give an outline of the tables encoding this data.
 As is common in relational databases, records of similar types (e.g., participants, trials, experiments, coded looks at each timepoint) are grouped into tables, and records of various types are linked through numeric identifiers. 
@@ -215,20 +215,12 @@ As is common in relational databases, records of similar types (e.g., participan
 knitr::include_graphics(here("brm/figures","schema_3.png"))
 ```
 
-### Timecourse data
-
-Timecourse looking data is encoded in two tables: `aoi_timepoints` and `xy_timepoints`.
-The `aoi_timepoints` table encodes where a child is looking at each point in time, by specifying the coded area of interest (AOI): looks to the target, looks to the distractor, looks on the screen but away from target and distractor, and missing looks.
-All datasets must include this timecourse data, as it represents the main record of children's looking behavior.
-For eyetracking experiments that are automatically rather than manually coded, the `xy_timepoints` table additionally encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trial.
-Both the `aoi_timepoints` and `xy_timepoints` tables are resampled to a consistent sampling rate, as described in the Import section below.
-To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of _dog_ in "Can you find the _dog_?").
-
 ### Metadata
 
-Each record in the timecourse data is linked to several metadata records.
-This metadata can be separated into three parts: (1) subject-level information (e.g., demographics) (2) experiment-level information (e.g., a subject's age for a specific experiment, or the particular eyetracker used to collect the data) and (3) trial information and experimental design (what images or videos were presented onscreen, and paired with which audio).
-Information about individuals who participate in one more studies, for example a subject's sex and first language, is recorded in the `subjects` table, while the `administrations` table contains information about a specific subject participating in a specific experiment.
+We encode the metadata available for each study and participation in the database.
+<!-- jm: need a better intro -->
+This metadata can be separated into three parts: (1) subject-level information (e.g., demographics) (2) experiment-level information (e.g., a subject's age for a specific experiment, or the particular eyetracker used to collect the data) and (3) trial information and experimental design (e.g., what images or videos were presented onscreen, and paired with which audio).
+Information about individuals who participate in one or more studies (e.g, a subject's sex and first language), is recorded in the `subjects` table, while the `administrations` table contains information about a subject's participation in a single administration of a study (e.g, a subject's age of participation or the eyetracker that was used).
 This division allows Peekbank to gracefully handle longitudinal designs: a single subject can be associated with many administrations.
 
 The `stimuli` and `trial_types` tables store information about trials, which in turn may reflect specifics of the experiment design.
@@ -240,6 +232,15 @@ Because individual trial types can be repeated multiple times within an administ
 Each unique ordering that occurred in the experiment is encoded in this table.
 The `trial_id`, which links a trial type to the order it was presented in an administration, is attached to the timecourse looking data.
 
+
+### Timecourse data
+
+Timecourse looking data is encoded in two tables: `aoi_timepoints` and `xy_timepoints`.
+The `aoi_timepoints` table encodes where a child is looking at each point in time, by specifying the coded area of interest (AOI): looks to the target, looks to the distractor, looks on the screen but away from target and distractor, and missing looks.
+All datasets must include this timecourse data, as it represents the main record of children's looking behavior.
+For eyetracking experiments that are automatically rather than manually coded, the `xy_timepoints` table additionally encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trial.
+Both the `aoi_timepoints` and `xy_timepoints` tables are resampled to a consistent sampling rate, as described in the Import section below.
+To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of _dog_ in "Can you find the _dog_?").
 
 
 ## Import
