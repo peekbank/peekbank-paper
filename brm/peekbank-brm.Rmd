@@ -205,24 +205,21 @@ knitr::include_graphics(here("brm/figures","peekbankflowchartv6.png"))
 
 ## Database Schema
 
-The peekbank database contains two major types of data: (1) timecourse looking data, detailing where on the screen a child is looking at a given point in time, and (2) metadata regarding the relevant experiment, participant, and trial (Fig XX).
+The peekbank database contains two major types of data: (1) metadata regarding the relevant experiment, participant, and trial, and (2) timecourse looking data, detailing where on the screen a child is looking at a given point in time (Fig. \@ref(fig:fig-schema)).
+
 Here, we will give an outline of the tables encoding this data.
 As is common in relational databases, records of similar types (e.g., participants, trials, experiments, coded looks at each timepoint) are grouped into tables, and records of various types are linked through numeric identifiers. 
 
-### Timecourse data
-
-Timecourse looking data is encoded in two tables: `aoi_timepoints` and `xy_timepoints`.
-The `aoi_timepoints` table encodes where a child is looking at each point in time, by specifying the coded area of interest (AOI): looks to the target, looks to the distractor, looks on the screen but away from target and distractor, and missing looks.
-All datasets must include this timecourse data, as it represents the main record of children's looking behavior.
-For eyetracking experiments that are automatically rather than manually coded, the `xy_timepoints` table additionally encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trial.
-Both the `aoi_timepoints` and `xy_timepoints` tables are resampled to a consistent sampling rate, as described in the Import section below.
-To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of _dog_ in "Can you find the _dog_?").
+```{r fig-schema, fig.env = "figure", fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "The Peekbank schema. Each square represents a table in the relational database."}
+knitr::include_graphics(here("brm/figures","schema_3.png"))
+```
 
 ### Metadata
 
-Each record in the timecourse data is linked to several metadata records.
-This metadata can be separated into three parts: (1) subject-level information (e.g., demographics) (2) experiment-level information (e.g., a subject's age for a specific experiment, or the particular eyetracker used to collect the data) and (3) trial information and experimental design (what images or videos were presented onscreen, and paired with which audio).
-Information about individuals who participate in one more studies, for example a subject's sex and first language, is recorded in the `subjects` table, while the `administrations` table contains information about a specific subject participating in a specific experiment.
+We encode the metadata available for each study and participation in the database.
+<!-- jm: need a better intro -->
+This metadata can be separated into three parts: (1) subject-level information (e.g., demographics) (2) experiment-level information (e.g., a subject's age for a specific experiment, or the particular eyetracker used to collect the data) and (3) trial information and experimental design (e.g., what images or videos were presented onscreen, and paired with which audio).
+Information about individuals who participate in one or more studies (e.g, a subject's sex and first language), is recorded in the `subjects` table, while the `administrations` table contains information about a subject's participation in a single administration of a study (e.g, a subject's age of participation or the eyetracker that was used).
 This division allows Peekbank to gracefully handle longitudinal designs: a single subject can be associated with many administrations.
 
 The `stimuli` and `trial_types` tables store information about trials, which in turn may reflect specifics of the experiment design.
@@ -234,6 +231,15 @@ Because individual trial types can be repeated multiple times within an administ
 Each unique ordering that occurred in the experiment is encoded in this table.
 The `trial_id`, which links a trial type to the order it was presented in an administration, is attached to the timecourse looking data.
 
+
+### Timecourse data
+
+Timecourse looking data is encoded in two tables: `aoi_timepoints` and `xy_timepoints`.
+The `aoi_timepoints` table encodes where a child is looking at each point in time, by specifying the coded area of interest (AOI): looks to the target, looks to the distractor, looks on the screen but away from target and distractor, and missing looks.
+All datasets must include this timecourse data, as it represents the main record of children's looking behavior.
+For eyetracking experiments that are automatically rather than manually coded, the `xy_timepoints` table additionally encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trial.
+Both the `aoi_timepoints` and `xy_timepoints` tables are resampled to a consistent sampling rate, as described in the Import section below.
+To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of _dog_ in "Can you find the _dog_?").
 
 
 ## Import
@@ -266,7 +272,7 @@ The `trials` table links all experiment design information to the timecourse dat
 
 Raw looking data is a series of looks to AOIs or to (x, y) coordinates on the experiment screen, linked to points in time.
 For data generated by eyetrackers, we typically have (x, y) coordinates at each time point, which will be encoded in the `xy_timepoints` table.
-These looks will also be recoded into AOIs using the AOI coordinates in the `aoi_region_sets` table using the `add_aois()` function in `peekds`, which will be encoded in the `aoi_timepoints` table.
+These looks will also be recoded into AOIs according to the AOI coordinates in the `aoi_region_sets` table using the `add_aois()` function in `peekds`, which will be encoded in the `aoi_timepoints` table.
 For hand-coded data, we typically have a series of AOIs; these will be recoded into the categories in the Peekbank schema (target, distractor, other, and missing) and encoded in the `aoi_timepoints` table, and these datasets will not have an `xy_timepoints` table.
 
 Typically, timepoints in the `xy_timepoints` table and `aoi_timepoints` table need to be regularized to center each trial's time around the point of disambiguation--the time of target word onset in the trial.
@@ -274,20 +280,23 @@ If time values run throughout the experiment rather than resetting to zero at th
 After this, each trial's times are centered around the point of disambiguation using `normalize_times()`.
 When these steps are complete, the time course is ready for resampling.
 
-To facilitate time course analysis and visualization across datasets, timecourse data must be resampled to a uniform sampling rate.
+To facilitate time course analysis and visualization across datasets, timecourse data must be resampled to a uniform sampling rate (i.e., such that every trial in every dataset has observations at the same time points).
 To do this, we use the `resample()` function.
-During the resampling process, we interpolate using constant interpolation, selecting the looking location for the nearest time point in the original data for both `aoi_timepoints` and `xy_timepoints` data.
+During the resampling process, we interpolate using constant interpolation, selecting for each interpolated timepoint the looking location for the nearest observed time point in the original data for both `aoi_timepoints` and `xy_timepoints` data.
 Compared to linear interpolation (see e.g. Wass et al., 2014), constant interpolation has the advantage that it does not introduce new look locations, so it is a more conservative method of resampling.
 
+## Validation and ingestion into the database
+
 After resampling, the final step of dataset import is validation.
-The `peekds` package offers functions to check the now processed data tables against the most updated database schema to ensure that all tables have the required fields and correct data types for database ingestion.
-In an effort to double check the data quality and to make sure that no errors are made in the importing script, we also create a time course plot based on our processed tables to replicate the results in the original paper in the validation step.
+The `peekds` package offers functions to check the now processed data tables against the database schema to ensure that all tables have the required fields and correct data types for database ingestion.
+In an effort to double check the data quality and to make sure that no errors are made in the importing script, as part of the import procedure we create a timecourse plot based on our processed tables to replicate the results in the original paper.
+Once this plot has been created and checked for consistency and all tables pass our validation functions, the processed dataset is ready for ingestion into the database.
 
-## CHECK and edit resampling section for ties and for maximum time over which we interpolate
+Currently, the import process is carried out by the Peekbank team using data offered by other research teams. In the future, we hope to allow research teams to carry out their own import processes with checks from the Peekbank team before ingestion. To this end, import script templates are available for both hand-coded datasets and automatic eyetracking datasets for research teams to adapt to their data.
 
-```{r fig-schema, fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "The Peekbank schema. Each square represents a table in the relational database."}
-knitr::include_graphics(here("brm/figures","schema_3.png"))
-```
+## CHECK and edit resampling section for ties, interpolating forward/back in time, and for maximum time over which we interpolate
+
+
 
 ## Current Data Sources
 
@@ -475,6 +484,8 @@ Plots are then updated in real time to reflect users' customization choices, and
 The Shiny app thus allows users to quickly inspect basic properties of Peekbanks datasets and create reproducible visualizations without incurring any of the technical overhead required to access the database through R.
 
 ## Peekbankr
+
+The `peekbankr` API offers a way for users to access data from the database and flexibly analyze it in `R`. Users can download tables from the database, as specified in the Schema section above, and merge them using their linked IDs to examine timecourse data and metadata jointly. In the sections below, we work through some examples to outline the possibilities for analyzing data downloaded using `peekbankr`.
 
 Functions:
 
