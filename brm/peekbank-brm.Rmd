@@ -406,7 +406,7 @@ summarize_datasets %>%
    kableExtra::kable_styling(latex_options = "scale_down")
 ```
 
-The database currently includes 11 looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table \@ref(tab:dataset-table)).
+The database currently includes 15 looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table \@ref(tab:dataset-table)).
 Most datasets (10 out of 11 total) consist of data from monolingual native English speakers.
 They span a wide age spectrum with participants ranging from 8 to 84 months of age, and are balanced in terms of gender (48% female).
 The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior.
