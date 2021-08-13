@@ -138,7 +138,7 @@ Peekbank provides an openly accessible database of eye-tracking data of children
 
 ## The “Looking-While-Listening” Paradigm
 Word recognition is traditionally studied in the “looking-while-listening” paradigm [alternatively referred to as the intermodal preferential looking procedure; @fernald2008; @hirshpasek1987]. 
-In such studies, infants listen to a sentence prompting a specific referent (e.g., Look at the dog!) while viewing two images on the screen (e.g., an image of a dog – the target image – and an image of a bird – the distractor image). 
+In such studies, infants listen to a sentence prompting a specific referent (e.g., "Look at the dog!") while viewing two images on the screen (e.g., an image of a dog – the target image – and an image of a bird – the distractor image). 
 Infants’ word recognition is measured in terms of how quickly and accurately they fixate on the correct target image after hearing its label. 
 Past research has used this same basic method to study a wide range of questions in language development. 
 For example, the looking-while-listening paradigm has been used to investigate early noun knowledge, phonological representations of words, prediction during language processing, and individual differences in language development [@bergelson2012; @golinkoff2013; @lewwilliams2007; @marchman2018; @swingley2000].
@@ -187,10 +187,10 @@ Researcher conventions for structuring data vary, as do the technical specificat
 Therefore, our first effort was to develop a common tabular format to support analyses of all studies simultaneously.
 <!-- scm commented out for clarity -- this is unclear without defining "incoming" and "ingesting": All incoming datasets will be processed into this unified format and then ingested into the core database.--> 
 
-As illustrated in Figure \@ref(fig:fig-framework-overview), the Peekbank framework consists of four main components: (1) a set of tools to convert eye-tracking datasets into a unified format; (2) a relational database populated with data in this unified format and (3) a set of tools to retrieve data from this database (4) a web app (using the Shiny framework) for visualizing the data.
+As illustrated in Figure \@ref(fig:fig-framework-overview), the Peekbank framework consists of four main components: (1) a set of tools to convert eye-tracking datasets into a unified format, (2) a relational database populated with data in this unified format, (3) a set of tools to retrieve data from this database, and (4) a web app (using the Shiny framework) for visualizing the data.
 <!-- scm: the graph shows visualizations / shiny as a 4th top-level component --> 
 These components are supported by three libraries.
-The `peekds` library (for the R language; [@R-base] helps researchers convert existing datasets to use the standardized format of the database.
+The `peekds` library (for the R language; @R-base) helps researchers convert existing datasets to use the standardized format of the database.
 The `peekbank` module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by `peekds`.
 The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages, and can be hosted on one machine and accessed by many others over the Internet.
 The `peekbankr` library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing the tabular data stored in Peekbank.
@@ -206,7 +206,7 @@ knitr::include_graphics(here("brm/figures","peekbankflowchartv6.png"))
 
 ## Database Schema
 
-The peekbank database contains two major types of data: (1) timecourse looking data, detailing where on the screen a child is looking at a given point in time, or (2) metadata regarding the relevant experiment, participant, and trial (Fig XX).
+The peekbank database contains two major types of data: (1) timecourse looking data, detailing where on the screen a child is looking at a given point in time, and (2) metadata regarding the relevant experiment, participant, and trial (Fig XX).
 <!-- scm: what is this figure supposed to convey? -->
 Here, we will give an outline of the tables encoding this data.
 As is common in relational databases, records of similar types (e.g., participants, trials, experiments, coded looks at each timepoint) are grouped into tables, and records of various types are linked through numeric identifiers. 
@@ -216,9 +216,9 @@ As is common in relational databases, records of similar types (e.g., participan
 Timecourse looking data is encoded in two tables: `aoi_timepoints` and `xy_timepoints`.
 The `aoi_timepoints` table encodes where a child is looking at each point in time, by specifying the coded area of interest (AOI): looks to the target, looks to the distractor, looks on the screen but away from target and distractor, and missing looks.
 All datasets must include this timecourse data, as it represents the main record of children's looking behavior.
-For eyetracking experiments that are automatically rather than manually coded, the `xy_timepoints` table encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trial.
+For eyetracking experiments that are automatically rather than manually coded, the `xy_timepoints` table additionally encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trial.
 Both the `aoi_timepoints` and `xy_timepoints` tables are resampled to a consistent sampling rate, as described in the Import section below.
-To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of _dog_ in "can you find the _dog_?").
+To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of _dog_ in "Can you find the _dog_?").
 
 ### Metadata
 
@@ -234,15 +234,14 @@ If this dataset used automatic eyetracking rather than manual coding, each trial
 
 Because individual trial types can be repeated multiple times within an administration, the order of the trials is encoded in the `trials` table.
 Each unique ordering that occurred in the experiment is encoded in this table.
-For example, if every participant saw the same ordering, the trials table would only have as many rows as there were trials in the experiment; if there were many different orderings, the trials table would represent each ordering.
-The `trial_id`, which links a trial type to the order it was presented in an administration, is attached to the time course looking data.
+The `trial_id`, which links a trial type to the order it was presented in an administration, is attached to the timecourse looking data.
 
 
 
 ## Import
 
 During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema.
-The following section is a description of the import process for peekbank.
+The following section is a description of the import process for Peekbank.
 It serves as both a description of our method in importing the datasets already in the database, as well as a high-level overview of the import process for researchers looking to import their data in the future.
 First, we will describe the import of metadata, and second, we will describe import of the timecourse looking data, including processing functions in `peekds` for normalizing and resampling looking behavior.
 
