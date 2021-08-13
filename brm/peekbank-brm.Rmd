@@ -164,7 +164,7 @@ A second limitation is that targets are often yoked with a limited set of distra
 Aggregating across many looking-while-listening studies has the potential to meet these challenges by increasing the number of observations for specific items at different ages and by increasing the variability in the distractor items co-occurring with a specific target.
 
 ## Replicability and Reproducibility
-A core challenge facing psychology in general, and the study of infant development in particular, are threats to the replicability and reproducibility of core empirical results [@Nosek2021,@Frank2017a].
+A core challenge facing psychology in general, and the study of infant development in particular, are threats to the replicability and reproducibility of core empirical results [@Nosek2021;@Frank2017a].
 In infant research, many studies are not adequately powered to detect the main effects of interest [@bergmann2018].
 This is often compounded by low reliability in infant measures, often due to limits on the number of trials that can be collected from an individual infant in an experimental session [@Byers-Heinlein2021].
 One hurdle to improving the power in infant research is that it can often be difficult to develop a priori estimates of effect sizes, and how specific design decisions (e.g., the number of test trials) will impact power and reliability.
