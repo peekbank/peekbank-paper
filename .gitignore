@@ -30,6 +30,7 @@ vignettes/*.pdf
 # knitr and R markdown default cache directories
 *_cache/
 /cache/
+*_files/
 
 # Temporary files created by R markdown
 *.utf8.md
@@ -37,6 +38,14 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# LaTeX build files
+*.tex
+*.log
+*.fff
+*.ttt
+*.aux
+
 brm2021/.DS_Store
 cogsci2021/.DS_Store
 .DS_Store
