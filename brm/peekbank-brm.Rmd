@@ -193,18 +193,18 @@ why a unified format is need first, hence the data import and raw data processin
 ```
 
 One of the main challenges in compiling a large-scale eye-tracking dataset is the lack of a shared data format across individual experiments.
-Researcher conventions for structuring data vary, as do the technical specifications of different devices (e.g., computer displays and eyetracking cameras), rendering the task of integrating datasets from different labs and data sources difficult.
+Researcher conventions for structuring data vary, as do the technical specifications of different devices (e.g., computer displays and eye-tracking cameras), rendering the task of integrating datasets from different labs and data sources difficult.
 Therefore, our first effort was to develop a common tabular format to support analyses of all studies simultaneously.
 <!-- scm commented out for clarity -- this is unclear without defining "incoming" and "ingesting": All incoming datasets will be processed into this unified format and then ingested into the core database.--> 
 
-As illustrated in Figure \@ref(fig:fig-framework-overview), the Peekbank framework consists of four main components: (1) a set of tools to convert eye-tracking datasets into a unified format; (2) a relational database populated with data in this unified format and (3) a set of tools to retrieve data from this database (4) a web app (using the Shiny framework) for visualizing the data.
+As illustrated in Figure \@ref(fig:fig-framework-overview), the Peekbank framework consists of four main components: (1) a set of tools to convert eye-tracking datasets into a unified format, (2) a relational database populated with data in this unified format, (3) a set of tools to retrieve data from this database, and (4) a web app (using the Shiny framework) for visualizing the data.
 <!-- scm: the graph shows visualizations / shiny as a 4th top-level component --> 
-These components are supported by three libraries.
-The `peekds` library (for the R language; [@R-base] helps researchers convert existing datasets to use the standardized format of the database.
+These components are supported by three packages.
+The `peekds` package (for the R language; @R-base) helps researchers convert existing datasets to use the standardized format of the database.
 The `peekbank` module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by `peekds`.
 The database is implemented in MySQL, an industry standard relational database, which may be accessed by a variety of programming languages, and can be hosted on one machine and accessed by many others over the Internet.
-The `peekbankr` library (R) provides an application programming interface, or API, that offers high-level abstractions for accessing the tabular data stored in Peekbank.
-Most users will access data through this final library, in which case the details of data formatting and processing are abstracted away from the user.
+The `peekbankr` package (R) provides an application programming interface, or API, that offers high-level abstractions for accessing the tabular data stored in Peekbank.
+Most users will access data through this final package, in which case the details of data formatting and processing are abstracted away from the user.
 
 In the following sections, we will begin by providing the details on the database’s organization (or _schema_) and the technical implementation on `peekds`.
 Users who are primarily interested in accessing the database can skip these details and focus on access through the `peekbankr` API and the web apps.
@@ -212,49 +212,52 @@ Users who are primarily interested in accessing the database can skip these deta
 ```{r fig-framework-overview, fig.env = "figure", fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "Overview of the Peekbank data ecosystem. Peekbank tools are highlighted in green. * indicates R packages introduced in this work."}
 knitr::include_graphics(here("brm/figures","peekbankflowchartv6.png"))
 ```
-<!-- scm: I switched "custom R packages" to "R packages introduced in this work" -->
 
 ## Database Schema
 
-The peekbank database contains two major types of data: (1) timecourse looking data, detailing where on the screen a child is looking at a given point in time, or (2) metadata regarding the relevant experiment, participant, and trial (Fig XX).
-<!-- scm: what is this figure supposed to convey? -->
+The peekbank database contains two major types of data: (1) metadata regarding the relevant experiment, participant, and trial, and (2) time course looking data, detailing where on the screen a child is looking at a given point in time (Fig. \@ref(fig:fig-schema)).
+
 Here, we will give an outline of the tables encoding this data.
 As is common in relational databases, records of similar types (e.g., participants, trials, experiments, coded looks at each timepoint) are grouped into tables, and records of various types are linked through numeric identifiers. 
 
-### Timecourse data
-
-Timecourse looking data is encoded in two tables: `aoi_timepoints` and `xy_timepoints`.
-The `aoi_timepoints` table encodes where a child is looking at each point in time, by specifying the coded area of interest (AOI): looks to the target, looks to the distractor, looks on the screen but away from target and distractor, and missing looks.
-All datasets must include this timecourse data, as it represents the main record of children's looking behavior.
-For eyetracking experiments that are automatically rather than manually coded, the `xy_timepoints` table encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trial.
-Both the `aoi_timepoints` and `xy_timepoints` tables are resampled to a consistent sampling rate, as described in the Import section below.
-To normalize across trials and across experiments, all timecourses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of _dog_ in "can you find the _dog_?").
+```{r fig-schema, fig.env = "figure", fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "The Peekbank schema. Each square represents a table in the relational database."}
+knitr::include_graphics(here("brm/figures","schema_3.png"))
+```
 
 ### Metadata
 
-Each record in the timecourse data is linked to several metadata records.
-This metadata can be separated into three parts: (1) subject-level information (e.g., demographics) (2) experiment-level information (e.g., a subject's age for a specific experiment, or the particular eyetracker used to collect the data) and (3) trial information and experimental design (what images or videos were presented onscreen, and paired with which audio).
-Information about individuals who participate in one more studies, for example a subject's sex and first language, is recorded in the `subjects` table, while the `administrations` table contains information about a specific subject participating in a specific experiment.
+We encode the metadata available for each study and participation in the database.
+<!-- jm: need a better intro -->
+This metadata can be separated into three parts: (1) subject-level information (e.g., demographics) (2) experiment-level information (e.g., a subject's age for a specific experiment, or the particular eye tracker used to collect the data) and (3) trial information and experimental design (e.g., what images or videos were presented onscreen, and paired with which audio).
+Information about individuals who participate in one or more studies (e.g, a subject's sex and first language), is recorded in the `subjects` table, while the `administrations` table contains information about a subject's participation in a single administration of a study (e.g, a subject's age of participation or the eye tracker that was used).
 This division allows Peekbank to gracefully handle longitudinal designs: a single subject can be associated with many administrations.
 
 The `stimuli` and `trial_types` tables store information about trials, which in turn may reflect specifics of the experiment design.
 Stimuli are (label, image) mappings that are seen in the experiment.
 The `trial_types` table encodes information about each trial of the experiment, including the target stimulus and location, the distractor stimulus and location, and the point of disambiguation for that trial.
-If this dataset used automatic eyetracking rather than manual coding, each trial type is additionally linked to a set of area of interest (x, y) coordinates, encoded in the `aoi_region_sets` table.
+If this dataset used automatic eye-tracking rather than manual coding, each trial type is additionally linked to a set of area of interest (x, y) coordinates, encoded in the `aoi_region_sets` table.
 
 Because individual trial types can be repeated multiple times within an administration, the order of the trials is encoded in the `trials` table.
 Each unique ordering that occurred in the experiment is encoded in this table.
-For example, if every participant saw the same ordering, the trials table would only have as many rows as there were trials in the experiment; if there were many different orderings, the trials table would represent each ordering.
 The `trial_id`, which links a trial type to the order it was presented in an administration, is attached to the time course looking data.
 
+
+### Time course data
+
+Time course looking data is encoded in two tables: `aoi_timepoints` and `xy_timepoints`.
+The `aoi_timepoints` table encodes where a child is looking at each point in time, by specifying the coded area of interest (AOI): looks to the target, looks to the distractor, looks on the screen but away from target and distractor, and missing looks.
+All datasets must include this time course data, as it represents the main record of children's looking behavior.
+For eye-tracking experiments that are automatically rather than manually coded, the `xy_timepoints` table additionally encodes the inferred (x, y) coordinates of fixations on the screen over the course of each trial.
+Both the `aoi_timepoints` and `xy_timepoints` tables are resampled to a consistent sampling rate, as described in the Import section below.
+To normalize across trials and across experiments, all time courses are computed so that the time of 0 ms represents the onset of disambiguating material (i.e., the beginning of _dog_ in "Can you find the _dog_?").
 
 
 ## Import
 
 During data import, raw eye-tracking datasets are processed to conform to the Peekbank data schema.
-The following section is a description of the import process for peekbank.
+The following section is a description of the import process for Peekbank.
 It serves as both a description of our method in importing the datasets already in the database, as well as a high-level overview of the import process for researchers looking to import their data in the future.
-First, we will describe the import of metadata, and second, we will describe import of the timecourse looking data, including processing functions in `peekds` for normalizing and resampling looking behavior.
+First, we will describe the import of metadata, and second, we will describe import of the time course looking data, including processing functions in `peekds` for normalizing and resampling looking behavior.
 
 ### Metadata
 
@@ -273,13 +276,13 @@ The `trial_types` table links trial types to the `aoi_region_sets` table and the
 
 The `trials` table encodes each unique ordering of trial types seen in all runs of an experiment.
 For example, for experiments with a fixed trial order, the `trials` table will have as many rows as there are stimuli in the experiment; for experiments with a randomized trial order, there will be many rows linking the trial orderings to the trial types.
-The `trials` table links all experiment design information to the timecourse data.
+The `trials` table links all experiment design information to the time course data.
 
-### Timecourse data
+### Time course data
 
 Raw looking data is a series of looks to AOIs or to (x, y) coordinates on the experiment screen, linked to points in time.
-For data generated by eyetrackers, we typically have (x, y) coordinates at each time point, which will be encoded in the `xy_timepoints` table.
-These looks will also be recoded into AOIs using the AOI coordinates in the `aoi_region_sets` table using the `add_aois()` function in `peekds`, which will be encoded in the `aoi_timepoints` table.
+For data generated by eye-trackers, we typically have (x, y) coordinates at each time point, which will be encoded in the `xy_timepoints` table.
+These looks will also be recoded into AOIs according to the AOI coordinates in the `aoi_region_sets` table using the `add_aois()` function in `peekds`, which will be encoded in the `aoi_timepoints` table.
 For hand-coded data, we typically have a series of AOIs; these will be recoded into the categories in the Peekbank schema (target, distractor, other, and missing) and encoded in the `aoi_timepoints` table, and these datasets will not have an `xy_timepoints` table.
 
 Typically, timepoints in the `xy_timepoints` table and `aoi_timepoints` table need to be regularized to center each trial's time around the point of disambiguation--the time of target word onset in the trial.
@@ -287,31 +290,63 @@ If time values run throughout the experiment rather than resetting to zero at th
 After this, each trial's times are centered around the point of disambiguation using `normalize_times()`.
 When these steps are complete, the time course is ready for resampling.
 
-To facilitate time course analysis and visualization across datasets, timecourse data must be resampled to a uniform sampling rate.
+To facilitate time course analysis and visualization across datasets, time course data must be resampled to a uniform sampling rate (i.e., such that every trial in every dataset has observations at the same time points).
 To do this, we use the `resample()` function.
-During the resampling process, we interpolate using constant interpolation, selecting the looking location for the nearest time point in the original data for both `aoi_timepoints` and `xy_timepoints` data.
+During the resampling process, we interpolate using constant interpolation, selecting for each interpolated timepoint the looking location for the nearest observed time point in the original data for both `aoi_timepoints` and `xy_timepoints` data.
 Compared to linear interpolation (see e.g. Wass et al., 2014), constant interpolation has the advantage that it does not introduce new look locations, so it is a more conservative method of resampling.
 
+## Validation and ingestion into the database
+
 After resampling, the final step of dataset import is validation.
-The `peekds` package offers functions to check the now processed data tables against the most updated database schema to ensure that all tables have the required fields and correct data types for database ingestion.
-In an effort to double check the data quality and to make sure that no errors are made in the importing script, we also create a time course plot based on our processed tables to replicate the results in the original paper in the validation step.
+The `peekds` package offers functions to check the now processed data tables against the database schema to ensure that all tables have the required fields and correct data types for database ingestion.
+In an effort to double check the data quality and to make sure that no errors are made in the importing script, as part of the import procedure we create a time course plot based on our processed tables to replicate the results in the original paper.
+Once this plot has been created and checked for consistency and all tables pass our validation functions, the processed dataset is ready for ingestion into the database.
 
-## CHECK and edit resampling section for ties and for maximum time over which we interpolate
+Currently, the import process is carried out by the Peekbank team using data offered by other research teams. In the future, we hope to allow research teams to carry out their own import processes with checks from the Peekbank team before ingestion. To this end, import script templates are available for both hand-coded datasets and automatic eye-tracking datasets for research teams to adapt to their data.
 
-```{r fig-schema, fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "The Peekbank schema. Each square represents a table in the relational database."}
-knitr::include_graphics(here("brm/figures","schema_3.png"))
-```
+## CHECK and edit resampling section for ties, interpolating forward/back in time, and for maximum time over which we interpolate
+
+
 
 ## Current Data Sources
 
 ```{r eval=FALSE}
+t_range <- c(-1000,3000)
+datasets <- get_datasets()
+administrations <- get_administrations()
+subjects <- get_subjects()
+aoi_timepoints <- get_aoi_timepoints()
+stimuli <- get_stimuli()
+trial_types <- get_trial_types()
+trials <- get_trials()
+
+dataset_info <- administrations %>%
+  right_join(datasets) %>%
+  right_join(subjects) 
+
+overall_aoi_data_joined <- aoi_timepoints %>%
+  right_join(administrations) %>%
+  right_join(trials) %>%
+  right_join(trial_types) %>%
+  right_join(datasets) %>%
+  mutate(stimulus_id = target_id) %>%
+  right_join(stimuli) %>%
+  filter(t_norm > t_range[1],
+         t_norm < t_range[2])
+
+saveRDS(overall_aoi_data_joined, here("brm","data","overall_aoi_data_joined.Rds"))
+saveRDS(dataset_info,here("brm","data","dataset_info.Rds"))
+```
+
+``` {r eval=FALSE}
+aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 iso_codes <- read_csv(here("brm","data","iso_language_codes.csv"))
 
 dataset_unique_subj <- dataset_info %>%
   distinct(subject_id,sex)
 
-summarize_novel_familiar <- aoi_data_joined %>%
+summarize_novel_familiar <- overall_aoi_data_joined %>%
   group_by(dataset_name,stimulus_novelty) %>%
   summarize(n=n()) %>%
   left_join(dataset_name_mapping) %>%
@@ -321,6 +356,8 @@ summarize_novel_familiar <- aoi_data_joined %>%
     has_familiar = ifelse(is.na(familiar)|familiar==0,0,1),
     has_novel=ifelse(is.na(novel)|novel==0,0,1)
   )
+
+saveRDS(summarize_novel_familiar, here("brm", "data", "summarize_novel_familiar.rds"))
 
 summarize_datasets <- dataset_info %>%
   left_join(dataset_name_mapping) %>%
@@ -399,6 +436,11 @@ saveRDS(summarize_datasets, here("brm", "data", "summarize_datasets.rds"))
 ```
 
 ```{r dataset-table}
+dataset_info <- readRDS(here("brm","data","dataset_info.Rds"))
+summarize_novel_familiar <- readRDS(here("brm", "data", "summarize_novel_familiar.rds"))
+dataset_unique_subj <- dataset_info %>%
+  distinct(subject_id,sex)
+
 summarize_datasets <- readRDS(here("brm", "data", "summarize_datasets.rds"))
 summarize_datasets %>%
   mutate(apa_cite = str_remove_all(apa_cite, "[()]"),
@@ -410,12 +452,16 @@ summarize_datasets %>%
    kableExtra::kable_styling(latex_options = "scale_down")
 ```
 
-The database currently includes 11 looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table \@ref(tab:dataset-table)).
-Most datasets (10 out of 11 total) consist of data from monolingual native English speakers.
-They span a wide age spectrum with participants ranging from 8 to 84 months of age, and are balanced in terms of gender (48% female).
-The datasets vary across a number of dimensions related to design and methodology, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior.
-Most studies focused on testing familiar items, but the database also includes studies with novel pseudowords.
-All data (and accompanying references) are openly available on the Open Science Framework (osf.io/pr6wu).
+---
+nocite: | 
+  @Pomper2016; @Yurovsky2013; @Byers-Heinlein2017; @Frank2016; @Casillas2017; @Adams2018; @Potter2019; @Mahr2015; @Pomper2019; @Garrison2020; @Perry2017; @Swingley2002; @Yurovsky2017
+...
+
+The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table 1).
+Most datasets (`r sum(summarize_datasets$language=="English")` out of `r length(summarize_datasets$language)` total) consist of data from monolingual native English speakers. 
+They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),2)*100`% female). 
+The datasets vary across a number of design-related dimensions, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. 
+All studies tested familiar items, but the database also includes `r sum(summarize_novel_familiar$has_novel)` datasets that tested novel pseudo-words in addition to familiar words. All data are openly available on the Open Science Framework (https://osf.io/pr6wu/).
 
 How selected?
 Language coverage?
@@ -449,30 +495,182 @@ The Shiny app thus allows users to quickly inspect basic properties of Peekbanks
 
 ## Peekbankr
 
+The `peekbankr` API offers a way for users to access data from the database and flexibly analyze it in `R`. Users can download tables from the database, as specified in the Schema section above, and merge them using their linked IDs to examine time course data and metadata jointly. In the sections below, we work through some examples to outline the possibilities for analyzing data downloaded using `peekbankr`.
+
 Functions:
 
-- `connect_to_peekbank()`
-- `get_datasets()`
-- `get_subjects()`
-- `get_administrations()`
-- `get_stimuli()`
-- `get_aoi_timepoints()`
-- `get_trials()`
-- `get_trial_types()`
-- `get_xy_timepoints()`
-- `get_aoi_region_sets()`
+- `connect_to_peekbank()` opens a connection with the Peekbank database to allow tables to be downloaded with the following functions 
+- `get_datasets()` gives each dataset name and its citation information 
+- `get_subjects()` gives information about persistent subject identifiers (e.g., native languages, sex) 
+- `get_administrations()` gives information about specific experimental administrations (e.g., subject age, monitor size, gaze coding method) 
+- `get_stimuli()` gives information about word–image pairings that appeared in experiments  
+- `get_trial_types()` gives information about pairings of stimuli that appeared in the experiment (e.g., point of disambiguation, target and distractor stimuli, condition, language) 
+- `get_trials()` gives the trial orderings for each administration, linking trial types to the trial IDs used in time course data 
+- `get_aoi_region_sets()` gives coordinate regions for each area of interest (AOI)  linked to trial type IDs 
+- `get_xy_timepoints()` gives time course data for each subject's looking behavior in each trial, as (x, y) coordinates on the experiment monitor 
+- `get_aoi_timepoints()` gives time course data for each subject's looking behavior in each trial, coded into areas of interest 
+
 
 ## OSF site
 
 Stimuli Data in raw format (if some additional datum needed, e.g. pupil size?)
 
+# Peekbank: General Descriptives
+
+[Accuracy, Reaction Times, Item variability?]
+
+## Overall Word Recognition Accuracy
+
+```{r computing accuracy, eval=FALSE}
+aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
+dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
+#set variables for analysis window range
+t_min <- 367
+t_max <- 2000
+
+### summarize the data by trial ###
+by_trial_means <- aoi_data_joined %>%
+  #window of analysis
+  filter(t_norm > t_min, t_norm < t_max) %>%
+  mutate(age_binned = cut(age, seq(12,60,12))) %>%
+  rename(target_label = english_stimulus_label) %>%
+  group_by(dataset_name,subject_id, trial_id, stimulus_novelty,target_label,
+           age, age_binned) %>%
+  summarise(prop_looking = sum(aoi == "target", na.rm = TRUE) / 
+              (sum(aoi == "target", na.rm=TRUE) + 
+                 sum(aoi=="distractor", na.rm=TRUE)),
+            prop_missing = mean(aoi == "missing", na.rm = TRUE))
+
+#Filter the data to trials where there is sufficient looking data (target or distractor looking on at least 2/3 of the trial)
+by_trial_means <- by_trial_means %>%
+  ungroup() %>%
+  filter(prop_missing < 1/3) %>%
+  mutate(age_centered = age - mean(age,na.rm=TRUE))
+
+unique_stimuli <- by_trial_means %>%
+  ungroup() %>%
+  select(dataset_name,target_label) %>%
+  distinct() %>%
+  group_by(dataset_name) %>%
+  summarize(
+    unique_items=n()
+  )
+
+### summarize the data by participant ###
+#collapsing across stimulus novelty
+by_participant_means <- by_trial_means %>%
+  ungroup() %>%
+  group_by(dataset_name,subject_id) %>%
+  summarize(
+    trial_n=n(),
+    unique_items=length(unique(target_label)),
+    avg_prop_looking=mean(prop_looking,na.rm=TRUE),
+    # avg_prop_looking_ci=qt(0.975, trial_n-1)*sd(prop_looking,na.rm=TRUE)/sqrt(trial_n),
+    # avg_prop_looking_lower_ci=avg_prop_looking-avg_prop_looking_ci,
+    # avg_prop_looking_upper_ci=avg_prop_looking+avg_prop_looking_ci,
+    age=mean(age,na.rm=TRUE)
+  ) 
+#grouping by stimulus novelty
+by_participant_means_novelty <- by_trial_means %>%
+  ungroup() %>%
+  group_by(dataset_name,subject_id,stimulus_novelty) %>%
+  summarize(
+    trial_n=n(),
+    avg_prop_looking=mean(prop_looking,na.rm=TRUE),
+    age=mean(age,na.rm=TRUE)
+  )
+
+### summarize means across participants ###
+#collapsing across stimulus novelty
+dataset_means <- by_participant_means %>%
+  ungroup() %>%
+  group_by(dataset_name) %>%
+  summarize(
+    N=n(),
+    mean_age=round(mean(age,na.rm=TRUE),0),
+    min_age=round(min(age,na.rm=TRUE),0),
+    max_age=round(max(age,na.rm=TRUE),0),
+    prop_looking=mean(avg_prop_looking,na.rm=TRUE),
+    prop_looking_ci=qt(0.975, N-1)*sd(avg_prop_looking,na.rm=TRUE)/sqrt(N),
+    prop_looking_lower_ci=prop_looking-prop_looking_ci,
+    prop_looking_upper_ci=prop_looking+prop_looking_ci,
+  ) %>%
+  select(-prop_looking_ci) %>%
+  left_join(unique_stimuli) %>%
+  relocate(unique_items,.after=N)
+
+saveRDS(dataset_means, here("brm", "data", "dataset_means.rds"))
+
+#grouping by stimulus novelty
+#(not currently used in the paper)
+dataset_means_novelty <- by_participant_means_novelty %>%
+  ungroup() %>%
+  group_by(dataset_name,stimulus_novelty) %>%
+  summarize(
+    N=n(),
+    mean_age=round(mean(age,na.rm=TRUE),0),
+    min_age=round(min(age,na.rm=TRUE),0),
+    max_age=round(max(age,na.rm=TRUE),0),
+    prop_looking=mean(avg_prop_looking,na.rm=TRUE),
+    prop_looking_ci=qt(0.975, N-1)*sd(avg_prop_looking,na.rm=TRUE)/sqrt(N),
+    prop_looking_lower_ci=prop_looking-prop_looking_ci,
+    prop_looking_upper_ci=prop_looking+prop_looking_ci,
+  ) %>%
+  select(-prop_looking_ci)
+saveRDS(dataset_means_novelty, here("brm", "data", "dataset_means_novelty.rds"))
+
+overall_novelty <- by_participant_means_novelty %>%
+  group_by(stimulus_novelty) %>%
+  summarize(
+    N=n(),
+    prop_looking=mean(avg_prop_looking,na.rm=TRUE),
+    prop_looking_ci=qt(0.975, N-1)*sd(avg_prop_looking,na.rm=TRUE)/sqrt(N),
+    prop_looking_lower_ci=prop_looking-prop_looking_ci,
+    prop_looking_upper_ci=prop_looking+prop_looking_ci
+  )
+saveRDS(overall_novelty, here("brm", "data", "overall_novelty.rds"))
+```
+
+```{r xtable2, num.cols.cap=1, results="asis"}
+overall_novelty <- readRDS(here("brm", "data", "overall_novelty.rds"))
+dataset_means <- readRDS(here("brm", "data", "dataset_means.rds"))
+dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
+
+#editing in preparation of depicting the dataset means in a table
+dataset_means <- dataset_means %>%
+  left_join(dataset_name_mapping) %>%
+  select(dataset_rename,unique_items,prop_looking,prop_looking_lower_ci,prop_looking_upper_ci) %>%
+  arrange(dataset_rename) %>%
+  mutate(ci=paste0("[",round(prop_looking_lower_ci,2),", ",round(prop_looking_upper_ci,2),"]")) %>%
+  select(-prop_looking_lower_ci,-prop_looking_upper_ci)
+
+#setting up table
+tab2 <- xtable::xtable(dataset_means, digits=c(0,0,0,2,0), 
+                       caption = "Average proportion target looking in each dataset.")
+
+names(tab2) <- c("Dataset Name", "Unique Items","Prop. Target", "95% CI")
+print(tab2, type="latex", comment = F, table.placement = "H",include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont")
+```
+
+In general, participants demonstrated robust, above-chance word recognition in each dataset (chance=0.5). 
+Table 2 shows the average proportion of target looking within a standard critical window of 367-2000ms after the onset of the label for each dataset [@Swingley2000]. 
+Proportion target looking was generally higher for familiar words (*M* = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="familiar")$N`) than for novel words learned during the experiment (*M* = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="novel")$N`). 
+
+## Item-level variability
+```{r items, set.cap.width=T, fig.cap = "Item-level variability in proportion target looking within each dataset (chance=0.5). Time is centered on the onset of the target label (vertical line). Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines."}
+img <- png::readPNG(here("brm","figures","peekbank_item_vis.png"))
+grid::grid.raster(img)
+```
+
+Figure \@ref(fig:items) gives an overview of the variability in accuracy for individual words in each dataset. The number of unique target labels and their associated accuracy vary widely across datasets. 
+
 # Peekbank in Action
 
-We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis [e.g., @hardwicke2018] and also provides an easy way to explore looking-while-listening timecourse data in a standardized format. Our second example shows an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis could in principle be used for optimizing the stimuli for new experiments, especially as the Peekbank dataset grows and gains coverage over a great number of items. 
+We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis [e.g., @hardwicke2018] and also provides an easy way to explore looking-while-listening time course data in a standardized format. Our second example shows an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis could in principle be used for optimizing the stimuli for new experiments, especially as the Peekbank dataset grows and gains coverage over a greater number of items. 
 
 ## Computational reproducibility example: @swingley2000
 
-@swingley2000 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. "oppel" (close mispronunciation) or "opel" (distant mispronunciation) instead of "apple" (correct condition). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. 
+@swingley2000 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. "oppel" (close mispronunciation) or "opel" (distant mispronunciation) instead of "apple" (correct pronunciation). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. 
 
 \singlespacing
 ```{r swingley_data, echo = TRUE, eval = FALSE}
@@ -506,14 +704,14 @@ saveRDS(swingley_data, here("brm", "data", "swingley_data.rds"))
 swingley_data <- readRDS(here("brm", "data", "swingley_data.rds"))
 ```
 
-As the code above shows, once the data are joined, condition information for each timepoint is present and so we can easily filter out filler trials and set up the conditions for further analysis. For simplicity, here we combine both mispronunciation conditions since this manipulation showed no effect in the original paper. 
+As the code above shows, once the data are joined, condition information for each timepoint is present and so we can easily filter out filler trials and set up the conditions for further analysis. For simplicity, here we combine both mispronunciation conditions since the close vs. distant mispronunciation manipulation showed no effect in the original paper. 
 
 \singlespacing
 ```{r swingley_analysis, echo=TRUE}
 accuracies <- swingley_data  %>%
   group_by(condition, t_norm, administration_id) %>% 
-  summarize(correct = mean(aoi == "target") / 
-              mean(aoi %in% c("target","distractor"))) %>%
+  summarize(correct = sum(aoi == "target") / 
+              sum(aoi %in% c("target","distractor"))) %>%
   group_by(condition, t_norm) %>% 
   summarize(mean_correct = mean(correct),
             ci = 1.96 * sd(correct) / sqrt(n()))
@@ -541,7 +739,7 @@ accuracies <- swingley_data  %>%
 #   coord_cartesian(xlim = c(-500,3000), ylim = c(0.4,0.8))
 ```
 
-The final step in our analysis is to create a summary dataframe using `dplyr` commands. We first group the data by timestep, participant, and condition and compute the proportion looking at the correct image. We then summarize again, averaging across participants, computing both means and 95% confidence intervals (via the  approximation of 1.96 times the standard error of the mean). The resulting dataframe can be used for visualization of the time-course of looking.
+The final step in our analysis is to create a summary dataframe using `dplyr` commands. We first group the data by timestep, participant, and condition and compute the proportion looking at the correct image. We then summarize again, averaging across participants, computing both means and 95% confidence intervals (via the  approximation of 1.96 times the standard error of the mean). The resulting dataframe can be used for visualization of the time course of looking.
 
 \singlespacing
 ```{r swingley, echo=TRUE, fig.cap="Proportion looking at the correct referent by time from the point of disambiguation (the onset of the target noun). Colors show the two pronunciation conditions; points give means and ranges show 95\\% confidence intervals. The dotted line shows the point of disambiguation and the dashed line shows chance performance.", fig.env="figure*"}
@@ -582,9 +780,9 @@ ggplot(subject_mp_effect,aes(lab_age,mp_effect))+
 
 ## Item analyses
 
-A second use case for Peekbank is to examine item-level variation in word recognition. While individual datasets rarely have enough statistical power to show reliable developmental differences within items. To illustrate the power of aggregating data across multiple datasets, we select the four words with the most data available across studies and ages (apple, book, dog, and frog) and show average recognition trajectories. 
+A second use case for Peekbank is to examine item-level variation in word recognition. Individual datasets rarely have enough statistical power to show reliable developmental differences within items. To illustrate the power of aggregating data across multiple datasets, we select the four words with the most data available across studies and ages (apple, book, dog, and frog) and show average recognition trajectories. 
 
-Our first step is to collect and join the data from the relevant tables including timepoint data, trial and stimulus data, and administration data (for participant ages). We join thsse into a single dataframe for easy access; this dataframe is a common starting point for analyses of item-level data. 
+Our first step is to collect and join the data from the relevant tables including timepoint data, trial and stimulus data, and administration data (for participant ages). We join these into a single dataframe for easy manipulation; this dataframe is a common starting point for analyses of item-level data. 
 
 ```{r all_data, eval=FALSE, echo = TRUE}
 all_aoi_timepoints <- get_aoi_timepoints()
@@ -625,7 +823,7 @@ ggplot(filter(item_counts, n > 80),
   coord_flip()
 ```
 
-Next we select a set of four target words (chosen based on having more than children contributing data for each across several one-year age groups). We create age groups, aggregate, and compute timepoint-by-timepoint confidence intervals using the $z$ approximation. 
+Next we select a set of four target words (chosen based on having more than XXX children contributing data for each across several one-year age groups). We create age groups, aggregate, and compute timepoint-by-timepoint confidence intervals using the $z$ approximation. 
 
 ```{r target_word_data, echo = TRUE}
 target_words <- c("book","dog","frog","apple")
@@ -662,8 +860,8 @@ ggplot(target_word_data,
   theme(legend.position = "bottom")
 ```
 
-Finally, we plot the data as time-courses split by age. Our plotting code is shown below (with styling commands again removed for clarity). Figure \@ref(fig:target-word-plot) shows the resulting plot, with time courses for each of three (rather coarse) age bins. Although some baseline effects ared visible across items, we still see clear and consistent increases in looking to the target, with the increase appearing earlier and in many cases asymptoting at a higher level for older children. On the other hand, this simple averaging approach ignores study-to-study variation (perhaps responsible for the baseline effects we see in the "apple"
-and "frog" items especially. In future work, we hope to introduce model-based analytic methods that use mixed effects regression to factor out study-level and individual-level variance in order to recover developmental effects more appropriately [see e.g. @zettersten2021 for a prototype of such an analysis]. 
+Finally, we plot the data as time courses split by age. Our plotting code is shown below (with styling commands again removed for clarity). Figure \@ref(fig:target-word-plot) shows the resulting plot, with time courses for each of three (rather coarse) age bins. Although some baseline effects are visible across items, we still see clear and consistent increases in looking to the target, with the increase appearing earlier and in many cases asymptoting at a higher level for older children. On the other hand, this simple averaging approach ignores study-to-study variation (perhaps responsible for the baseline effects we see in the "apple"
+and "frog" items especially). In future work, we hope to introduce model-based analytic methods that use mixed effects regression to factor out study-level and individual-level variance in order to recover developmental effects more appropriately (see e.g. @zettersten2021 for a prototype of such an analysis). 
 
 ```{r target_word_plot_demo, echo = TRUE, eval = FALSE}
 ggplot(target_word_data, 
@@ -676,7 +874,7 @@ ggplot(target_word_data,
 
 
 
-# Discussion/ Conclusion
+# Discussion and Conclusion
 
 Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive.
 Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science (@bergmann2018; @frank2017; @manybabies2020].
@@ -687,7 +885,7 @@ There are a number of limitations surrounding the current scope of the database.
 A priority in future work will be to expand the size of the database.
 With 11 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results.
 Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability.
-The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset comes from WEIRD populations; [@muthukrishna2020].
+The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset come from WEIRD populations, potentially limiting generalizability; see @muthukrishna2020).
 Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
 
 Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development.
