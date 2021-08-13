@@ -129,26 +129,33 @@ To understand speech, children must process the incoming auditory signal and lin
 Measuring early word recognition offers insight into children's early word representations and as well as the speed and efficiency with which children comprehend language in real time, as the speech signal unfolds [@bergelson2020; @fernald1998].
 Word recognition skills are also thought to build a foundation for children’s subsequent language development. 
 Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes [@bleses2016; @marchman2018]. 
-One explanation for this relationship is that efficiency of word recognition facilitates subsequent word learning: the faster children are at processing speech, the more efficiently they can learn from the input in their environment [@fernald2012].
 
-While word recognition is a central part of children's language development, mapping the trajectory of word recognition skills has remained elusive. Studies investigating children's word recognition are typically limited in scope to experiments in individual labs involving small samples tested on a small set of items.
-This limitation makes it difficult to understand developmental changes in children's word knowledge at a broad scale.
-Peekbank provides an openly accessible database of eye-tracking data of children's word recognition, with the primary goal of facilitating the study of developmental changes in children's word knowledge and recognition speed.
-
+While word recognition is a central part of children's language development, mapping the trajectory of word recognition skills has remained elusive. 
+Studies investigating children's word recognition are typically limited in scope to experiments in individual labs involving small samples tested on a small set of items.
+The limitations of single datasets makes it difficult to understand developmental changes in children's word knowledge at a broad scale.
+One way to overcome this challenge is to combine existing datasets into a large-scale database in order to expand the scope of research questions that can be asked about the the development word recognition abilities. 
+This strategy capitalizes on the vast amounts of data that have been collected across labs on infants' word recognition over the past 35 years [@golinkoff2013].
+In this paper, we introduce large-scale, open database of infant and toddler eye-tracking data of children's word recognition (*Peekbank*).
+The primary goal of the Peekbank database is to facilitate the study of developmental changes in children's word knowledge and recognition speed.
 
 ## The “Looking-While-Listening” Paradigm
 Word recognition is traditionally studied in the “looking-while-listening” paradigm [alternatively referred to as the intermodal preferential looking procedure; @fernald2008; @hirshpasek1987]. 
-In such studies, infants listen to a sentence prompting a specific referent (e.g., Look at the dog!) while viewing two images on the screen (e.g., an image of a dog – the target image – and an image of a bird – the distractor image). 
+In such studies, infants listen to a sentence prompting a specific referent (e.g., *Look at the dog!*) while viewing two images on the screen (e.g., an image of a dog – the target image – and an image of a bird – the distractor image). 
 Infants’ word recognition is measured in terms of how quickly and accurately they fixate on the correct target image after hearing its label. 
 Past research has used this same basic method to study a wide range of questions in language development. 
 For example, the looking-while-listening paradigm has been used to investigate early noun knowledge, phonological representations of words, prediction during language processing, and individual differences in language development [@bergelson2012; @golinkoff2013; @lewwilliams2007; @marchman2018; @swingley2000].
 
+## Replicability and Reproducibility
+While the looking-while-listening paradigm has been highly fruitful in advancing understanding of early word knowledge, fundamental questions remain.
+One core challenge facing psychology in general, but the study of infant development in particular, are threats to the replicability and infant work, given that many studies in infant research are underpowered []
 **TO DO: ALIGN CHALLENGES WITH tidybits/ use cases**
 - computational reproducibility and teaching
+
+## Understanding the development of children's word knowledge on the level of items
 - item-level analyses
 
 ## Measuring developmental change in word recognition
-While the looking-while-listening paradigm has been highly fruitful in advancing understanding of early word knowledge, fundamental questions remain.
+
 One central question is how to accurately capture developmental change in the speed and accuracy of word recognition. 
 There is ample evidence demonstrating that infants get faster and more accurate in word recognition over the first few years of life [e.g., @fernald1998].
 However, precisely measuring developmental increases in the speed and accuracy of word recognition remains challenging due to the difficulty of distinguishing developmental changes in word recognition skill from changes in knowledge of specific words. 
