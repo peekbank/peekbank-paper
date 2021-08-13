@@ -510,8 +510,8 @@ As the code above shows, once the data are joined, condition information for eac
 ```{r swingley_analysis, echo=TRUE}
 accuracies <- swingley_data  %>%
   group_by(condition, t_norm, administration_id) %>% 
-  summarize(correct = mean(aoi == "target") / 
-              mean(aoi %in% c("target","distractor"))) %>%
+  summarize(correct = sum(aoi == "target") / 
+              sum(aoi %in% c("target","distractor"))) %>%
   group_by(condition, t_norm) %>% 
   summarize(mean_correct = mean(correct),
             ci = 1.96 * sd(correct) / sqrt(n()))
@@ -580,9 +580,9 @@ ggplot(subject_mp_effect,aes(lab_age,mp_effect))+
 
 ## Item analyses
 
-A second use case for Peekbank is to examine item-level variation in word recognition. While individual datasets rarely have enough statistical power to show reliable developmental differences within items. To illustrate the power of aggregating data across multiple datasets, we select the four words with the most data available across studies and ages (apple, book, dog, and frog) and show average recognition trajectories. 
+A second use case for Peekbank is to examine item-level variation in word recognition. Individual datasets rarely have enough statistical power to show reliable developmental differences within items. To illustrate the power of aggregating data across multiple datasets, we select the four words with the most data available across studies and ages (apple, book, dog, and frog) and show average recognition trajectories. 
 
-Our first step is to collect and join the data from the relevant tables including timepoint data, trial and stimulus data, and administration data (for participant ages). We join thsse into a single dataframe for easy access; this dataframe is a common starting point for analyses of item-level data. 
+Our first step is to collect and join the data from the relevant tables including timepoint data, trial and stimulus data, and administration data (for participant ages). We join these into a single dataframe for easy manipulation; this dataframe is a common starting point for analyses of item-level data. 
 
 ```{r all_data, eval=FALSE, echo = TRUE}
 all_aoi_timepoints <- get_aoi_timepoints()
@@ -623,7 +623,7 @@ ggplot(filter(item_counts, n > 80),
   coord_flip()
 ```
 
-Next we select a set of four target words (chosen based on having more than children contributing data for each across several one-year age groups). We create age groups, aggregate, and compute timepoint-by-timepoint confidence intervals using the $z$ approximation. 
+Next we select a set of four target words (chosen based on having more than XXX children contributing data for each across several one-year age groups). We create age groups, aggregate, and compute timepoint-by-timepoint confidence intervals using the $z$ approximation. 
 
 ```{r target_word_data, echo = TRUE}
 target_words <- c("book","dog","frog","apple")
@@ -660,8 +660,8 @@ ggplot(target_word_data,
   theme(legend.position = "bottom")
 ```
 
-Finally, we plot the data as time-courses split by age. Our plotting code is shown below (with styling commands again removed for clarity). Figure \@ref(fig:target-word-plot) shows the resulting plot, with time courses for each of three (rather coarse) age bins. Although some baseline effects ared visible across items, we still see clear and consistent increases in looking to the target, with the increase appearing earlier and in many cases asymptoting at a higher level for older children. On the other hand, this simple averaging approach ignores study-to-study variation (perhaps responsible for the baseline effects we see in the "apple"
-and "frog" items especially. In future work, we hope to introduce model-based analytic methods that use mixed effects regression to factor out study-level and individual-level variance in order to recover developmental effects more appropriately [see e.g. @zettersten2021 for a prototype of such an analysis]. 
+Finally, we plot the data as timecourses split by age. Our plotting code is shown below (with styling commands again removed for clarity). Figure \@ref(fig:target-word-plot) shows the resulting plot, with time courses for each of three (rather coarse) age bins. Although some baseline effects are visible across items, we still see clear and consistent increases in looking to the target, with the increase appearing earlier and in many cases asymptoting at a higher level for older children. On the other hand, this simple averaging approach ignores study-to-study variation (perhaps responsible for the baseline effects we see in the "apple"
+and "frog" items especially). In future work, we hope to introduce model-based analytic methods that use mixed effects regression to factor out study-level and individual-level variance in order to recover developmental effects more appropriately (see e.g. @zettersten2021 for a prototype of such an analysis). 
 
 ```{r target_word_plot_demo, echo = TRUE, eval = FALSE}
 ggplot(target_word_data, 
@@ -674,7 +674,7 @@ ggplot(target_word_data,
 
 
 
-# Discussion/ Conclusion
+# Discussion and Conclusion
 
 Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive.
 Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science (@bergmann2018; @frank2017; @manybabies2020].
@@ -685,7 +685,7 @@ There are a number of limitations surrounding the current scope of the database.
 A priority in future work will be to expand the size of the database.
 With 11 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results.
 Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability.
-The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset comes from WEIRD populations; [@muthukrishna2020].
+The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset come from WEIRD populations, potentially limiting generalizability; see @muthukrishna2020).
 Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
 
 Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development.
