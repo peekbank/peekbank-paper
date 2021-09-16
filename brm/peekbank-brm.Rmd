@@ -105,6 +105,7 @@ library(here)
 library(tidyverse)
 library(peekbankr)
 library(xtable)
+library(ggthemes)
 
 knitr::opts_chunk$set(cache = TRUE, cache.extra = knitr::rand_seed,
                       echo = FALSE, warning = FALSE, message = FALSE,
@@ -341,7 +342,7 @@ saveRDS(overall_aoi_data_joined, here("brm","data","overall_aoi_data_joined.Rds"
 saveRDS(dataset_info,here("brm","data","dataset_info.Rds"))
 ```
 
-``` {r eval=FALSE}
+```{r eval=FALSE}
 aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 iso_codes <- read_csv(here("brm","data","iso_language_codes.csv"))
@@ -633,6 +634,59 @@ overall_novelty <- by_participant_means_novelty %>%
   )
 saveRDS(overall_novelty, here("brm", "data", "overall_novelty.rds"))
 ```
+
+```{r descriptive-plots, eval = FALSE}
+aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
+means_items <- aoi_data_joined %>%
+  filter(age > 12, age <= 60) %>%
+  #mutate(age_binned = cut(age, seq(0,60,12))) %>%
+  #group_by(t_norm, dataset_name, age_binned, stimulus_novelty) %>%
+  group_by(t_norm, dataset_name, english_stimulus_label) %>%
+  summarise(n = sum(aoi %in% c("target","distractor"), na.rm = TRUE), 
+            p = sum(aoi == "target", na.rm = TRUE),
+            prop_looking = p / n, 
+            ci_lower = binom::binom.confint(p, n, method = "bayes")$lower,
+            ci_upper = binom::binom.confint(p, n, method = "bayes")$upper) 
+
+average_across_items <- means_items %>%
+  group_by(t_norm, dataset_name) %>%
+  summarize(
+    N=n(),
+    avg_prop_looking=mean(prop_looking,na.rm=T),
+    sd = sd(prop_looking,na.rm=T),
+    ci=qt(0.975, N-1)*sd/sqrt(N),
+    ci_lower=avg_prop_looking-ci,
+    ci_upper=avg_prop_looking+ci
+  )
+
+means_items %>%
+  filter(n>=12) %>%
+ggplot(aes(x = t_norm, y = prop_looking,color=english_stimulus_label)) + 
+  geom_line(alpha=0.5) + 
+  # geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, 
+  #                 fill = dataset_name), alpha = .5) +
+  # geom_smooth(data=average_across_items,
+  #             aes(y=avg_prop_looking,ymin = ci_lower, ymax = ci_upper),color="black",stat="identity")+
+  geom_smooth(color="black",se=F,method="gam")+
+  geom_hline(yintercept = .5, lty = 2) + 
+  geom_vline(xintercept = 0, lty = "solid") +
+  ylab("Proportion Target Looking") +
+  xlab("Time (msec)") +
+  theme_classic() +
+  scale_color_solarized() +
+  scale_fill_solarized() +
+  facet_wrap(~dataset_name,nrow=3)+
+  theme(legend.position="none")+
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=16))+
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5),strip.text.x = element_text(size = 12))+
+  scale_x_continuous(breaks=seq(-500,3000,500))+
+  scale_y_continuous(breaks=c(0,0.25,0.5,0.75,1),limits=c(0,1))
+  
+  
+ggsave(here(figure_path,"peekbank_item_vis.png"),width=10,height=6,dpi=600)
+```
+
 
 ```{r xtable2, num.cols.cap=1, results="asis"}
 overall_novelty <- readRDS(here("brm", "data", "overall_novelty.rds"))
