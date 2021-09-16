@@ -124,7 +124,10 @@ set.seed(42)
 
 Across their first years of life, children learn words at an accelerating pace [@frank2021].
 Although many children will only produce their first word at around one year of age, they show signs of understanding many common nouns (e.g., "mommy") and phrases (e.g., "Let's go bye-bye!") much earlier in development [@bergelson2012].
+<!-- MZ: however/ although - clean up -->
 However, the processes involved in early word understanding are less directly apparent in children's behaviors and are less accessible to observation than developments in speech production [@fernald2008].
+<!-- MZ: next sentence is now a bit of a non-sequitur - need to maybe link these sentences a bit better -->
+<!-- MZ: need to introduce looking-while-listening earlier because it is used in this and the following paragraph - maybe this kind of sentence could fit somewhere her - also for clarifying what "measuring word recognition" means -->
 To understand speech, children must process the incoming auditory signal and link that signal to relevant meanings – a process often referred to as word recognition. 
 Measuring early word recognition offers insight into children's early word representations and as well as the speed and efficiency with which children comprehend language in real time, as the speech signal unfolds [@bergelson2020; @fernald1998].
 Word recognition skills are also thought to build a foundation for children’s subsequent language development. 
@@ -158,9 +161,9 @@ A sufficiently large dataset would allow researchers to estimate developmental c
 
 ## Understanding the development of word recognition on the item level
 A related open theoretical question is understanding changes in children's word recognition at the level of individual items.
-Looking-while-listening studies have typically been limited in their ability to assess the development of specific words.
+Looking-while-listening studies have been limited in their ability to assess the development of specific words.
 One limitation is that studies typically test only a small number of trials for each item, limiting the power the accurately measure the development of word-specific accuracy.
-A second limitation is that targets are often yoked with a limited set of distractors (often one or two), leaving ambiguous whether accurate looking to a particular target word is largely a function of children's recognition of the target word, their knowledge about the distractor allowing them to reject the distractor as a response candidate, or both.
+A second limitation is that targets are often yoked with a limited set of distractors (often one or two), leaving ambiguous whether accurate looking to a particular target word is largely a function of children's recognition of the target word, their knowledge about the distractor, which allows them to reject the distractor as a response candidate, or both.
 Aggregating across many looking-while-listening studies has the potential to meet these challenges by increasing the number of observations for specific items at different ages and by increasing the variability in the distractor items co-occurring with a specific target.
 
 ## Replicability and Reproducibility
@@ -273,7 +276,7 @@ This structure is useful for studies on synonymy or using multiple languages.
 For studies in which the same label refers to multiple images (e.g., the word "dog" refers to an image of a dalmatian and a poodle), the same label can have multiple rows in the `stimuli` table with unique images.
 The `trial_types` table contains each pair of stimuli, a target and distractor, seen in the experiment.
 The `trial_types` table links trial types to the `aoi_region_sets` table and the `trials` table.
-
+<!-- MZ: this next section is a bit repetitive with the previous schema section on trials -->
 The `trials` table encodes each unique ordering of trial types seen in all runs of an experiment.
 For example, for experiments with a fixed trial order, the `trials` table will have as many rows as there are stimuli in the experiment; for experiments with a randomized trial order, there will be many rows linking the trial orderings to the trial types.
 The `trials` table links all experiment design information to the time course data.
