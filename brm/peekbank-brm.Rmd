@@ -129,7 +129,7 @@ Although early word understanding is an enticing research target, the processes 
 <!-- MZ: need to introduce looking-while-listening earlier because it is used in this and the following paragraph - maybe this kind of sentence could fit somewhere her - also for clarifying what "measuring word recognition" means -->
 <!-- GK: What processes are involved in understanding? -->
 To understand a spoken word, children must process the incoming auditory signal and link that signal to relevant meanings – a process often referred to as word recognition. 
-A child who looks at a target word's intended referent is 
+A child who looks at a word's intended referent upon hearing the word is inferred to have recognized and understood the word.
 Measuring early word recognition offers insight into children's early word representations and as well as the speed and efficiency with which children comprehend language in real time, as the speech signal unfolds [@bergelson2020; @fernald1998].
 Word recognition skills are also thought to build a foundation for children’s subsequent language development. 
 Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes [@bleses2016; @marchman2018]. 
