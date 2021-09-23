@@ -35,33 +35,36 @@ We're focused on familiar words here.
 all_aoi_timepoints <- get_aoi_timepoints()
 all_stimuli <- get_stimuli()
 all_administrations <- get_administrations()
+all_subjects <- get_subjects()
 all_trial_types <- get_trial_types() 
-all_trials <- get_trials() 
 all_trials <- get_trials() 
 
 aoi_data_joined <- all_aoi_timepoints |>
   right_join(all_administrations) |>
+  right_join(all_subjects) |>
   right_join(all_trials) |>
   right_join(all_trial_types) |>
   mutate(stimulus_id = target_id) |>
   right_join(all_stimuli) |>
-  select(dataset_name, administration_id, trial_id, dataset_id, stimulus_id, t_norm, age, aoi, english_stimulus_label, stimulus_novelty)
+  select(dataset_name, subject_id, administration_id, trial_id, dataset_id, stimulus_id, t_norm, age, aoi, english_stimulus_label, stimulus_novelty)
+# TO DO: looks like a very small number of rows get added in the join, probably a sign of an issue/ ambiguity somewhere.
 
-save(aoi_data_joined, file = here("data/aoi_data_joined.Rds"))
+save(aoi_data_joined, file = here("explorations","data","aoi_data_joined.Rds"))
 ```
 
 ```{r}
-load(file = here("data/aoi_data_joined.Rds"))
+load(file = here("explorations","data","aoi_data_joined.Rds"))
 ```
 
 Take only familiar word data. 
+(Note: retaining monolingual+bilingual data; only excluding Tseltal dataset)
 
 ```{r}
 d_trial <- aoi_data_joined |>
   filter(dataset_name != "casillas_tseltal_2015") |>
   filter(age > 12, age <= 60, 
          stimulus_novelty == "familiar") |> 
-  select(dataset_name, administration_id, trial_id, 
+  select(dataset_name, subject_id, administration_id, trial_id, 
          dataset_id, stimulus_id, t_norm, age, aoi, english_stimulus_label) |>
   mutate(correct = ifelse(aoi == "target", 1, 
                           ifelse(aoi == "distractor", 0, NA)))
@@ -73,14 +76,17 @@ Now think about what the basic curve is and how to get out various measures.
 
 ```{r}
 ggplot(d_trial, aes(x = t_norm, y = correct)) + 
+  xlim(-2000,3500)+
   geom_smooth()
 ```
 
 Seems like we want something that captures 1) the accuracy and 2) the rise coming soon after zero (RT).
 
+(Comment MZ: this summary is a little bit atypical in that the common convention is to summarize average accuracy for each trial first, and then average across items/ within subjects). This is meant e.g. to deal with missing data, e.g. the fact that different trials will have different amounts of (non-missing) looking data. Also note that we are summarizing by administrations, not subjects.)
+
 ```{r}
 d_summary <- d_trial |>
-  group_by(dataset_name, dataset_id, administration_id, stimulus_id) |>
+  group_by(dataset_name, dataset_id, subject_id,administration_id, stimulus_id) |>
   summarise(accuracy = mean(correct[t_norm > 0], na.rm=TRUE),
             prop_data = mean(!is.na(correct[t_norm > 0])))
 
