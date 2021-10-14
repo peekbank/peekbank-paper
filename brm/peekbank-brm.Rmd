@@ -696,7 +696,7 @@ print(tab2, type="latex", comment = F, table.placement = "H",include.rownames=FA
 ```
 
 In general, participants demonstrated robust, above-chance word recognition in each dataset (chance=0.5). 
-Table 2 shows the average proportion of target looking within a standard critical window of 367-2000ms after the onset of the label for each dataset [@Swingley2000]. 
+Table 2 shows the average proportion of target looking within a standard critical window of 367-2000ms after the onset of the label for each dataset [@swingley2000]. 
 Proportion target looking was generally higher for familiar words (*M* = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="familiar")$N`) than for novel words learned during the experiment (*M* = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="novel")$N`). 
 
 ## Item-level variability
