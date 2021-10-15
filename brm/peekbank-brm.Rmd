@@ -279,10 +279,11 @@ After this, each trial's times are centered around the point of disambiguation u
 When these steps are complete, the time course is ready for resampling.
 
 To facilitate time course analysis and visualization across datasets, time course data must be resampled to a uniform sampling rate (i.e., such that every trial in every dataset has observations at the same time points).
-To do this, we use the `resample()` function.
+To do this, we use the `resample_times()` function.
 During the resampling process, we interpolate using constant interpolation, selecting for each interpolated timepoint the looking location for the nearest observed time point in the original data for both `aoi_timepoints` and `xy_timepoints` data.
-Compared to linear interpolation (see e.g. Wass et al., 2014), constant interpolation has the advantage that it does not introduce new look locations, so it is a more conservative method of resampling.
-
+In the case of ties, the look location observed at the earlier timepoint in the original data is chosen for the resampled timepoint.
+Currently, all data is resampled to 40 Hz (observations every 25 ms) by default, which represents a compromise between retaining fine-grained timing information from datasets with dense sampling rates (maximum sampling rate among current datasets: 500 Hz) while minimizing the possibility of introducing artifacts via resampling for datasets with lower sampling rates (minimum sampling rate for current datasets: 30 Hz).
+Compared to linear interpolation (see e.g. Wass et al., 2014), constant interpolation has the advantage that it is more conservative, in the sense that it does not introduce new look locations beyond those measured in the original data.
 
 ## Processing, Validation and Ingestion
 
@@ -292,11 +293,9 @@ In an effort to double check the data quality and to make sure that no errors ar
 Once this plot has been created and checked for consistency and all tables pass our validation functions, the processed dataset is ready for ingestion into the database using the `peekbank` library. 
 This library applies additional data checks, and adds the data to the MySQL database using the Django web framework.
 
-Currently, the import process is carried out by the Peekbank team using data offered by other research teams. In the future, we hope to allow research teams to carry out their own import processes with checks from the Peekbank team before ingestion. To this end, import script templates are available for both hand-coded datasets and automatic eye-tracking datasets for research teams to adapt to their data.
-
-## CHECK and edit resampling section for ties, interpolating forward/back in time, and for maximum time over which we interpolate
-
-
+Currently, the import process is carried out by the Peekbank team using data offered by other research teams. 
+In the future, we hope to allow research teams to carry out their own import processes with checks from the Peekbank team before ingestion. 
+To this end, import script templates are available for both hand-coded datasets and automatic eye-tracking datasets for research teams to adapt to their data.
 
 ## Current Data Sources
 
@@ -915,18 +914,16 @@ ggplot(target_word_data,
   facet_wrap(~english_stimulus_label)
 ```
 
-
-
 # Discussion and Conclusion
 
 Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive.
-Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science (@bergmann2018; @frank2017; @manybabies2020].
+Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science [@bergmann2018; @frank2017; @manybabies2020].
 The Peekbank project expands on these efforts by building an infrastructure for aggregating eye-tracking data across studies, with a specific focus on the looking-while-listening paradigm.
-This paper presents an illustration of some of the key theoretical and methodological questions that can be addressed using Peekbank: generalizing across item-level variability in children's word recognition and providing data-driven guidance on methodological choices.
+This paper presents an overview of the structure of the database, as well as how users can access the database and some initial demonstrations of how it can be used both to facilitate reproducibility, for teaching and for exploring theoretical questions beyond on the scope of an individual study.
 
 There are a number of limitations surrounding the current scope of the database.
 A priority in future work will be to expand the size of the database.
-With 11 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results.
+With 20 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results.
 Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability.
 The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset come from WEIRD populations, potentially limiting generalizability; see @muthukrishna2020).
 Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
