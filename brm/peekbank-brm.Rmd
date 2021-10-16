@@ -75,7 +75,7 @@ abstract: |
   The goal of this effort is to address theoretical and methodological challenges in measuring vocabulary development.
   
   <!-- https://tinyurl.com/ybremelq -->
-keywords          : "tools; processing; analysis / usage examples"
+keywords          : "word recognition; eye-tracking; vocabulary development; looking-while-listening; visual world paradigm; lexical processing"
 wordcount         : "X"
 bibliography      : ["peekbank.bib"]
 floatsintext      : no
@@ -106,8 +106,9 @@ library(tidyverse)
 library(peekbankr)
 library(xtable)
 library(ggthemes)
+library(viridis)
 
-knitr::opts_chunk$set(cache = TRUE, cache.extra = knitr::rand_seed,
+knitr::opts_chunk$set(cache = TRUE, cache.extra = knitr::rand_seed,cache.lazy = FALSE,
                       echo = FALSE, warning = FALSE, message = FALSE,
                       fig.env = "figure*")
 
@@ -121,6 +122,8 @@ theme_update(panel.grid = ggplot2::element_blank(),
              legend.position = "bottom")
 
 set.seed(42)
+
+DATABASE_VERSION = "peekbank_dev"
 ```
 
 Across their first years of life, children learn words at an accelerating pace [@frank2021].
@@ -299,15 +302,32 @@ To this end, import script templates are available for both hand-coded datasets 
 
 ## Current Data Sources
 
-```{r eval=FALSE}
+
+
+```{r eval = FALSE}
 t_range <- c(-1000,3000)
-datasets <- get_datasets()
-administrations <- get_administrations()
-subjects <- get_subjects()
-aoi_timepoints <- get_aoi_timepoints()
-stimuli <- get_stimuli()
-trial_types <- get_trial_types()
-trials <- get_trials()
+
+if (DATABASE_VERSION=="current") {
+  datasets <- get_datasets()
+  administrations <- get_administrations()
+  subjects <- get_subjects()
+  aoi_timepoints <- get_aoi_timepoints()
+  stimuli <- get_stimuli()
+  trial_types <- get_trial_types()
+  trials <- get_trials()
+} else {
+  #connect to the database
+  #con <- connect_to_peekbank(db_version=DATABASE_VERSION)
+  #get all of the tables you need
+  datasets <- get_datasets(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
+  administrations <- get_administrations(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
+  subjects <- get_subjects(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
+  aoi_timepoints <- get_aoi_timepoints(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
+  stimuli <- get_stimuli(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
+  trial_types <- get_trial_types(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
+  trials <- get_trials(connection = connect_to_peekbank(db_version=DATABASE_VERSION))  %>% collect()
+}
+
 
 dataset_info <- administrations %>%
   right_join(datasets) %>%
@@ -327,7 +347,7 @@ saveRDS(overall_aoi_data_joined, here("brm","data","overall_aoi_data_joined.Rds"
 saveRDS(dataset_info,here("brm","data","dataset_info.Rds"))
 ```
 
-```{r eval=FALSE}
+```{r eval = FALSE}
 aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 iso_codes <- read_csv(here("brm","data","iso_language_codes.csv"))
@@ -447,14 +467,11 @@ nocite: |
 ...
 
 The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table 1).
+The current data represents a convenience sample of datasets that were (a) datasets collected by or available to Peekbank team members, (b) made available to Peekbank after informal inquiry or (c) datasets that were openly available.
 Most datasets (`r sum(summarize_datasets$language=="English")` out of `r length(summarize_datasets$language)` total) consist of data from monolingual native English speakers. 
 They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),2)*100`% female). 
 The datasets vary across a number of design-related dimensions, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. 
-All studies tested familiar items, but the database also includes `r sum(summarize_novel_familiar$has_novel)` datasets that tested novel pseudo-words in addition to familiar words. All data are openly available on the Open Science Framework (https://osf.io/pr6wu/).
-
-How selected?
-Language coverage?
-More details about lab and design variation?
+All studies tested familiar items, but the database also includes `r sum(summarize_novel_familiar$has_novel)` datasets that tested novel pseudo-words in addition to familiar words.
 
 ## Versioning + Expanding the database
 
@@ -502,7 +519,10 @@ Functions:
 
 ## OSF site
 
-Stimuli Data in raw format (if some additional datum needed, e.g. pupil size?)
+In addition to the Peekbank database proper, all data is openly available on the Peekbank OSF webpage ([https://osf.io/pr6wu/](https://osf.io/pr6wu/)).
+The OSF site also includes the original raw data (both time series data and metadata, such as trial lists and participant logs) that was obtained for each study and subsequently processed into the standardized Peekbank format.
+Users who are interested in inspecting or reproducing the processing pipeline for a given dataset can use the respective import script (openly available on GitHub, [https://github.com/langcog/peekbank-data-import](https://github.com/langcog/peekbank-data-import)) to download and process the raw data from OSF into its final standardized format.
+Where available, the OSF page also includes additional information about the stimuli used in each dataset, including in some instances the original stimulus sets (e.g., image and audio files).
 
 # Peekbank: General Descriptives
 
@@ -510,7 +530,7 @@ Stimuli Data in raw format (if some additional datum needed, e.g. pupil size?)
 
 ## Overall Word Recognition Accuracy
 
-```{r computing accuracy, eval=FALSE}
+```{r computing accuracy, eval = FALSE}
 aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 #set variables for analysis window range
@@ -658,9 +678,9 @@ ggplot(aes(x = t_norm, y = prop_looking,color=english_stimulus_label)) +
   ylab("Proportion Target Looking") +
   xlab("Time (msec)") +
   theme_classic() +
-  scale_color_solarized() +
-  scale_fill_solarized() +
-  facet_wrap(~dataset_name,nrow=3)+
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  facet_wrap(~dataset_name,nrow=4)+
   theme(legend.position="none")+
   theme(axis.text=element_text(size=12),
         axis.title=element_text(size=16))+
@@ -669,7 +689,7 @@ ggplot(aes(x = t_norm, y = prop_looking,color=english_stimulus_label)) +
   scale_y_continuous(breaks=c(0,0.25,0.5,0.75,1),limits=c(0,1))
   
   
-ggsave(here(figure_path,"peekbank_item_vis.png"),width=10,height=6,dpi=600)
+ggsave(here("brm", "figures","peekbank_item_vis.png"),width=10,height=6,dpi=600)
 ```
 
 
@@ -799,7 +819,7 @@ ggplot(accuracies, aes(x = t_norm, y = mean_correct, color = condition)) +
 
 Figure \@ref(fig:swingley) shows the average time course of looking for the two conditions, as produced by the code above. Looks after the correctly pronounced noun appeared both faster (deviating from chance earlier) and more accurate (showing a higher asymptote). Overall, this example demonstrates the ability to produce this visualization in just a few lines of code.
 
-```{r eval=FALSE}
+```{r eval = FALSE}
 subject_accuracy <- swingley_data   %>%
   group_by(administration_id, lab_age, condition,trial_id) %>% 
   filter(t_norm >=367 & t_norm>=2000) %>%
@@ -826,7 +846,7 @@ A second use case for Peekbank is to examine item-level variation in word recogn
 
 Our first step is to collect and join the data from the relevant tables including timepoint data, trial and stimulus data, and administration data (for participant ages). We join these into a single dataframe for easy manipulation; this dataframe is a common starting point for analyses of item-level data. 
 
-```{r all_data, eval=FALSE, echo = TRUE}
+```{r all_data, eval = FALSE, echo = TRUE}
 all_aoi_timepoints <- get_aoi_timepoints()
 all_stimuli <- get_stimuli()
 all_administrations <- get_administrations()
@@ -842,7 +862,7 @@ aoi_data_joined <- all_aoi_timepoints %>%
   select(administration_id, english_stimulus_label, age, t_norm, aoi)
 ```
 
-```{r save_aoi_data_joined, eval=FALSE}
+```{r save_aoi_data_joined, eval = FALSE}
 saveRDS(aoi_data_joined, here("brm","data","aoi_data_joined.rds"))
 ```
 
@@ -851,7 +871,7 @@ dataset_info <- readRDS(here("brm","data","dataset_info.rds"))
 aoi_data_joined <- readRDS(here("brm","data","aoi_data_joined.rds"))
 ```
 
-```{r item_counts, eval=FALSE}
+```{r item-counts, eval = FALSE}
 item_counts <- aoi_data_joined %>%
   group_by(administration_id, english_stimulus_label) %>%
   count() %>%
