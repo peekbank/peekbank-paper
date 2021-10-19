@@ -75,7 +75,7 @@ abstract: |
   The goal of this effort is to address theoretical and methodological challenges in measuring vocabulary development.
   
   <!-- https://tinyurl.com/ybremelq -->
-keywords          : "tools; processing; analysis / usage examples"
+keywords          : "word recognition; eye-tracking; vocabulary development; looking-while-listening; visual world paradigm; lexical processing"
 wordcount         : "X"
 bibliography      : ["peekbank.bib"]
 floatsintext      : no
@@ -106,8 +106,9 @@ library(tidyverse)
 library(peekbankr)
 library(xtable)
 library(ggthemes)
+library(viridis)
 
-knitr::opts_chunk$set(cache = TRUE, cache.extra = knitr::rand_seed,
+knitr::opts_chunk$set(cache = TRUE, cache.extra = knitr::rand_seed,cache.lazy = FALSE,
                       echo = FALSE, warning = FALSE, message = FALSE,
                       fig.env = "figure*")
 
@@ -121,6 +122,8 @@ theme_update(panel.grid = ggplot2::element_blank(),
              legend.position = "bottom")
 
 set.seed(42)
+
+DATABASE_VERSION = "peekbank_dev"
 ```
 
 Across their first years of life, children learn words at an accelerating pace [@frank2021].
@@ -130,7 +133,7 @@ Although early word understanding is an enticing research target, the processes 
 <!-- GK: What processes are involved in understanding? -->
 To understand a spoken word, children must process the incoming auditory signal and link that signal to relevant meanings – a process often referred to as word recognition. 
 A child who looks at a word's intended referent upon hearing the word is inferred to have recognized and understood the word.
-Measuring early word recognition offers insight into children's early word representations and as well as the speed and efficiency with which children comprehend language in real time, as the speech signal unfolds [@bergelson2020; @fernald1998].
+Measuring early word recognition offers insight into children's early word representations: children's speed of response (i.e., moving their eyes; turning their heads) to the unfolding speech signal can reveal children's level of comprehension [@bergelson2020; @fernald1998].
 Word recognition skills are also thought to build a foundation for children’s subsequent language development. 
 Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes [@bleses2016; @marchman2018]. 
 
@@ -279,10 +282,11 @@ After this, each trial's times are centered around the point of disambiguation u
 When these steps are complete, the time course is ready for resampling.
 
 To facilitate time course analysis and visualization across datasets, time course data must be resampled to a uniform sampling rate (i.e., such that every trial in every dataset has observations at the same time points).
-To do this, we use the `resample()` function.
+To do this, we use the `resample_times()` function.
 During the resampling process, we interpolate using constant interpolation, selecting for each interpolated timepoint the looking location for the nearest observed time point in the original data for both `aoi_timepoints` and `xy_timepoints` data.
-Compared to linear interpolation (see e.g. Wass et al., 2014), constant interpolation has the advantage that it does not introduce new look locations, so it is a more conservative method of resampling.
-
+In the case of ties, the look location observed at the earlier timepoint in the original data is chosen for the resampled timepoint.
+Currently, all data is resampled to 40 Hz (observations every 25 ms) by default, which represents a compromise between retaining fine-grained timing information from datasets with dense sampling rates (maximum sampling rate among current datasets: 500 Hz) while minimizing the possibility of introducing artifacts via resampling for datasets with lower sampling rates (minimum sampling rate for current datasets: 30 Hz).
+Compared to linear interpolation (see e.g. Wass et al., 2014), constant interpolation has the advantage that it is more conservative, in the sense that it does not introduce new look locations beyond those measured in the original data.
 
 ## Processing, Validation and Ingestion
 
@@ -292,23 +296,38 @@ In an effort to double check the data quality and to make sure that no errors ar
 Once this plot has been created and checked for consistency and all tables pass our validation functions, the processed dataset is ready for ingestion into the database using the `peekbank` library. 
 This library applies additional data checks, and adds the data to the MySQL database using the Django web framework.
 
-Currently, the import process is carried out by the Peekbank team using data offered by other research teams. In the future, we hope to allow research teams to carry out their own import processes with checks from the Peekbank team before ingestion. To this end, import script templates are available for both hand-coded datasets and automatic eye-tracking datasets for research teams to adapt to their data.
-
-## CHECK and edit resampling section for ties, interpolating forward/back in time, and for maximum time over which we interpolate
-
-
+Currently, the import process is carried out by the Peekbank team using data offered by other research teams. 
+In the future, we hope to allow research teams to carry out their own import processes with checks from the Peekbank team before ingestion. 
+To this end, import script templates are available for both hand-coded datasets and automatic eye-tracking datasets for research teams to adapt to their data.
 
 ## Current Data Sources
 
-```{r eval=FALSE}
+
+
+```{r eval = FALSE}
 t_range <- c(-1000,3000)
-datasets <- get_datasets()
-administrations <- get_administrations()
-subjects <- get_subjects()
-aoi_timepoints <- get_aoi_timepoints()
-stimuli <- get_stimuli()
-trial_types <- get_trial_types()
-trials <- get_trials()
+
+if (DATABASE_VERSION=="current") {
+  datasets <- get_datasets()
+  administrations <- get_administrations()
+  subjects <- get_subjects()
+  aoi_timepoints <- get_aoi_timepoints()
+  stimuli <- get_stimuli()
+  trial_types <- get_trial_types()
+  trials <- get_trials()
+} else {
+  #connect to the database
+  #con <- connect_to_peekbank(db_version=DATABASE_VERSION)
+  #get all of the tables you need
+  datasets <- get_datasets(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
+  administrations <- get_administrations(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
+  subjects <- get_subjects(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
+  aoi_timepoints <- get_aoi_timepoints(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
+  stimuli <- get_stimuli(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
+  trial_types <- get_trial_types(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
+  trials <- get_trials(connection = connect_to_peekbank(db_version=DATABASE_VERSION))  %>% collect()
+}
+
 
 dataset_info <- administrations %>%
   right_join(datasets) %>%
@@ -328,7 +347,7 @@ saveRDS(overall_aoi_data_joined, here("brm","data","overall_aoi_data_joined.Rds"
 saveRDS(dataset_info,here("brm","data","dataset_info.Rds"))
 ```
 
-```{r eval=FALSE}
+```{r eval = FALSE}
 aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 iso_codes <- read_csv(here("brm","data","iso_language_codes.csv"))
@@ -448,14 +467,11 @@ nocite: |
 ...
 
 The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table 1).
+The current data represents a convenience sample of datasets that were (a) datasets collected by or available to Peekbank team members, (b) made available to Peekbank after informal inquiry or (c) datasets that were openly available.
 Most datasets (`r sum(summarize_datasets$language=="English")` out of `r length(summarize_datasets$language)` total) consist of data from monolingual native English speakers. 
 They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),2)*100`% female). 
 The datasets vary across a number of design-related dimensions, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. 
-All studies tested familiar items, but the database also includes `r sum(summarize_novel_familiar$has_novel)` datasets that tested novel pseudo-words in addition to familiar words. All data are openly available on the Open Science Framework (https://osf.io/pr6wu/).
-
-How selected?
-Language coverage?
-More details about lab and design variation?
+All studies tested familiar items, but the database also includes `r sum(summarize_novel_familiar$has_novel)` datasets that tested novel pseudo-words in addition to familiar words.
 
 ## Versioning + Expanding the database
 
@@ -503,7 +519,10 @@ Functions:
 
 ## OSF site
 
-Stimuli Data in raw format (if some additional datum needed, e.g. pupil size?)
+In addition to the Peekbank database proper, all data is openly available on the Peekbank OSF webpage ([https://osf.io/pr6wu/](https://osf.io/pr6wu/)).
+The OSF site also includes the original raw data (both time series data and metadata, such as trial lists and participant logs) that was obtained for each study and subsequently processed into the standardized Peekbank format.
+Users who are interested in inspecting or reproducing the processing pipeline for a given dataset can use the respective import script (openly available on GitHub, [https://github.com/langcog/peekbank-data-import](https://github.com/langcog/peekbank-data-import)) to download and process the raw data from OSF into its final standardized format.
+Where available, the OSF page also includes additional information about the stimuli used in each dataset, including in some instances the original stimulus sets (e.g., image and audio files).
 
 # Peekbank: General Descriptives
 
@@ -511,7 +530,7 @@ Stimuli Data in raw format (if some additional datum needed, e.g. pupil size?)
 
 ## Overall Word Recognition Accuracy
 
-```{r computing accuracy, eval=FALSE}
+```{r computing accuracy, eval = FALSE}
 aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 #set variables for analysis window range
@@ -659,9 +678,9 @@ ggplot(aes(x = t_norm, y = prop_looking,color=english_stimulus_label)) +
   ylab("Proportion Target Looking") +
   xlab("Time (msec)") +
   theme_classic() +
-  scale_color_solarized() +
-  scale_fill_solarized() +
-  facet_wrap(~dataset_name,nrow=3)+
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  facet_wrap(~dataset_name,nrow=4)+
   theme(legend.position="none")+
   theme(axis.text=element_text(size=12),
         axis.title=element_text(size=16))+
@@ -670,7 +689,7 @@ ggplot(aes(x = t_norm, y = prop_looking,color=english_stimulus_label)) +
   scale_y_continuous(breaks=c(0,0.25,0.5,0.75,1),limits=c(0,1))
   
   
-ggsave(here(figure_path,"peekbank_item_vis.png"),width=10,height=6,dpi=600)
+ggsave(here("brm", "figures","peekbank_item_vis.png"),width=10,height=6,dpi=600)
 ```
 
 
@@ -696,7 +715,7 @@ print(tab2, type="latex", comment = F, table.placement = "H",include.rownames=FA
 ```
 
 In general, participants demonstrated robust, above-chance word recognition in each dataset (chance=0.5). 
-Table 2 shows the average proportion of target looking within a standard critical window of 367-2000ms after the onset of the label for each dataset [@Swingley2000]. 
+Table 2 shows the average proportion of target looking within a standard critical window of 367-2000ms after the onset of the label for each dataset [@swingley2000]. 
 Proportion target looking was generally higher for familiar words (*M* = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="familiar")$N`) than for novel words learned during the experiment (*M* = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="novel")$N`). 
 
 ## Item-level variability
@@ -800,7 +819,7 @@ ggplot(accuracies, aes(x = t_norm, y = mean_correct, color = condition)) +
 
 Figure \@ref(fig:swingley) shows the average time course of looking for the two conditions, as produced by the code above. Looks after the correctly pronounced noun appeared both faster (deviating from chance earlier) and more accurate (showing a higher asymptote). Overall, this example demonstrates the ability to produce this visualization in just a few lines of code.
 
-```{r eval=FALSE}
+```{r eval = FALSE}
 subject_accuracy <- swingley_data   %>%
   group_by(administration_id, lab_age, condition,trial_id) %>% 
   filter(t_norm >=367 & t_norm>=2000) %>%
@@ -827,7 +846,7 @@ A second use case for Peekbank is to examine item-level variation in word recogn
 
 Our first step is to collect and join the data from the relevant tables including timepoint data, trial and stimulus data, and administration data (for participant ages). We join these into a single dataframe for easy manipulation; this dataframe is a common starting point for analyses of item-level data. 
 
-```{r all_data, eval=FALSE, echo = TRUE}
+```{r all_data, eval = FALSE, echo = TRUE}
 all_aoi_timepoints <- get_aoi_timepoints()
 all_stimuli <- get_stimuli()
 all_administrations <- get_administrations()
@@ -843,7 +862,7 @@ aoi_data_joined <- all_aoi_timepoints %>%
   select(administration_id, english_stimulus_label, age, t_norm, aoi)
 ```
 
-```{r save_aoi_data_joined, eval=FALSE}
+```{r save_aoi_data_joined, eval = FALSE}
 saveRDS(aoi_data_joined, here("brm","data","aoi_data_joined.rds"))
 ```
 
@@ -852,7 +871,7 @@ dataset_info <- readRDS(here("brm","data","dataset_info.rds"))
 aoi_data_joined <- readRDS(here("brm","data","aoi_data_joined.rds"))
 ```
 
-```{r item_counts, eval=FALSE}
+```{r item-counts, eval = FALSE}
 item_counts <- aoi_data_joined %>%
   group_by(administration_id, english_stimulus_label) %>%
   count() %>%
@@ -915,18 +934,16 @@ ggplot(target_word_data,
   facet_wrap(~english_stimulus_label)
 ```
 
-
-
 # Discussion and Conclusion
 
 Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive.
-Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science (@bergmann2018; @frank2017; @manybabies2020].
+Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science [@bergmann2018; @frank2017; @manybabies2020].
 The Peekbank project expands on these efforts by building an infrastructure for aggregating eye-tracking data across studies, with a specific focus on the looking-while-listening paradigm.
-This paper presents an illustration of some of the key theoretical and methodological questions that can be addressed using Peekbank: generalizing across item-level variability in children's word recognition and providing data-driven guidance on methodological choices.
+This paper presents an overview of the structure of the database, as well as how users can access the database and some initial demonstrations of how it can be used both to facilitate reproducibility, for teaching and for exploring theoretical questions beyond on the scope of an individual study.
 
 There are a number of limitations surrounding the current scope of the database.
 A priority in future work will be to expand the size of the database.
-With 11 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results.
+With 20 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results.
 Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability.
 The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background (all but one dataset come from WEIRD populations, potentially limiting generalizability; see @muthukrishna2020).
 Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
