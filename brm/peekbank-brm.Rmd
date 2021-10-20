@@ -156,7 +156,7 @@ Word recognition is traditionally studied in the “looking-while-listening” p
 In such studies, infants listen to a sentence prompting a specific referent (e.g., *Look at the dog!*) while viewing two images on the screen (e.g., an image of a dog – the target image – and an image of a bird – the distractor image). 
 Infants’ word recognition is measured in terms of how quickly and accurately they fixate on the correct target image after hearing its label. 
 Past research has used this same basic method to study a wide range of questions in language development. 
-For example, the looking-while-listening paradigm has been used to investigate early noun knowledge, phonological representations of words, prediction during language processing, and individual differences in language development [@bergelson2012; @golinkoff2013; @lewwilliams2007; @marchman2018; @swingley2000].
+For example, the looking-while-listening paradigm has been used to investigate early noun knowledge, phonological representations of words, prediction during language processing, and individual differences in language development [@bergelson2012; @golinkoff2013; @lewwilliams2007; @marchman2018; @Swingley2002].
 
 ## Measuring developmental change in word recognition
 While the looking-while-listening paradigm has been fruitful in advancing understanding of early word knowledge, fundamental questions remain.
@@ -721,7 +721,7 @@ print(tab2, type="latex", comment = F, table.placement = "H",include.rownames=FA
 ```
 
 In general, participants demonstrated robust, above-chance word recognition in each dataset (chance=0.5). 
-Table 2 shows the average proportion of target looking within a standard critical window of 367-2000ms after the onset of the label for each dataset [@swingley2000]. 
+Table 2 shows the average proportion of target looking within a standard critical window of 367-2000ms after the onset of the label for each dataset [@Swingley2002]. 
 Proportion target looking was generally higher for familiar words (*M* = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="familiar")$N`) than for novel words learned during the experiment (*M* = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="novel")$N`). 
 
 ## Item-level variability
@@ -736,9 +736,9 @@ Figure \@ref(fig:items) gives an overview of the variability in accuracy for ind
 
 We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis [e.g., @hardwicke2018] and also provides an easy way to explore looking-while-listening time course data in a standardized format. Our second example shows an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis could in principle be used for optimizing the stimuli for new experiments, especially as the Peekbank dataset grows and gains coverage over a greater number of items. 
 
-## Computational reproducibility example: @swingley2000
+## Computational reproducibility example: @Swingley2002
 
-@swingley2000 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. *oppel* (close mispronunciation) or *opel* (distant mispronunciation) instead of *apple* (correct pronunciation). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. 
+@Swingley2002 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. *oppel* (close mispronunciation) or *opel* (distant mispronunciation) instead of *apple* (correct pronunciation). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. 
 
 \singlespacing
 ```{r swingley_data, echo = TRUE, eval = FALSE}
@@ -809,7 +809,7 @@ accuracies <- swingley_data  %>%
 
 The final step in our analysis is to create a summary dataframe using `dplyr` commands. We first group the data by timestep, participant, and condition and compute the proportion looking at the correct image. We then summarize again, averaging across participants, computing both means and 95% confidence intervals (via the  approximation of 1.96 times the standard error of the mean). The resulting dataframe can be used for visualization of the time course of looking.
 
-```{r swingley, fig.env = "figure", fig.cap="Proportion looking at the correct referent by time from the point of disambiguation (the onset of the target noun) in Swingley & Aslin (2020). Colors show the two pronunciation conditions; points give means and ranges show 95\\% confidence intervals. The dotted line shows the point of disambiguation and the dashed line shows chance performance."}
+```{r swingley, fig.env = "figure", fig.cap="Proportion looking at the correct referent by time from the point of disambiguation (the onset of the target noun) in Swingley & Aslin (2002). Colors show the two pronunciation conditions; points give means and ranges show 95\\% confidence intervals. The dotted line shows the point of disambiguation and the dashed line shows chance performance."}
 ggplot(accuracies, aes(x = t_norm, y = mean_correct, color = condition)) +
   geom_hline(yintercept = 0.5, linetype = "dashed", color = "black") +
   geom_vline(xintercept = 0, linetype = "dotted", color = "black") +
