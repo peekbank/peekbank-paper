@@ -129,10 +129,9 @@ DATABASE_VERSION = "peekbank_dev"
 Across their first years of life, children learn words at an accelerating pace [@frank2021].
 While many children will only *produce* their first word at around one year of age, most children show signs of *understanding* many common nouns (e.g., "mommy") and phrases (e.g., "Let's go bye-bye!") much earlier in development [@bergelson2012].
 Although early word understanding is an enticing research target, the processes involved are less directly apparent in children's behaviors and are less accessible to observation than developments in speech production [@fernald2008].
-<!-- MZ: need to introduce looking-while-listening earlier because it is used in this and the following paragraph - maybe this kind of sentence could fit somewhere her - also for clarifying what "measuring word recognition" means -->
-<!-- GK: What processes are involved in understanding? -->
 To understand a spoken word, children must process the incoming auditory signal and link that signal to relevant meanings – a process often referred to as word recognition. 
-A child who looks at a word's intended referent upon hearing the word is inferred to have recognized and understood the word.
+A primary means of measuring word recognition in young infants are eye-tracking techniques that use patterns of preferential looking to make inferences about children's word processing [@fernald2008].
+The key idea of these methods is that if a child preferentially looks at a target referent (rather than a distractor stimulus) upon hearing a word, this indicates that the child is able to recognize the word and activate its meaning during real-time language processing.
 Measuring early word recognition offers insight into children's early word representations: children's speed of response (i.e., moving their eyes; turning their heads) to the unfolding speech signal can reveal children's level of comprehension [@bergelson2020; @fernald1998].
 Word recognition skills are also thought to build a foundation for children’s subsequent language development. 
 Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes [@bleses2016; @marchman2018]. 
@@ -148,7 +147,7 @@ For example, WordBank aggregated data from the MacArthur-Bates Communicative Dev
 In this paper, we introduce *Peekbank*, an open database of infant and toddler eye-tracking data aimed at facilitating the study of developmental changes in children's word knowledge and recognition speed.
 
 ## The “Looking-While-Listening” Paradigm
-Word recognition is traditionally studied in the “looking-while-listening” paradigm [alternatively referred to as the intermodal preferential looking procedure; @fernald2008; @hirshpasek1987]. 
+Word recognition is traditionally studied in the “looking-while-listening” paradigm [@fernald2008; alternatively referred to as the intermodal preferential looking procedure, @hirshpasek1987]. 
 In such studies, infants listen to a sentence prompting a specific referent (e.g., *Look at the dog!*) while viewing two images on the screen (e.g., an image of a dog – the target image – and an image of a bird – the distractor image). 
 Infants’ word recognition is measured in terms of how quickly and accurately they fixate on the correct target image after hearing its label. 
 Past research has used this same basic method to study a wide range of questions in language development. 
@@ -160,13 +159,15 @@ One central question is how to accurately capture developmental change in the sp
 There is ample evidence demonstrating that infants get faster and more accurate in word recognition over the first few years of life [e.g., @fernald1998].
 However, precisely measuring developmental increases in the speed and accuracy of word recognition remains challenging due to the difficulty of distinguishing developmental changes in word recognition skill from changes in knowledge of specific words. 
 This problem is particularly thorny in studies with young children, since the number of items that can be tested within a single session is limited and items must be selected in an age-appropriate manner [@peter2019]. 
-One way to overcome this challenge is to measure word recognition across development in a large-scale dataset with a wide range of items. 
-A sufficiently large dataset would allow researchers to estimate developmental change in word recognition speed and accuracy while generalizing across changes related to specific words.
+Another potential challenge are that differences in the design choices and analytic decisions within single studies could obscure changes when comparing individual studies at different developmental time points.
+One approach to addressing these these challenges is to conduct meta-analyses aggregating effects across studies while testing for heterogeneity due to researcher choices [@Lewis2016; bergmann2018].
+However, meta-analyses typically lack the granularity to estimate participant-level and item-level variation or to model behavior beyond coarse-grained effect size estimates.
+An alternative way to approach this challenge is to aggregate trial-level data from smaller studies measuring word recognition with a wide range of items and design choices into a large-scale dataset that can be analyzed using a unified modeling approach.
+A sufficiently large dataset would allow researchers to estimate developmental change in word recognition speed and accuracy while generalizing across changes related to specific words or the design features of particular studies.
 
-## Understanding the development of word recognition on the item level
 A related open theoretical question is understanding changes in children's word recognition at the level of individual items.
 Looking-while-listening studies have been limited in their ability to assess the development of specific words.
-One limitation is that studies typically test only a small number of trials for each item, limiting the power the accurately measure the development of word-specific accuracy.
+One limitation is that studies typically test only a small number of trials for each item, limiting the power the accurately measure the development of word-specific accuracy [@DeBolt2020].
 A second limitation is that targets are often yoked with a limited set of distractors (often one or two), leaving ambiguous whether accurate looking to a particular target word is largely a function of children's recognition of the target word, their knowledge about the distractor, which allows them to reject the distractor as a response candidate, or both.
 Aggregating across many looking-while-listening studies has the potential to meet these challenges by increasing the number of observations for specific items at different ages and by increasing the variability in the distractor items co-occurring with a specific target.
 
@@ -178,14 +179,21 @@ One hurdle to improving the power in infant research is that it can often be dif
 Large-scale databases of infant behavior can aid researchers' in their decision-making by providing rich datasets that can help constrain expectations about possible effect sizes and can be used to make data-driven design decisions. 
 For example, if a researcher is interested in understanding how the number of test trials could impact the power and reliability of their looking-while-listening design, a large-scale database would allow them to simulate possible outcomes across a range of test trials, based on past eye-tracking data with infants.
 
-[add paragraph about reproducibility?]
+In addition to threats to replicability, the field of infant development also faces concerns about analytic reproducibility - the ability for researchers to arrive at the same analytic conclusion reported in the original research article, given the same dataset.
+A recent estimate based on studies published in a prominent cognitive science journal suggests that analyses can remain difficult to reproduce, even when data is made available to other research teams [@hardwicke2018].
+Aggregating data in centralized databases can aid in improving reproducibility in several ways.
+First, building a large-scale database requires defining a standardized data specification.
+Recent examples include the brain imaging data structure (BIDS), an effort to specify a unified data format for neuroimaging experiments [@gorgolewski_brain_2016].
+Defining a data standard - in this case, for infant eye-tracking experiments - supports reproducibility by setting data curation standards that guarantee that critical information will be available in openly shared data and that make it easier for different research teams to understand the data structure.
+Second, open databases make it easy for researchers to generate open and reproducible analytic pipelines, both for individual studies and for analyses aggregating across datasets.
+Creating open analytic pipelines across many datasets also serves a pedagogical purpose, providing teaching examples illustrating how to implement analytic techniques using in influential studies and how to conduct reproducible analyses on infant eye-tracking data.
 
 ## Peekbank: An open database of developmental eye-tracking studies.
-What many of these open challenges share is that they are difficult to address at the scale of a single research lab or in a single study.
+What all of these open challenges share is that they are difficult to address at the scale of a single research lab or in a single study.
 To address this challenge, we developed *Peekbank* a flexible and reproducible interface to an open database of developmental eye-tracking studies. 
 The Peekbank project (a) collects a large set of eye-tracking datasets on children’s word recognition, (b) introduces a data format and processing tools for standardizing eye-tracking data across data sources, and (c) provides an interface for accessing and analyzing the database. 
 In the current paper, we introduce the key components of the project and give an overview of the existing database. 
-We then provide a number of worked examples of how researchers can use Peekbank (1) to inform methodological decision-making, (2) to teach through reproducible examples, and (3) ask novel research questions about the development of children's word recognition.
+We then provide worked examples of how researchers can use Peekbank (1) to inform methodological decision-making, (2) to teach through reproducible examples, and (3) ask novel research questions about the development of children's word recognition.
 
 # Design and Technical Approach
 
@@ -463,7 +471,7 @@ summarize_datasets %>%
 
 ---
 nocite: | 
-  @Pomper2016; @Yurovsky2013; @Byers-Heinlein2017; @Frank2016; @Casillas2017; @Adams2018; @Potter2019; @Mahr2015; @Pomper2019; @Garrison2020; @Perry2017; @Swingley2002; @Yurovsky2017
+  @Pomper2016; @Yurovsky2013; @Byers-Heinlein2017; @Frank2016; @Casillas2017; @Adams2018; @Potter2019; @Mahr2015; @Pomper2019; @Garrison2020; @Perry2017; @Swingley2002; @Yurovsky2017; @Ronfard2021; @Hurtado2007; @Weisleder2013; @Hurtado2008; @Fernald2013
 ...
 
 The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table 1).
