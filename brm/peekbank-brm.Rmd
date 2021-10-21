@@ -157,7 +157,7 @@ In such studies, infants listen to a sentence prompting a specific referent (e.g
 Infants’ word recognition is measured in terms of how quickly and accurately they fixate on the correct target image after hearing its label. 
 Past research has used this same basic method to study a wide range of questions in language development. 
 For example, the looking-while-listening paradigm has been used to investigate early noun knowledge, phonological representations of words, prediction during language processing, and individual differences in language development [@bergelson2012; @golinkoff2013; @lewwilliams2007; @marchman2018; @Swingley2002].
-
+ 
 ## Measuring developmental change in word recognition
 While the looking-while-listening paradigm has been fruitful in advancing understanding of early word knowledge, fundamental questions remain.
 One central question is how to accurately capture developmental change in the speed and accuracy of word recognition. 
@@ -521,7 +521,12 @@ Specifically, users can visualize
 
 Users are given various customization options for each of these visualizations, e.g., choosing which datasets to include in the plots, controlling the age range of participants, splitting the visualizations by age bins, and controlling the analysis window for time course analyses.
 Plots are then updated in real time to reflect users' customization choices, and users are given options to share the visualizations they created.
+An screenshot of the app is shown in Figure \@ref(fig:shiny).
 The Shiny app thus allows users to quickly inspect basic properties of Peekbanks datasets and create reproducible visualizations without incurring any of the technical overhead required to access the database through R.
+
+```{r fig-shiny, fig.env = "figure", fig.align = "center", out.height="6in", set.cap.width=T, num.cols.cap=1, fig.cap = "Screenshot of the Peekbank visualization tool, which shows a variety of standard analysis plots as a function of user-selected datasets, words, age ranges, and analysis windows. Shown here are mean reaction time and proportion target looking over time by age group for two selected datasets."}
+knitr::include_graphics(here("brm/figures","shiny-full-window.png")) # 
+```
 
 ## OSF site
 
