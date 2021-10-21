@@ -302,11 +302,11 @@ Compared to linear interpolation (see e.g. Wass et al., 2014), constant interpol
 The `peekds` package offers functions to extract the above data. 
 Once this data has been extracted in a tabular form, the package also offers a function to check whether all tables have the required fields and data types expected by the database.
 In an effort to double check the data quality and to make sure that no errors are made in the importing script, as part of the import procedure we create a time course plot based on our processed tables to replicate the results in the paper that first presented each dataset.
-Once this plot has been created and checked for consistency and all tables pass our validation functions, the processed dataset is ready for ingestion into the database using the `peekbank` library. 
+Once this plot has been created and checked for consistency and all tables pass our validation functions, the processed dataset is ready for reprocessing into the database using the `peekbank` library. 
 This library applies additional data checks, and adds the data to the MySQL database using the Django web framework.
 
 Currently, the import process is carried out by the Peekbank team using data offered by other research teams. 
-In the future, we hope to allow research teams to carry out their own import processes with checks from the Peekbank team before ingestion. 
+In the future, we hope to allow research teams to carry out their own import processes with checks from the Peekbank team before reprocessing. 
 To this end, import script templates are available for both hand-coded datasets and automatic eye-tracking datasets for research teams to adapt to their data.
 
 ## Current Data Sources
