@@ -1,6 +1,6 @@
 ---
 title             : "Peekbank: Exploring children's word recognition through an open, large-scale repository for developmental eye-tracking data"
-shorttitle        : "Peekbank repository for developmental eye-tracking data"
+shorttitle        : "Repository for developmental eye-tracking data"
 author: 
   - name          : "Peekbank team"
   - name          : "Martin Zettersten"
