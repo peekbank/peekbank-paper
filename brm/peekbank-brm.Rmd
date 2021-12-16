@@ -486,6 +486,8 @@ To facilitate reproducibility of analyses, we use a versioning system where succ
 By default, users will interact with the most recent version of the database available, though `peekbankr` API allows researchers to run analyses against any previous version of the database.
 For users with intensive use-cases, each version of the database may be downloaded as a compressed .sql file and installed on a local MySQL server.
 
+Peekbank allows for fully reproducible analyses using our source data, but the goal is not to reproduce precisely the analyses -- or even the datasets -- in the publications whose data we archive. Because of our emphasis on a standardized data importing and formatting pipeline, there may be minor discrepancies in the timecourse data that we archive compared with those reported in original publications. Further, we archive all of the data that are provided to us -- including participants that might have been excluded in the original studies, if these data are available -- rather than attempting to reproduce specific exclusion criteria. We hope that Peekbank can be used as a basis for comparing different exclusion and filtering criteria -- as such, an inclusive policy regarding importing all available data helps us provide a broad base of data for investigating these decisions. 
+
 # Interfacing with Peekbank
 
 ## Peekbankr
@@ -511,7 +513,7 @@ One goal of the Peekbank project is to allow a wide range of users to easily exp
 We therefore have created an interactive web application -- `peekbank-shiny` -- that allows users to quickly and easily create informative visualizations of individual datasets and aggregated data.
 `peekbank-shiny` is built using Shiny, a software package for creating web apps for data exploration with R, as well as the `peekbankr` package.
 The Shiny app allows users to create commonly used visualizations of looking-while-listening data, based on data from the Peekbank database.
-Specifically, users can visualize
+Specifically, users can visualize:
 
 1. the time course of looking data in a profile plot depicting infant target looking across trial time
 2. overall accuracy (proportion target looking) within a specified analysis window
@@ -536,7 +538,7 @@ Where available, the OSF page also includes additional information about the sti
 
 # Peekbank: General Descriptives
 
-[Accuracy, Reaction Times, Item variability?]
+Readers may be interested in .In this section, we provide some general descriptive analyses 
 
 ## Overall Word Recognition Accuracy
 
@@ -738,11 +740,11 @@ Figure \@ref(fig:items) gives an overview of the variability in accuracy for ind
 
 # Peekbank in Action
 
-We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can replicate the analysis for a classic study. This type of computational reproducibility can be a very useful exercise for teaching students about best practices for data analysis [e.g., @hardwicke2018] and also provides an easy way to explore looking-while-listening time course data in a standardized format. Our second example shows an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis could in principle be used for optimizing the stimuli for new experiments, especially as the Peekbank dataset grows and gains coverage over a greater number of items. 
+We provide two potential use-cases for Peekbank data. In each case, we provide sample code so as to model how easy it is to do simple analyses using data from the database. Our first example shows how we can investigate the findings of a classic study. This type of investigation can be a very useful exercise for teaching students about best practices for data analysis [e.g., @hardwicke2018] and also provides an easy way to explore looking-while-listening time course data in a standardized format. Our second example shows an in-depth exploration of developmental changes in the recognition of particular words. Besides its theoretical interest (which we will explore more fully in subsequent work), this type of analysis could in principle be used for optimizing the stimuli for new experiments, especially as the Peekbank dataset grows and gains coverage over a greater number of items. 
 
-## Computational reproducibility example: @Swingley2002
+## Investigating prior findings: @Swingley2002
 
-@Swingley2002 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. *oppel* (close mispronunciation) or *opel* (distant mispronunciation) instead of *apple* (correct pronunciation). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. 
+@Swingley2002 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. *oppel* (close mispronunciation) or *opel* (distant mispronunciation) instead of *apple* (correct pronunciation). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. Our goal here is not to provide a precise computational reproduction of the analyses reported in the original paper, but rather to demonstrate the use of the Peekbank framework to analyze datasets of this type. In particular, because Peekbank uses a uniform data import standard, it is likely that there will be minor numerical discrepancies between analyses on Peekbank data and analyses that use another processing pipeline. 
 
 \singlespacing
 ```{r swingley_data, echo = TRUE, eval = FALSE}
@@ -811,7 +813,7 @@ accuracies <- swingley_data  %>%
 #   coord_cartesian(xlim = c(-500,3000), ylim = c(0.4,0.8))
 ```
 
-The final step in our analysis is to create a summary dataframe using `dplyr` commands. We first group the data by timestep, participant, and condition and compute the proportion looking at the correct image. We then summarize again, averaging across participants, computing both means and 95% confidence intervals (via the  approximation of 1.96 times the standard error of the mean). The resulting dataframe can be used for visualization of the time course of looking.
+The final step in our analysis is to create a summary dataframe using `dplyr` commands. We first group the data by timestep, participant, and condition and compute the proportion looking at the correct image. We then summarize again, averaging across participants, computing both means and 95% confidence intervals (via the approximation of 1.96 times the standard error of the mean). The resulting dataframe can be used for visualization of the time course of looking.
 
 ```{r swingley, fig.env = "figure", fig.cap="Proportion looking at the correct referent by time from the point of disambiguation (the onset of the target noun) in Swingley & Aslin (2002). Colors show the two pronunciation conditions; points give means and ranges show 95\\% confidence intervals. The dotted line shows the point of disambiguation and the dashed line shows chance performance."}
 ggplot(accuracies, aes(x = t_norm, y = mean_correct, color = condition)) +
@@ -950,7 +952,7 @@ ggplot(target_word_data,
 Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive.
 Recent years have seen a growing effort to build open source tools and pool research efforts to meet the challenge of building a cumulative developmental science [@bergmann2018; @frank2017; @manybabies2020; @Sanchez2019].
 The Peekbank project expands on these efforts by building an infrastructure for aggregating eye-tracking data across studies, with a specific focus on the looking-while-listening paradigm.
-This paper presents an overview of the structure of the database, as well as how users can access the database and some initial demonstrations of how it can be used both to facilitate reproducibility, for teaching and for exploring theoretical questions beyond on the scope of an individual study.
+This paper presents an overview of the structure of the database, as well as how users can access the database and some initial demonstrations of how it can be used both to investigate prior experiments and to synthesize data across studies.
 
 There are a number of limitations surrounding the current scope of the database.
 A priority in future work will be to expand the size of the database.
