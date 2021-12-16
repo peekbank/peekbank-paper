@@ -43,7 +43,7 @@ author:
   - name          : "Daniel Yurovsky"
     affiliation   : "6"
   - name          : "Michael C. Frank"
-    affiliation   : "1"
+    affiliation   : "4"
 affiliation:
   - id            : "1"
     institution   : "Dept. of Psychology, Princeton University"
@@ -538,10 +538,6 @@ Where available, the OSF page also includes additional information about the sti
 
 # Peekbank: General Descriptives
 
-Readers may be interested in .In this section, we provide some general descriptive analyses 
-
-## Overall Word Recognition Accuracy
-
 ```{r computing accuracy, eval = FALSE}
 aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
@@ -726,17 +722,18 @@ names(tab2) <- c("Dataset Name", "Unique Items","Prop. Target", "95% CI")
 print(tab2, type="latex", comment = F, table.placement = "H",include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont")
 ```
 
-In general, participants demonstrated robust, above-chance word recognition in each dataset (chance=0.5). 
+One of the values of the uniform data format we use in Peekbank is the ease of providing cross-dataset descriptions that can give an overview of some of the general patterns found in our data. 
+
+A first broad question is about the degree of accuracy in word recognition found across studies. In general, participants demonstrated robust, above-chance word recognition in each dataset (chance=0.5).
 Table 2 shows the average proportion of target looking within a standard critical window of 367-2000ms after the onset of the label for each dataset [@Swingley2002]. 
 Proportion target looking was generally higher for familiar words (*M* = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="familiar")$N`) than for novel words learned during the experiment (*M* = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="novel")$N`). 
 
-## Item-level variability
 ```{r items, fig.env = "figure", set.cap.width=T, fig.cap = "Item-level variability in proportion target looking within each dataset (chance=0.5). Time is centered on the onset of the target label (vertical line). Colored lines represent specific target labels. Black lines represent smoothed average fits based on a general additive model using cubic splines."}
 img <- png::readPNG(here("brm","figures","peekbank_item_vis.png"))
 grid::grid.raster(img)
 ```
 
-Figure \@ref(fig:items) gives an overview of the variability in accuracy for individual words in each dataset. The number of unique target labels and their associated accuracy vary widely across datasets. 
+A second question is interest is about the variability across items within specific studies. While some studies use many, heterogeneous items, others focus on measuring a much smaller and more homogeneous set. Figure \@ref(fig:items) gives an overview of the variability in accuracy for individual words in each dataset. Although all datasets show a gradual rise in accuracy over chance performance, the number of unique target labels and their associated accuracy vary widely across datasets.
 
 # Peekbank in Action
 
