@@ -197,7 +197,7 @@ What all of these open challenges share is that they are difficult to address at
 To address this challenge, we developed *Peekbank* a flexible and reproducible interface to an open database of developmental eye-tracking studies. 
 The Peekbank project (a) collects a large set of eye-tracking datasets on children’s word recognition, (b) introduces a data format and processing tools for standardizing eye-tracking data across heterogeneous data sources, and (c) provides an interface for accessing and analyzing the database. 
 In the current paper, we introduce the key components of the project and give an overview of the existing database. 
-We then provide two worked examples of how researchers can use Peekbank. In the first, we reproduce a classic result in the word recognition literature, and in the second we show developmental trends on individual items.
+We then provide two worked examples of how researchers can use Peekbank. In the first, we examine a classic result in the word recognition literature, and in the second we aggregate data across studies to investigate developmental trends for the recognition of individual words.
 
 # Design and Technical Approach
 
@@ -326,27 +326,27 @@ if (DATABASE_VERSION=="current") {
   #connect to the database
   #con <- connect_to_peekbank(db_version=DATABASE_VERSION)
   #get all of the tables you need
-  datasets <- get_datasets(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
-  administrations <- get_administrations(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
-  subjects <- get_subjects(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
-  aoi_timepoints <- get_aoi_timepoints(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
-  stimuli <- get_stimuli(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
-  trial_types <- get_trial_types(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) %>% collect()
-  trials <- get_trials(connection = connect_to_peekbank(db_version=DATABASE_VERSION))  %>% collect()
+  datasets <- get_datasets(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) |> collect()
+  administrations <- get_administrations(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) |> collect()
+  subjects <- get_subjects(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) |> collect()
+  aoi_timepoints <- get_aoi_timepoints(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) |> collect()
+  stimuli <- get_stimuli(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) |> collect()
+  trial_types <- get_trial_types(connection = connect_to_peekbank(db_version=DATABASE_VERSION)) |> collect()
+  trials <- get_trials(connection = connect_to_peekbank(db_version=DATABASE_VERSION))  |> collect()
 }
 
 
-dataset_info <- administrations %>%
-  right_join(datasets) %>%
+dataset_info <- administrations |>
+  right_join(datasets) |>
   right_join(subjects) 
 
-overall_aoi_data_joined <- aoi_timepoints %>%
-  right_join(administrations) %>%
-  right_join(trials) %>%
-  right_join(trial_types) %>%
-  right_join(datasets) %>%
-  mutate(stimulus_id = target_id) %>%
-  right_join(stimuli) %>%
+overall_aoi_data_joined <- aoi_timepoints |>
+  right_join(administrations) |>
+  right_join(trials) |>
+  right_join(trial_types) |>
+  right_join(datasets) |>
+  mutate(stimulus_id = target_id) |>
+  right_join(stimuli) |>
   filter(t_norm > t_range[1],
          t_norm < t_range[2])
 
@@ -359,15 +359,15 @@ aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 iso_codes <- read_csv(here("brm","data","iso_language_codes.csv"))
 
-dataset_unique_subj <- dataset_info %>%
+dataset_unique_subj <- dataset_info |>
   distinct(subject_id,sex)
 
-summarize_novel_familiar <- overall_aoi_data_joined %>%
-  group_by(dataset_name,stimulus_novelty) %>%
-  summarize(n=n()) %>%
-  left_join(dataset_name_mapping) %>%
-  pivot_wider(id_cols=dataset_rename,names_from = stimulus_novelty,values_from=n) %>%
-  group_by(dataset_rename) %>%
+summarize_novel_familiar <- overall_aoi_data_joined |>
+  group_by(dataset_name,stimulus_novelty) |>
+  summarize(n=n()) |>
+  left_join(dataset_name_mapping) |>
+  pivot_wider(id_cols=dataset_rename,names_from = stimulus_novelty,values_from=n) |>
+  group_by(dataset_rename) |>
   summarize(
     has_familiar = ifelse(is.na(familiar)|familiar==0,0,1),
     has_novel=ifelse(is.na(novel)|novel==0,0,1)
@@ -375,9 +375,9 @@ summarize_novel_familiar <- overall_aoi_data_joined %>%
 
 saveRDS(summarize_novel_familiar, here("brm", "data", "summarize_novel_familiar.rds"))
 
-summarize_datasets <- dataset_info %>%
-  left_join(dataset_name_mapping) %>%
-  group_by(dataset_rename, apa_cite) %>%
+summarize_datasets <- dataset_info |>
+  left_join(dataset_name_mapping) |>
+  group_by(dataset_rename, apa_cite) |>
   summarize(
     #num_admin=length(unique(administration_id)),
     num_subj=length(unique(subject_id)),
@@ -386,58 +386,58 @@ summarize_datasets <- dataset_info %>%
     min_age_months = round(min(age, na.rm = TRUE),0), 
     max_age_months = round(max(age, na.rm = TRUE),0),
     method=unique(coding_method)[1],
-    native_language = names(which.max(table(native_language)))) %>%
+    native_language = names(which.max(table(native_language)))) |>
   # mutate(
   #   percent_female = case_when(
   #     is.nan(percent_female) ~ "N/A",
   #     TRUE ~ paste0(percent_female*100,"%"))
-  # ) %>%
+  # ) |>
   mutate(
     method=case_when(
       method=="manual gaze coding" ~ "manual coding",
       method=="eyetracking" ~ "eye-tracking",
       method=="preprocessed eyetracking" ~ "eye-tracking",
       TRUE ~ method)
-  ) %>%
+  ) |>
     #split language into multiple columns (only two expected; expand if dataset acquires more)
-  separate(native_language,into=c("native_language_1","native_language_2"),sep=", ") %>%
+  separate(native_language,into=c("native_language_1","native_language_2"),sep=", ") |>
   #join based on ISO standard
-  left_join(iso_codes,by=c("native_language_1"="iso_code")) %>%
-  left_join(iso_codes,by=c("native_language_2"="iso_code")) %>%
+  left_join(iso_codes,by=c("native_language_1"="iso_code")) |>
+  left_join(iso_codes,by=c("native_language_2"="iso_code")) |>
   rename(
     language_name_1 = language_name.x,
     language_name_2 = language_name.y
-  ) %>%
+  ) |>
   #clean up some naming issues
   mutate(
     language_name_1 = case_when(
       language_name_1 == "Spanish; Castilian" ~ "Spanish",
       TRUE ~ language_name_1
-    )) %>%
+    )) |>
   #unite names
   mutate(
     language = case_when(
       !is.na(language_name_2) ~ paste(language_name_1,language_name_2,sep=", "),
-      TRUE ~ language_name_1)) %>%
+      TRUE ~ language_name_1)) |>
   # native language special cases
   mutate(
     language = case_when(
       dataset_rename == "tseltal" ~ "Tseltal",
-      TRUE ~ language)) %>%
+      TRUE ~ language)) |>
   #convert age range into one column
-  mutate(age_range_months= paste(min_age_months,max_age_months,sep=" - ")) %>%
+  mutate(age_range_months= paste(min_age_months,max_age_months,sep=" - ")) |>
   mutate(
    apa_cite=case_when(
       is.na(apa_cite) ~ "unpublished",
       TRUE ~ apa_cite
-  )) %>%
-  select(dataset_rename,apa_cite, num_subj,avg_age,age_range_months,method,language) %>%
+  )) |>
+  select(dataset_rename,apa_cite, num_subj,avg_age,age_range_months,method,language) |>
   arrange(dataset_rename)
 
 saveRDS(summarize_datasets, here("brm", "data", "summarize_datasets.rds"))
 
-# summarize_dataset_by_age_bin <- dataset_info %>%
-#   left_join(dataset_name_mapping) %>%
+# summarize_dataset_by_age_bin <- dataset_info |>
+#   left_join(dataset_name_mapping) |>
 #   mutate(
 #     age_bin = case_when(
 #       age <= 24 ~ "(12,24]",
@@ -445,8 +445,8 @@ saveRDS(summarize_datasets, here("brm", "data", "summarize_datasets.rds"))
 #       age <=48 ~ "(36,48]",
 #       age<=60 ~ "(48,60]"
 #     )
-#   ) %>%
-#   group_by(dataset_rename,age_bin) %>%
+#   ) |>
+#   group_by(dataset_rename,age_bin) |>
 #   summarize(
 #     num_subj=length(unique(subject_id)))
 ```
@@ -454,17 +454,17 @@ saveRDS(summarize_datasets, here("brm", "data", "summarize_datasets.rds"))
 ```{r dataset-table}
 dataset_info <- readRDS(here("brm","data","dataset_info.Rds"))
 summarize_novel_familiar <- readRDS(here("brm", "data", "summarize_novel_familiar.rds"))
-dataset_unique_subj <- dataset_info %>%
+dataset_unique_subj <- dataset_info |>
   distinct(subject_id,sex)
 
 summarize_datasets <- readRDS(here("brm", "data", "summarize_datasets.rds"))
-summarize_datasets %>%
+summarize_datasets |>
   mutate(apa_cite = str_remove_all(apa_cite, "[()]"),
-         age_range_months = str_replace(age_range_months, " - ", "–")) %>%
+         age_range_months = str_replace(age_range_months, " - ", "–")) |>
   knitr::kable(col.names = c("Dataset name", "Citation", "N", "Mean age (mos.)",
                              "Age range (mos.)", "Method", "Language"),
                caption = "Overview of the datasets in the current database.",
-               digits = 1, booktabs = TRUE, linesep = "") %>%
+               digits = 1, booktabs = TRUE, linesep = "") |>
    kableExtra::kable_styling(latex_options = "scale_down")
 ```
 
@@ -525,10 +525,10 @@ Specifically, users can visualize:
 
 Users are given various customization options for each of these visualizations, e.g., choosing which datasets to include in the plots, controlling the age range of participants, splitting the visualizations by age bins, and controlling the analysis window for time course analyses.
 Plots are then updated in real time to reflect users' customization choices, and users are given options to share the visualizations they created.
-An screenshot of the app is shown in Figure \@ref(fig:shiny).
+A screenshot of the app is shown in Figure \@ref(fig:shiny).
 The Shiny app thus allows users to quickly inspect basic properties of Peekbanks datasets and create reproducible visualizations without incurring any of the technical overhead required to access the database through R.
 
-```{r fig-shiny, fig.env = "figure", fig.align = "center", out.height="6in", set.cap.width=T, num.cols.cap=1, fig.cap = "Screenshot of the Peekbank visualization tool, which shows a variety of standard analysis plots as a function of user-selected datasets, words, age ranges, and analysis windows. Shown here are mean reaction time and proportion target looking over time by age group for two selected datasets."}
+```{r shiny, fig.env = "figure", fig.align = "center", out.height="6in", set.cap.width=T, num.cols.cap=1, fig.cap = "Screenshot of the Peekbank visualization tool, which shows a variety of standard analysis plots as a function of user-selected datasets, words, age ranges, and analysis windows. Shown here are mean reaction time and proportion target looking over time by age group for two selected datasets."}
 knitr::include_graphics(here("brm/figures","shiny-full-window.png")) # 
 ```
 
@@ -539,8 +539,6 @@ The OSF site also includes the original raw data (both time series data and meta
 Users who are interested in inspecting or reproducing the processing pipeline for a given dataset can use the respective import script (openly available on GitHub, [https://github.com/langcog/peekbank-data-import](https://github.com/langcog/peekbank-data-import)) to download and process the raw data from OSF into its final standardized format.
 Where available, the OSF page also includes additional information about the stimuli used in each dataset, including in some instances the original stimulus sets (e.g., image and audio files).
 
-# Peekbank: General Descriptives
-
 ```{r computing accuracy, eval = FALSE}
 aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
@@ -549,38 +547,38 @@ t_min <- 367
 t_max <- 2000
 
 ### summarize the data by trial ###
-by_trial_means <- aoi_data_joined %>%
+by_trial_means <- aoi_data_joined |>
   #window of analysis
-  filter(t_norm > t_min, t_norm < t_max) %>%
-  mutate(age_binned = cut(age, seq(12,60,12))) %>%
-  rename(target_label = english_stimulus_label) %>%
+  filter(t_norm > t_min, t_norm < t_max) |>
+  mutate(age_binned = cut(age, seq(12,60,12))) |>
+  rename(target_label = english_stimulus_label) |>
   group_by(dataset_name,subject_id, trial_id, stimulus_novelty,target_label,
-           age, age_binned) %>%
+           age, age_binned) |>
   summarise(prop_looking = sum(aoi == "target", na.rm = TRUE) / 
               (sum(aoi == "target", na.rm=TRUE) + 
                  sum(aoi=="distractor", na.rm=TRUE)),
             prop_missing = mean(aoi == "missing", na.rm = TRUE))
 
 #Filter the data to trials where there is sufficient looking data (target or distractor looking on at least 2/3 of the trial)
-by_trial_means <- by_trial_means %>%
-  ungroup() %>%
-  filter(prop_missing < 1/3) %>%
+by_trial_means <- by_trial_means |>
+  ungroup() |>
+  filter(prop_missing < 1/3) |>
   mutate(age_centered = age - mean(age,na.rm=TRUE))
 
-unique_stimuli <- by_trial_means %>%
-  ungroup() %>%
-  select(dataset_name,target_label) %>%
-  distinct() %>%
-  group_by(dataset_name) %>%
+unique_stimuli <- by_trial_means |>
+  ungroup() |>
+  select(dataset_name,target_label) |>
+  distinct() |>
+  group_by(dataset_name) |>
   summarize(
     unique_items=n()
   )
 
 ### summarize the data by participant ###
 #collapsing across stimulus novelty
-by_participant_means <- by_trial_means %>%
-  ungroup() %>%
-  group_by(dataset_name,subject_id) %>%
+by_participant_means <- by_trial_means |>
+  ungroup() |>
+  group_by(dataset_name,subject_id) |>
   summarize(
     trial_n=n(),
     unique_items=length(unique(target_label)),
@@ -591,9 +589,9 @@ by_participant_means <- by_trial_means %>%
     age=mean(age,na.rm=TRUE)
   ) 
 #grouping by stimulus novelty
-by_participant_means_novelty <- by_trial_means %>%
-  ungroup() %>%
-  group_by(dataset_name,subject_id,stimulus_novelty) %>%
+by_participant_means_novelty <- by_trial_means |>
+  ungroup() |>
+  group_by(dataset_name,subject_id,stimulus_novelty) |>
   summarize(
     trial_n=n(),
     avg_prop_looking=mean(prop_looking,na.rm=TRUE),
@@ -602,9 +600,9 @@ by_participant_means_novelty <- by_trial_means %>%
 
 ### summarize means across participants ###
 #collapsing across stimulus novelty
-dataset_means <- by_participant_means %>%
-  ungroup() %>%
-  group_by(dataset_name) %>%
+dataset_means <- by_participant_means |>
+  ungroup() |>
+  group_by(dataset_name) |>
   summarize(
     N=n(),
     mean_age=round(mean(age,na.rm=TRUE),0),
@@ -614,18 +612,18 @@ dataset_means <- by_participant_means %>%
     prop_looking_ci=qt(0.975, N-1)*sd(avg_prop_looking,na.rm=TRUE)/sqrt(N),
     prop_looking_lower_ci=prop_looking-prop_looking_ci,
     prop_looking_upper_ci=prop_looking+prop_looking_ci,
-  ) %>%
-  select(-prop_looking_ci) %>%
-  left_join(unique_stimuli) %>%
+  ) |>
+  select(-prop_looking_ci) |>
+  left_join(unique_stimuli) |>
   relocate(unique_items,.after=N)
 
 saveRDS(dataset_means, here("brm", "data", "dataset_means.rds"))
 
 #grouping by stimulus novelty
 #(not currently used in the paper)
-dataset_means_novelty <- by_participant_means_novelty %>%
-  ungroup() %>%
-  group_by(dataset_name,stimulus_novelty) %>%
+dataset_means_novelty <- by_participant_means_novelty |>
+  ungroup() |>
+  group_by(dataset_name,stimulus_novelty) |>
   summarize(
     N=n(),
     mean_age=round(mean(age,na.rm=TRUE),0),
@@ -635,12 +633,12 @@ dataset_means_novelty <- by_participant_means_novelty %>%
     prop_looking_ci=qt(0.975, N-1)*sd(avg_prop_looking,na.rm=TRUE)/sqrt(N),
     prop_looking_lower_ci=prop_looking-prop_looking_ci,
     prop_looking_upper_ci=prop_looking+prop_looking_ci,
-  ) %>%
+  ) |>
   select(-prop_looking_ci)
 saveRDS(dataset_means_novelty, here("brm", "data", "dataset_means_novelty.rds"))
 
-overall_novelty <- by_participant_means_novelty %>%
-  group_by(stimulus_novelty) %>%
+overall_novelty <- by_participant_means_novelty |>
+  group_by(stimulus_novelty) |>
   summarize(
     N=n(),
     prop_looking=mean(avg_prop_looking,na.rm=TRUE),
@@ -653,19 +651,19 @@ saveRDS(overall_novelty, here("brm", "data", "overall_novelty.rds"))
 
 ```{r descriptive-plots, eval = FALSE}
 aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
-means_items <- aoi_data_joined %>%
-  filter(age > 12, age <= 60) %>%
-  #mutate(age_binned = cut(age, seq(0,60,12))) %>%
-  #group_by(t_norm, dataset_name, age_binned, stimulus_novelty) %>%
-  group_by(t_norm, dataset_name, english_stimulus_label) %>%
+means_items <- aoi_data_joined |>
+  filter(age > 12, age <= 60) |>
+  #mutate(age_binned = cut(age, seq(0,60,12))) |>
+  #group_by(t_norm, dataset_name, age_binned, stimulus_novelty) |>
+  group_by(t_norm, dataset_name, english_stimulus_label) |>
   summarise(n = sum(aoi %in% c("target","distractor"), na.rm = TRUE), 
             p = sum(aoi == "target", na.rm = TRUE),
             prop_looking = p / n, 
             ci_lower = binom::binom.confint(p, n, method = "bayes")$lower,
             ci_upper = binom::binom.confint(p, n, method = "bayes")$upper) 
 
-average_across_items <- means_items %>%
-  group_by(t_norm, dataset_name) %>%
+average_across_items <- means_items |>
+  group_by(t_norm, dataset_name) |>
   summarize(
     N=n(),
     avg_prop_looking=mean(prop_looking,na.rm=T),
@@ -675,8 +673,8 @@ average_across_items <- means_items %>%
     ci_upper=avg_prop_looking+ci
   )
 
-means_items %>%
-  filter(n>=12) %>%
+means_items |>
+  filter(n>=12) |>
 ggplot(aes(x = t_norm, y = prop_looking,color=english_stimulus_label)) + 
   geom_line(alpha=0.5) + 
   # geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, 
@@ -710,11 +708,11 @@ dataset_means <- readRDS(here("brm", "data", "dataset_means.rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 
 #editing in preparation of depicting the dataset means in a table
-dataset_means <- dataset_means %>%
-  left_join(dataset_name_mapping) %>%
-  select(dataset_rename,unique_items,prop_looking,prop_looking_lower_ci,prop_looking_upper_ci) %>%
-  arrange(dataset_rename) %>%
-  mutate(ci=paste0("[",round(prop_looking_lower_ci,2),", ",round(prop_looking_upper_ci,2),"]")) %>%
+dataset_means <- dataset_means |>
+  left_join(dataset_name_mapping) |>
+  select(dataset_rename,unique_items,prop_looking,prop_looking_lower_ci,prop_looking_upper_ci) |>
+  arrange(dataset_rename) |>
+  mutate(ci=paste0("[",round(prop_looking_lower_ci,2),", ",round(prop_looking_upper_ci,2),"]")) |>
   select(-prop_looking_lower_ci,-prop_looking_upper_ci)
 
 #setting up table
@@ -724,6 +722,8 @@ tab2 <- xtable::xtable(dataset_means, digits=c(0,0,0,2,0),
 names(tab2) <- c("Dataset Name", "Unique Items","Prop. Target", "95% CI")
 print(tab2, type="latex", comment = F, table.placement = "H",include.rownames=FALSE, size="\\fontsize{9pt}{10pt}\\selectfont")
 ```
+
+# Peekbank: General Descriptives
 
 One of the values of the uniform data format we use in Peekbank is the ease of providing cross-dataset descriptions that can give an overview of some of the general patterns found in our data. 
 
@@ -760,11 +760,11 @@ We begin by retrieving the relevant tables from the database, `aoi_timepoints`, 
 
 \singlespacing
 ```{r swingley_joins, echo=TRUE, eval = FALSE}
-swingley_data <- aoi_timepoints %>%
-  left_join(administrations) %>%
-  left_join(trials) %>%
-  left_join(trial_types) %>%
-  filter(condition != "filler") %>%
+swingley_data <- aoi_timepoints |>
+  left_join(administrations) |>
+  left_join(trials) |>
+  left_join(trial_types) |>
+  filter(condition != "filler") |>
   mutate(condition = if_else(condition == "cp", "Correct", "Mispronounced"))
 ```
 \doublespacing
@@ -782,11 +782,11 @@ As the code above shows, once the data are joined, condition information for eac
 
 \singlespacing
 ```{r swingley_analysis, echo=TRUE}
-accuracies <- swingley_data  %>%
-  group_by(condition, t_norm, administration_id) %>% 
+accuracies <- swingley_data  |>
+  group_by(condition, t_norm, administration_id) |> 
   summarize(correct = sum(aoi == "target") / 
-              sum(aoi %in% c("target","distractor"))) %>%
-  group_by(condition, t_norm) %>% 
+              sum(aoi %in% c("target","distractor"))) |>
+  group_by(condition, t_norm) |> 
   summarize(mean_correct = mean(correct),
             ci = 1.96 * sd(correct) / sqrt(n()))
 ```
@@ -830,15 +830,15 @@ ggplot(accuracies, aes(x = t_norm, y = mean_correct, color = condition)) +
 Figure \@ref(fig:swingley)  shows the average time course of looking for the two conditions, as produced by the code above. Looks after the correctly pronounced noun appeared both faster (deviating from chance earlier) and more accurate (showing a higher asymptote). Overall, this example demonstrates the ability to produce this visualization in just a few lines of code.
 
 ```{r eval = FALSE}
-subject_accuracy <- swingley_data   %>%
-  group_by(administration_id, lab_age, condition,trial_id) %>% 
-  filter(t_norm >=367 & t_norm>=2000) %>%
+subject_accuracy <- swingley_data   |>
+  group_by(administration_id, lab_age, condition,trial_id) |> 
+  filter(t_norm >=367 & t_norm>=2000) |>
   summarise(correct = mean(aoi == "target") / 
-              mean(aoi %in% c("target","distractor"))) %>%
-  group_by(administration_id, lab_age, condition) %>% 
+              mean(aoi %in% c("target","distractor"))) |>
+  group_by(administration_id, lab_age, condition) |> 
   summarize(accuracy = mean(correct,na.rm=TRUE))
-subject_mp_effect <- subject_accuracy %>%
-  group_by(administration_id, lab_age) %>%
+subject_mp_effect <- subject_accuracy |>
+  group_by(administration_id, lab_age) |>
   summarize(
     mp_effect=accuracy[condition=="Correct"]-accuracy[condition=="Mispronunciation"]
   )
@@ -863,12 +863,12 @@ all_administrations <- get_administrations()
 all_trial_types <- get_trial_types() 
 all_trials <- get_trials()  
 
-aoi_data_joined <- all_aoi_timepoints %>%
-  right_join(all_administrations) %>%
-  right_join(all_trials) %>%
-  right_join(all_trial_types) %>%
-  mutate(stimulus_id = target_id) %>%
-  right_join(all_stimuli) %>%
+aoi_data_joined <- all_aoi_timepoints |>
+  right_join(all_administrations) |>
+  right_join(all_trials) |>
+  right_join(all_trial_types) |>
+  mutate(stimulus_id = target_id) |>
+  right_join(all_stimuli) |>
   select(administration_id, english_stimulus_label, age, t_norm, aoi)
 ```
 
@@ -882,11 +882,11 @@ aoi_data_joined <- readRDS(here("brm","data","aoi_data_joined.rds"))
 ```
 
 ```{r item-counts, eval = FALSE}
-item_counts <- aoi_data_joined %>%
-  group_by(administration_id, english_stimulus_label) %>%
-  count() %>%
-  group_by(english_stimulus_label) %>%
-  count() %>%
+item_counts <- aoi_data_joined |>
+  group_by(administration_id, english_stimulus_label) |>
+  count() |>
+  group_by(english_stimulus_label) |>
+  count() |>
   mutate(english_stimulus_label = fct_reorder(english_stimulus_label, n))
 
 ggplot(filter(item_counts, n > 80), 
@@ -901,14 +901,14 @@ We create age groups, aggregate, and compute timepoint-by-timepoint confidence i
 ```{r target_word_data, echo = TRUE}
 target_words <- c("book","dog","frog","apple")
 
-target_word_data <- aoi_data_joined %>%
-  filter(english_stimulus_label %in% target_words) %>%
-  mutate(age_group = cut(age, breaks = seq(12,48,12))) %>%
-  filter(!is.na(age_group)) %>%
-  group_by(t_norm, administration_id, age_group, english_stimulus_label) %>% 
+target_word_data <- aoi_data_joined |>
+  filter(english_stimulus_label %in% target_words) |>
+  mutate(age_group = cut(age, breaks = seq(12,48,12))) |>
+  filter(!is.na(age_group)) |>
+  group_by(t_norm, administration_id, age_group, english_stimulus_label) |> 
   summarise(correct = mean(aoi == "target") / 
-              mean(aoi %in% c("target","distractor"), na.rm=TRUE)) %>%
-  group_by(t_norm, age_group, english_stimulus_label) %>% 
+              mean(aoi %in% c("target","distractor"), na.rm=TRUE)) |>
+  group_by(t_norm, age_group, english_stimulus_label) |> 
   summarise(ci = 1.96 * sd(correct, na.rm=TRUE) / sqrt(length(correct)), 
             correct = mean(correct, na.rm=TRUE), 
             n = n()) 
@@ -936,7 +936,7 @@ ggplot(target_word_data,
 Finally, we plot the data as time courses split by age. Our plotting code is shown below (with styling commands again removed for clarity). Figure \@ref(fig:target-word-plot) shows the resulting plot, with time courses for each of three (rather coarse) age bins. 
 Although some baseline effects are visible across items, we still see clear and consistent increases in looking to the target, with the increase appearing earlier and in many cases asymptoting at a higher level for older children. 
 On the other hand, this simple averaging approach ignores study-to-study variation (perhaps responsible for the baseline effects we see in the *apple* and *frog* items especially). 
-In future work, we hope to introduce model-based analytic methods that use mixed effects regression to factor out study-level and individual-level variance in order to recover developmental effects more appropriately (see e.g. @zettersten2021 for a prototype of such an analysis). 
+In future work, we hope to introduce model-based analytic methods that use mixed effects regression to factor out study-level and individual-level variance in order to recover developmental effects more appropriately [see e.g., @zettersten2021 for a prototype of such an analysis]. 
 
 ```{r target_word_plot_demo, fig.env = "figure", echo = TRUE, eval = FALSE}
 ggplot(target_word_data, 
