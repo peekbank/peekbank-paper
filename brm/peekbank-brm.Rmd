@@ -290,11 +290,12 @@ After this, each trial's times are centered around the point of disambiguation u
 When these steps are complete, the time course is ready for resampling.
 
 To facilitate time course analysis and visualization across datasets, time course data must be resampled to a uniform sampling rate (i.e., such that every trial in every dataset has observations at the same time points).
-To do this, we use the `resample_times()` function.
-During the resampling process, we interpolate using constant interpolation, selecting for each interpolated timepoint the looking location for the nearest observed time point in the original data for both `aoi_timepoints` and `xy_timepoints` data.
-In the case of ties, the look location observed at the earlier timepoint in the original data is chosen for the resampled timepoint.
-Currently, all data is resampled to 40 Hz (observations every 25 ms) by default, which represents a compromise between retaining fine-grained timing information from datasets with dense sampling rates (maximum sampling rate among current datasets: 500 Hz) while minimizing the possibility of introducing artifacts via resampling for datasets with lower sampling rates (minimum sampling rate for current datasets: 30 Hz).
-Compared to linear interpolation (see e.g. Wass et al., 2014), constant interpolation has the advantage that it is more conservative, in the sense that it does not introduce new look locations beyond those measured in the original data.
+All data in the database is resampled to 40 Hz (observations every 25 ms), which represents a compromise between retaining fine-grained timing information from datasets with dense sampling rates (maximum sampling rate among current datasets: 500 Hz) while minimizing the possibility of introducing artifacts via resampling for datasets with lower sampling rates (minimum sampling rate for current datasets: 30 Hz).
+Further, 25 ms is a mathematically convenient interval for ensuring consistent resampling; we found that using 33.333 ms (30 Hz) as our interval simply introduced a large number of technical complexities. 
+The resampling operation is accomplished using the `resample_times()` function.
+During the resampling process, we interpolate using constant interpolation, selecting for each interpolated timepoint the looking location for the earlier-observed time point in the original data for both `aoi_timepoints` and `xy_timepoints` data.
+Compared to linear interpolation (see e.g. Wass et al., 2014), constant interpolation has the advantage that it is more conservative, in the sense that it does not introduce new look locations beyond those measured in the original data. 
+(Investigation of the effects of other interpolation functions would be an interesting application of the dataset). 
 
 ## Processing, Validation, and Ingestion
 
@@ -492,9 +493,7 @@ Peekbank allows for fully reproducible analyses using our source data, but the g
 
 ## Peekbankr
 
-The `peekbankr` API offers a way for users to access data from the database and flexibly analyze it in `R`. Users can download tables from the database, as specified in the Schema section above, and merge them using their linked IDs to examine time course data and metadata jointly. In the sections below, we work through some examples to outline the possibilities for analyzing data downloaded using `peekbankr`.
-
-Functions:
+The `peekbankr` API offers a way for users to access data from the database and flexibly analyze it in `R`. The majority of API calls simply allow users to download tables (or subsets of tables) from the database. In particular, the package offers the following functions:
 
 - `connect_to_peekbank()` opens a connection with the Peekbank database to allow tables to be downloaded with the following functions 
 - `get_datasets()` gives each dataset name and its citation information 
@@ -506,6 +505,10 @@ Functions:
 - `get_aoi_region_sets()` gives coordinate regions for each area of interest (AOI)  linked to trial type IDs 
 - `get_xy_timepoints()` gives time course data for each subject's looking behavior in each trial, as (x, y) coordinates on the experiment monitor 
 - `get_aoi_timepoints()` gives time course data for each subject's looking behavior in each trial, coded into areas of interest 
+
+Once users have downloaded tables, they can be merged using `join` command via their linked IDs. A set of standard merges are shown below in the "Peekbank in Action" section; these allow the common use-case of examining time course data and metadata jointly. 
+
+Because of the size of the XY and AOI data tables, downloading data across multiple studies can be time-consuming. Many of the most common analyses of the Peekbank data require download of the `aoi_timepoints` table, thus we have put substantial work into optimizing transfer times. In particular, `connect_to_peekbank` offers a data compression option, and `get_aoi_timepoints` by default  downloads time-courses via a compressed (run-length encoded) representation, which is then uncompressed on the client side. More information about these options (including how to modify them) can be found in the package documentation. 
 
 ## Shiny App
 
