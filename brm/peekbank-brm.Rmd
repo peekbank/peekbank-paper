@@ -18,6 +18,8 @@ author:
     affiliation   : "4"
   - name          : "Benny deMayo"
     affiliation   : "1"
+  - name          : "Kunal Handa"
+    affiliation   : "12"
   - name          : "George Kachergis"
     affiliation   : "4"
   - name          : "Molly Lewis"
@@ -67,6 +69,8 @@ affiliation:
     institution   : "Dept. of Psychology, UC San Diego"
   - id            : "11"
     institution   : "Dept. of Psychological and Brain Sciences, Indiana University"
+  - id            : "12"
+    institution   : "Brown University"
 abstract: |
   The ability to rapidly recognize words and link them to referents in context is central to children’s early language development. 
   This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants’ fixation on a target object (vs. a distractor) after hearing a target label. 
