@@ -298,8 +298,8 @@ All data in the database is resampled to 40 Hz (observations every 25 ms), which
 Further, 25 ms is a mathematically convenient interval for ensuring consistent resampling; we found that using 33.333 ms (30 Hz) as our interval simply introduced a large number of technical complexities. 
 The resampling operation is accomplished using the `resample_times()` function.
 During the resampling process, we interpolate using constant interpolation, selecting for each interpolated timepoint the looking location for the earlier-observed time point in the original data for both `aoi_timepoints` and `xy_timepoints` data.
-Compared to linear interpolation (see e.g. Wass et al., 2014), constant interpolation has the advantage that it is more conservative, in the sense that it does not introduce new look locations beyond those measured in the original data. 
-(Investigation of the effects of other interpolation functions would be an interesting application of the dataset). 
+Compared to linear interpolation [see e.g., @wass_2014], constant interpolation has the advantage that it is more conservative, in the sense that it does not introduce new look locations beyond those measured in the original data.
+One possible application of our new dataset is investigating the consequences of other interpolation functions for data analysis.
 
 ## Processing, Validation, and Ingestion
 
