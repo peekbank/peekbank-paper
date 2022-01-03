@@ -76,7 +76,7 @@ abstract: |
   This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants’ fixation on a target object (vs. a distractor) after hearing a target label. 
   We present a large-scale, open database of infant and toddler eye-tracking data from looking-while-listening tasks. 
   The goal of this effort is to address theoretical and methodological challenges in measuring vocabulary development. 
-  We first present the framework for creating the database and associated tools for processing and accessing infant eye-tracking datasets.
+  We first present how we created the database, its features and structure, and associated tools for processing and accessing infant eye-tracking datasets.
   Next, we show how researchers can use Peekbank to interrogate theoretical and methodological questions using two illustrative examples. 
   
   
@@ -133,11 +133,11 @@ DATABASE_VERSION = "peekbank_dev"
 ```
 
 Across their first years of life, children learn words at an accelerating pace [@frank2021].
-While many children will only produce their first word at around one year of age, most children show signs of understanding many common nouns (e.g., *mommy*) and phrases (e.g., *Let's go bye-bye!*) much earlier in development [@bergelson2012].
-Although early word understanding is an enticing research target, the processes involved are less directly apparent in children's behaviors and are less accessible to observation than developments in speech production [@fernald2008].
+While many children will only produce their first word at around one year of age, most children show signs of understanding many common nouns (e.g., *mommy*) and phrases (e.g., *Let's go bye-bye!*) much earlier in development [@bergelson2012; @bergelson2013].
+Although early word understanding is a critical element of first language learning, the processes involved are less directly apparent in children's behaviors and are less accessible to observation than developments in speech production [@fernald2008].
 To understand a spoken word, children must process the incoming auditory signal and link that signal to relevant meanings – a process often referred to as word recognition. 
-A primary means of measuring word recognition in young infants are eye-tracking techniques that use patterns of preferential looking to make inferences about children's word processing [@fernald2008].
-The key idea of these methods is that if a child preferentially looks at a target referent (rather than a distractor stimulus) upon hearing a word, this behavior indicates that the child is able to recognize the word and activate its meaning during real-time language processing.
+One of the primary means of measuring word recognition in young infants is eye-tracking:  gauging where children look in response to linguistic stimuli to make inferences about children's word processing abilities [@fernald2008].
+The key idea of these methods is that if a child preferentially looks at a target stimulus (rather than a distractor stimulus) upon hearing a word, this behavior indicates that the child is able to recognize the word and activate its meaning during real-time language processing.
 Measuring early word recognition offers insight into children's early word representations: children's speed of response (i.e., moving their eyes; turning their heads) to the unfolding speech signal can reveal children's level of comprehension [@bergelson2020; @fernald1998].
 Word recognition skills are also thought to build a foundation for children’s subsequent language development. 
 Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes [@bleses2016; @marchman2018]. 
@@ -150,7 +150,7 @@ This strategy capitalizes on the fact that the looking-while-listening paradigm 
 Such datasets have largely remained isolated from one another, but once combined, they have the potential to offer insights into the lexical development at a broad scale.
 Similar efforts in language development have born fruit in recent years. 
 For example, WordBank aggregated data from the MacArthur-Bates Communicative Development Inventory, a parent-report measure of child vocabulary, to deliver new insights into cross-linguistic patterns and variability in vocabulary development [@frank2017; @frank2021].
-In this paper, we introduce *Peekbank*, an open database of infant and toddler eye-tracking data aimed at facilitating the study of developmental changes in children's word knowledge and recognition speed.
+In this paper, we introduce *Peekbank*, an open database of infant and toddler eye-tracking data aimed at facilitating the study of developmental changes in children's word knowledge, especially recognition speed.
 
 ## The “Looking-While-Listening” Paradigm
 Word recognition is traditionally studied in the “looking-while-listening” paradigm [@fernald2008; alternatively referred to as the intermodal preferential looking procedure, @hirshpasek1987]. 
@@ -175,8 +175,8 @@ A sufficiently large dataset would allow researchers to estimate developmental c
 A related open theoretical question is understanding changes in children's word recognition at the level of individual items.
 Looking-while-listening studies have been limited in their ability to assess the development of specific words.
 One limitation is that studies typically test only a small number of trials for each item, limiting the power the accurately measure the development of word-specific accuracy [@DeBolt2020].
-A second limitation is that targets are often yoked with a limited set of distractors (often one or two), leaving ambiguous whether accurate looking to a particular target word is largely a function of children's recognition of the target word, their knowledge about the distractor, which allows them to reject the distractor as a response candidate, or both.
-Aggregating across many looking-while-listening studies has the potential to meet these challenges by increasing the number of observations for specific items at different ages and by increasing the variability in the distractor items co-occurring with a specific target.
+A second limitation is that target stimuli are often yoked with a limited set of distractor stimuli (i.e., a child sees a target with only one or two distractor stimuli over the course of an experiment), leaving ambiguous whether accurate looking to a particular target word can be attributed to children's recognition of the target word or their knowledge about the distractor.
+Aggregating across many looking-while-listening studies has the potential to meet these challenges by increasing the number of observations for specific items at different ages and by increasing the size of the inventory of distractor stimuli that co-occur with each target.
 
 ## Replicability and Reproducibility
 A core challenge facing psychology in general, and the study of infant development in particular, are threats to the replicability and reproducibility of core empirical results [@Nosek2021;@Frank2017a].
@@ -186,11 +186,11 @@ One hurdle to improving the power in infant research is that it can often be dif
 Large-scale databases of infant behavior can aid researchers' in their decision-making by providing rich datasets that can help constrain expectations about possible effect sizes and can be used to make data-driven design decisions. 
 For example, if a researcher is interested in understanding how the number of test trials could impact the power and reliability of their looking-while-listening design, a large-scale database would allow them to simulate possible outcomes across a range of test trials, based on past eye-tracking data with infants.
 
-In addition to threats to replicability, the field of infant development also faces concerns about analytic reproducibility -- the ability for researchers to arrive at the same analytic conclusion reported in the original research article, given the same dataset.
+In addition to threats to replicability, the field of infant development also faces concerns about analytic \textit{reproducibility} -- the ability for researchers to arrive at the same analytic conclusion reported in the original research article, given the same dataset.
 A recent estimate based on studies published in a prominent cognitive science journal suggests that analyses can remain difficult to reproduce, even when data is made available to other research teams [@hardwicke2018].
 Aggregating data in centralized databases can aid in improving reproducibility in several ways.
 First, building a large-scale database requires defining a standardized data specification.
-Recent examples include the brain imaging data structure (BIDS), an effort to specify a unified data format for neuroimaging experiments [@gorgolewski_brain_2016].
+Recent examples include the \texttt{brain imaging data structure} (BIDS), an effort to specify a unified data format for neuroimaging experiments [@gorgolewski_brain_2016], and the data formats associated with \texttt{ChildProject}, for managing long-form at-home language recordings [@gautheron_2021].
 Defining a data standard -- in this case, for infant eye-tracking experiments -- supports reproducibility by setting data curation standards that guarantee that critical information will be available in openly shared data and that make it easier for different research teams to understand the data structure.
 Second, open databases make it easy for researchers to generate open and reproducible analytic pipelines, both for individual studies and for analyses aggregating across datasets.
 Creating open analytic pipelines across many datasets also serves a pedagogical purpose, providing teaching examples illustrating how to implement analytic techniques used in influential studies and how to conduct reproducible analyses with infant eye-tracking data.
@@ -221,7 +221,7 @@ Therefore, we have developed a common tabular format to support analyses of all 
 
 As illustrated in Figure \@ref(fig:fig-framework-overview), the Peekbank framework consists of four main components: (1) a set of tools to *convert* eye-tracking datasets into a unified format, (2) a relational database populated with data in this unified format, (3) a set of tools to *retrieve* data from this database, and (4) a web app (using the Shiny framework) for visualizing the data.
 These components are supported by three packages.
-The `peekds` package (for the R language; @R-base) helps researchers convert existing datasets to use the standardized format of the database.
+The `peekds` package [for the R language, @R-base] helps researchers convert existing datasets to use the standardized format of the database.
 The `peekbank` module (Python) creates a database with the relational schema and populates it with the standardized datasets produced by `peekds`.
 The database is served through MySQL, an industry standard relational database server, which may be accessed by a variety of programming languages, and can be hosted on one machine and accessed by many others over the Internet.
 As is common in relational databases, records of similar types (e.g., participants, trials, experiments, coded looks at each timepoint) are grouped into tables, and records of various types are linked through numeric identifiers. 
@@ -283,9 +283,9 @@ This table links each record in the raw data (described below) to the trial type
 ### Time course data
 
 Raw looking data is a series of looks to areas of interest (AOIs), such as looks to the left or right of the screen, or to (x, y) coordinates on the experiment screen, linked to points in time.
-For data generated by eye-trackers, we typically have (x, y) coordinates at each time point, which will be encoded in the `xy_timepoints` table.
-These looks will also be recoded into AOIs according to the AOI coordinates in the `aoi_region_sets` table using the `add_aois()` function in `peekds`, which will be encoded in the `aoi_timepoints` table.
-For hand-coded data, we typically have a series of AOIs (i.e., looks to the left vs. right of the screen), but lack information about exact gaze positions on-screen; the AOIs will be recoded into the categories in the Peekbank schema (target, distractor, other, and missing) and encoded in the `aoi_timepoints` table, and these datasets will not have an `xy_timepoints` table.
+For data generated by eye-trackers, we typically have (x, y) coordinates at each time point, which we  encode in the `xy_timepoints` table.
+These looks are also recoded into AOIs according to the AOI coordinates in the `aoi_region_sets` table using the `add_aois()` function in `peekds`, and encoded in the `aoi_timepoints` table.
+For hand-coded data, we typically have a series of AOIs (i.e., looks to the left vs. right of the screen), but lack information about exact gaze positions on-screen; in these cases the AOIs are recoded into the categories in the Peekbank schema (target, distractor, other, and missing) and encoded in the `aoi_timepoints` table; however, these datasets do not have any corresponding data in the `xy_timepoints` table.
 
 Typically, timepoints in the `xy_timepoints` table and `aoi_timepoints` table need to be regularized to center each trial's time around the point of disambiguation -- such that 0 is the time of target word onset in the trial (i.e., the beginning of *dog* in *Can you find the dog?*).
 We re-centered timing information to the onset of the target label to facilitate comparison of target label processing across all datasets.^[While information preceding the onset of the target label in some datasets such as co-articulation cues [@Mahr2015] or adjectives [@Fernald2013] can in principle disambiguate the target referent, it has been conventional in the literature to use a standardized point of onset.]
@@ -488,7 +488,7 @@ All studies tested familiar items, but the database also includes `r sum(summari
 
 The content of Peekbank will change as we add additional datasets and revise previous ones. 
 To facilitate reproducibility of analyses, we use a versioning system where successive releases are assigned a name reflecting the year and version, e.g., `2021.1`.
-By default, users will interact with the most recent version of the database available, though `peekbankr` API allows researchers to run analyses against any previous version of the database.
+By default, users will interact with the most recent version of the database available, though the `peekbankr` API allows researchers to run analyses against any previous version of the database.
 For users with intensive use-cases, each version of the database may be downloaded as a compressed .sql file and installed on a local MySQL server.
 
 Peekbank allows for fully reproducible analyses using our source data, but the goal is not to reproduce precisely the analyses -- or even the datasets -- in the publications whose data we archive. Because of our emphasis on a standardized data importing and formatting pipeline, there may be minor discrepancies in the timecourse data that we archive compared with those reported in original publications. Further, we archive all of the data that are provided to us -- including participants that might have been excluded in the original studies, if these data are available -- rather than attempting to reproduce specific exclusion criteria. We hope that Peekbank can be used as a basis for comparing different exclusion and filtering criteria -- as such, an inclusive policy regarding importing all available data helps us provide a broad base of data for investigating these decisions. 
@@ -748,7 +748,7 @@ We provide two potential use-cases for Peekbank data. In each case, we provide s
 
 ## Investigating prior findings: @Swingley2002
 
-@Swingley2002 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. *oppel* (close mispronunciation) or *opel* (distant mispronunciation) instead of *apple* (correct pronunciation). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. Our goal here is not to provide a precise computational reproduction of the analyses reported in the original paper, but rather to demonstrate the use of the Peekbank framework to analyze datasets of this type. In particular, because Peekbank uses a uniform data import standard, it is likely that there will be minor numerical discrepancies between analyses on Peekbank data and analyses that use another processing pipeline. 
+@Swingley2002 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. *oppel* (close mispronunciation) or *opel* (distant mispronunciation) instead of *apple* (correct pronunciation). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. Our goal here is not to provide a precise analytical reproduction of the analyses reported in the original paper, but rather to demonstrate the use of the Peekbank framework to analyze datasets of this type. In particular, because Peekbank uses a uniform data import standard, it is likely that there will be minor numerical discrepancies between analyses on Peekbank data and analyses that use another processing pipeline. 
 
 \singlespacing
 ```{r swingley_data, echo = TRUE, eval = FALSE}
@@ -966,7 +966,7 @@ The current database is also limited by the relatively homogeneous background of
 Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
 
 Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development.
-Gaze behavior has been at the core of many of the key advances in our understanding of infant cognition.
+Gaze behavior has been at the core of many of the key advances in our understanding of infant cognition [@bergelson2012; @lewwilliams2007; @yurovksy_2017; @fernald1998; @Weisleder2013].
 Aggregating large datasets of infant looking behavior in a single, openly-accessible format promises to bring a fuller picture of infant cognitive development into view.
 
 # Acknowledgements
