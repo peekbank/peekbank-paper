@@ -299,7 +299,7 @@ All data in the database is resampled to 40 Hz (observations every 25 ms), which
 Further, 25 ms is a mathematically convenient interval for ensuring consistent resampling; we found that using 33.333 ms (30 Hz) as our interval simply introduced a large number of technical complexities. 
 The resampling operation is accomplished using the `resample_times()` function.
 During the resampling process, we interpolate using constant interpolation, selecting for each interpolated timepoint the looking location for the earlier-observed time point in the original data for both `aoi_timepoints` and `xy_timepoints` data.
-Compared to linear interpolation [see e.g., @wass_2014], which interpolates between locations of successive timepoints, constant interpolation has the advantage that it is more conservative, in the sense that it does not introduce new look locations beyond those measured in the original data.
+Compared to linear interpolation [see e.g., @Wass2013], which interpolates between locations of successive timepoints, constant interpolation has the advantage that it is more conservative, in the sense that it does not introduce new (spatial) look locations beyond those measured in the original data.
 One possible application of our new dataset is investigating the consequences of other interpolation functions for data analysis.
 
 ## Processing, Validation, and Ingestion
@@ -742,7 +742,7 @@ img <- png::readPNG(here("brm","figures","peekbank_item_vis.png"))
 grid::grid.raster(img)
 ```
 
-A second question of interest is about the variability across items within specific studies. While some studies use many, heterogeneous items, others focus on measuring a much smaller and more homogeneous set. Figure \@ref(fig:items) gives an overview of the variability in proportion looking to the target item for individual words in each dataset. Although all datasets show a gradual rise in average proportion target looking over chance performance, the number of unique target labels and their associated accuracy vary widely across datasets.
+A second question of interest is about the variability across items (i.e., target labels) within specific studies. Some studies use a smaller set of items [e.g., 8 nouns; @Adams2018] while others use dozens of different items [e.g., @Garrison2020]. Figure \@ref(fig:items) gives an overview of the variability in proportion looking to the target item for individual words in each dataset. Although all datasets show a gradual rise in average proportion target looking over chance performance, the number of unique target labels and their associated accuracy vary widely across datasets.
 
 # Peekbank in Action
 
