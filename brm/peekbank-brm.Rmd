@@ -183,7 +183,7 @@ Aggregating across many looking-while-listening studies has the potential to mee
 A core challenge facing psychology in general, and the study of infant development in particular, are threats to the replicability and reproducibility of core empirical results [@Nosek2021;@Frank2017a].
 In infant research, many studies are not adequately powered to detect the main effects of interest [@bergmann2018].
 This issues is compounded by low reliability in infant measures, often due to limits on the number of trials that can be collected from an individual infant in an experimental session [@Byers-Heinlein2021].
-One hurdle to improving the power in infant research is that it can be difficult to develop a priori estimates of effect sizes, and how specific design decisions (e.g., the number of test trials) will impact power and reliability.
+One hurdle to improving power in infant research is that it can be difficult to develop a priori estimates of effect sizes and how specific design decisions (e.g., the number of test trials) will impact power and reliability.
 Large-scale databases of infant behavior can aid researchers in their decision-making by allowing them to directly test how different design decisions affect power and reliability.
 For example, if a researcher is interested in understanding how the number of test trials could impact the power and reliability of their looking-while-listening design, a large-scale infant eye-tracking database would allow them to simulate possible outcomes across a range of test trials, providing the basis for data-driven design decisions.
 
@@ -259,7 +259,7 @@ The `datasets` table includes information about the lab conducting the study and
 In most cases, a dataset corresponds to a single study.
 
 Information about the experimental design is split across the `trial_types` and `stimuli` tables. 
-The `trial_types` table encodes information about each trial \textit{in the design of the experiment},\footnote{We note that the term \textit{trial} is often overloaded, to referring to both a particular combination of stimuli seen by many participants and a participant seeing that particular combination at a particular point in the experiment. We track the former in the `trial_types` table and the latter in the `trials` table.} including the target stimulus and location (left vs. right), the distractor stimulus and location, and the point of disambiguation for that trial.
+The `trial_types` table encodes information about each trial \textit{in the design of the experiment},\footnote{We note that the term \textit{trial} is ambiguous and could be used to refer to both a particular combination of stimuli seen by many participants and a participant seeing that particular combination at a particular point in the experiment. We track the former in the `trial_types` table and the latter in the `trials` table.} including the target stimulus and location (left vs. right), the distractor stimulus and location, and the point of disambiguation for that trial.
 If a dataset used automatic eye-tracking rather than manual coding, each trial type is additionally linked to a set of area of interest (x, y) coordinates, encoded in the `aoi_region_sets` table.
 The `trial_types` table links trial types to the `aoi_region_sets` table and the `trials` table.
 Each trial_type record links to two records in the `stimuli` table, identified by the `distractor_id` and the `target_id` fields.
@@ -289,7 +289,7 @@ These looks are also recoded into AOIs according to the AOI coordinates in the `
 For hand-coded data, we typically have a series of AOIs (i.e., looks to the left vs. right of the screen), but lack information about exact gaze positions on-screen; in these cases the AOIs are recoded into the categories in the Peekbank schema (target, distractor, other, and missing) and encoded in the `aoi_timepoints` table; however, these datasets do not have any corresponding data in the `xy_timepoints` table.
 
 Typically, timepoints in the `xy_timepoints` table and `aoi_timepoints` table need to be regularized to center each trial's time around the point of disambiguation -- such that 0 is the time of target word onset in the trial (i.e., the beginning of *dog* in *Can you find the dog?*).
-We re-centered timing information to the onset of the target label to facilitate comparison of target label processing across all datasets.^[While information preceding the onset of the target label in some datasets such as co-articulation cues [@Mahr2015] or adjectives [@Fernald2013] can in principle disambiguate the target referent, it has been conventional in the literature to use a standardized point of onset.]
+We re-centered timing information to the onset of the target label to facilitate comparison of target label processing across all datasets.^[While information preceding the onset of the target label in some datasets such as co-articulation cues [@Mahr2015] or adjectives [@Fernald2013] can in principle disambiguate the target referent, we use a standardized point of disambiguation based on the onset of the label for the target referent. Onset times for other potentially disambiguating information (such as adjectives) can typically be recovered from the raw data provided on OSF.]
 If time values run throughout the experiment rather than resetting to zero at the beginning of each trial, `rezero_times()` is used to reset the time at each trial.
 After this, each trial's times are centered around the point of disambiguation using `normalize_times()`.
 When these steps are complete, the time course is ready for resampling.
@@ -483,7 +483,8 @@ The current data represents a convenience sample of datasets that were (a) datas
 Most datasets (`r sum(summarize_datasets$language=="English")` out of `r length(summarize_datasets$language)` total) consist of data from monolingual native English speakers. 
 They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),2)*100`% female). 
 The datasets vary across a number of design-related dimensions, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. 
-All studies tested familiar items, but the database also includes `r sum(summarize_novel_familiar$has_novel)` datasets that tested novel pseudo-words in addition to familiar words.
+All studies tested familiar items, but the database also includes `r sum(summarize_novel_familiar$has_novel)` datasets that tested novel pseudo-words in addition to familiar words. 
+Users interested in a subset of the data (e.g., only trials testing familiar words) can filter out unwanted trials using columns available in the schema (e.g., using the column `stimulus_novelty`).
 
 ## Versioning and Reproducibility
 
@@ -741,7 +742,7 @@ img <- png::readPNG(here("brm","figures","peekbank_item_vis.png"))
 grid::grid.raster(img)
 ```
 
-A second question is interest is about the variability across items within specific studies. While some studies use many, heterogeneous items, others focus on measuring a much smaller and more homogeneous set. Figure \@ref(fig:items) gives an overview of the variability in accuracy for individual words in each dataset. Although all datasets show a gradual rise in accuracy over chance performance, the number of unique target labels and their associated accuracy vary widely across datasets.
+A second question of interest is about the variability across items within specific studies. While some studies use many, heterogeneous items, others focus on measuring a much smaller and more homogeneous set. Figure \@ref(fig:items) gives an overview of the variability in proportion looking to the target item for individual words in each dataset. Although all datasets show a gradual rise in average proportion target looking over chance performance, the number of unique target labels and their associated accuracy vary widely across datasets.
 
 # Peekbank in Action
 
