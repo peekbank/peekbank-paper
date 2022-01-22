@@ -1,6 +1,6 @@
 ---
-title             : "Peekbank: Exploring children's word recognition through an open, large-scale repository for developmental eye-tracking data"
-shorttitle        : "Repository for developmental eye-tracking data"
+title             : "Peekbank: An open, large-scale repository for developmental eye-tracking data of children’s word recognition"
+shorttitle        : "Peekbank repository for eye-tracking data"
 author: 
   - name          : "Martin Zettersten"
     affiliation   : "1"
@@ -129,7 +129,7 @@ theme_update(panel.grid = ggplot2::element_blank(),
 
 set.seed(42)
 
-DATABASE_VERSION = "peekbank_dev"
+DATABASE_VERSION = "2022.1"
 ```
 
 Across their first years of life, children learn words at an accelerating pace [@frank2021].
@@ -166,7 +166,7 @@ One central question is how to accurately capture developmental change in the sp
 There is ample evidence demonstrating that infants get faster and more accurate in word recognition over the first few years of life [e.g., @fernald1998].
 However, precisely measuring developmental increases in the speed and accuracy of word recognition remains challenging due to the difficulty of distinguishing developmental changes in word recognition skill from changes in knowledge of specific words. 
 This problem is particularly thorny in studies with young children, since the number of items that can be tested within a single session is limited and items must be selected in an age-appropriate manner [@peter2019]. 
-Another potential challenge is that differences in the design choices and analytic decisions between studies could obscure developmental change.
+More broadly, other key differences in the design choices (e.g., how distractor items are selected) and analytic decisions (e.g., how the analysis window is defined) between studies could obscure developmental change if not appropriately taken into account.
 
 One approach to addressing these these challenges is to conduct meta-analyses aggregating effects across studies while testing for heterogeneity due to researcher choices [@Lewis2016; @bergmann2018].
 However, meta-analyses typically lack the granularity to estimate participant-level and item-level variation or to model behavior beyond coarse-grained effect size estimates.
@@ -355,12 +355,12 @@ overall_aoi_data_joined <- aoi_timepoints |>
   filter(t_norm > t_range[1],
          t_norm < t_range[2])
 
-saveRDS(overall_aoi_data_joined, here("brm","data","overall_aoi_data_joined.Rds"))
-saveRDS(dataset_info,here("brm","data","dataset_info.Rds"))
+saveRDS(overall_aoi_data_joined, here("brm","data","overall_aoi_data_joined.rds"))
+saveRDS(dataset_info,here("brm","data","dataset_info.rds"))
 ```
 
 ```{r eval = FALSE}
-aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
+aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 iso_codes <- read_csv(here("brm","data","iso_language_codes.csv"))
 
@@ -436,8 +436,8 @@ summarize_datasets <- dataset_info |>
       is.na(apa_cite) ~ "unpublished",
       TRUE ~ apa_cite
   )) |>
-  select(dataset_rename,apa_cite, num_subj,avg_age,age_range_months,method,language) |>
-  arrange(dataset_rename)
+  select(apa_cite,dataset_rename, num_subj,avg_age,age_range_months,method,language) |>
+  arrange(apa_cite)
 
 saveRDS(summarize_datasets, here("brm", "data", "summarize_datasets.rds"))
 
@@ -457,7 +457,7 @@ saveRDS(summarize_datasets, here("brm", "data", "summarize_datasets.rds"))
 ```
 
 ```{r dataset-table}
-dataset_info <- readRDS(here("brm","data","dataset_info.Rds"))
+dataset_info <- readRDS(here("brm","data","dataset_info.rds"))
 summarize_novel_familiar <- readRDS(here("brm", "data", "summarize_novel_familiar.rds"))
 dataset_unique_subj <- dataset_info |>
   distinct(subject_id,sex)
@@ -466,7 +466,7 @@ summarize_datasets <- readRDS(here("brm", "data", "summarize_datasets.rds"))
 summarize_datasets |>
   mutate(apa_cite = str_remove_all(apa_cite, "[()]"),
          age_range_months = str_replace(age_range_months, " - ", "–")) |>
-  knitr::kable(col.names = c("Dataset name", "Citation", "N", "Mean age (mos.)",
+  knitr::kable(col.names = c("Citation","Dataset name", "N", "Mean age (mos.)",
                              "Age range (mos.)", "Method", "Language"),
                caption = "Overview of the datasets in the current database.",
                digits = 1, booktabs = TRUE, linesep = "") |>
@@ -475,7 +475,7 @@ summarize_datasets |>
 
 ---
 nocite: | 
-  @Pomper2016; @Yurovsky2013; @Byers-Heinlein2017; @Frank2016; @Casillas2017; @Adams2018; @Potter2019; @Mahr2015; @Pomper2019; @Garrison2020; @Perry2017; @Swingley2002; @Yurovsky2017; @Ronfard2021; @Hurtado2007; @Weisleder2013; @Hurtado2008; @Fernald2013
+  @Pomper2016; @Yurovsky2013; @Byers-Heinlein2017; @Frank2016; @Casillas2017; @Adams2018; @Potter2019; @Mahr2015; @Pomper2019; @Garrison2020; @Perry2017; @Swingley2002; @Yurovsky2017; @Ronfard2021; @Hurtado2007; @Weisleder2013; @Hurtado2008; @Fernald2013; @YurovskyWadeKrausUnpub; @PotterLewWilliamsUnpub
 ...
 
 The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table 1).
@@ -489,7 +489,7 @@ Users interested in a subset of the data (e.g., only trials testing familiar wor
 ## Versioning and Reproducibility
 
 The content of Peekbank will change as we add additional datasets and revise previous ones. 
-To facilitate reproducibility of analyses, we use a versioning system by which successive releases are assigned a name reflecting the year and version, e.g., `2021.1`.
+To facilitate reproducibility of analyses, we use a versioning system by which successive releases are assigned a name reflecting the year and version, e.g., `2022.1`.
 By default, users will interact with the most recent version of the database available, though the `peekbankr` API allows researchers to run analyses against any previous version of the database.
 For users with intensive use-cases, each version of the database may be downloaded as a compressed .sql file and installed on a local MySQL server.
 
@@ -545,8 +545,8 @@ The OSF site also includes the original raw data (both time series data and meta
 Users who are interested in inspecting or reproducing the processing pipeline for a given dataset can use the respective import script (openly available on GitHub, [https://github.com/langcog/peekbank-data-import](https://github.com/langcog/peekbank-data-import)) to download and process the raw data from OSF into its final standardized format.
 Where available, the OSF page also includes additional information about the stimuli used in each dataset, including in some instances the original stimulus sets (e.g., image and audio files).
 
-```{r computing accuracy, eval = FALSE}
-aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
+```{r computing accuracy, eval = TRUE}
+aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 #set variables for analysis window range
 t_min <- 367
@@ -655,8 +655,8 @@ overall_novelty <- by_participant_means_novelty |>
 saveRDS(overall_novelty, here("brm", "data", "overall_novelty.rds"))
 ```
 
-```{r descriptive-plots, eval = FALSE}
-aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.Rds"))
+```{r descriptive-plots, eval = TRUE}
+aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.rds"))
 means_items <- aoi_data_joined |>
   filter(age > 12, age <= 60) |>
   #mutate(age_binned = cut(age, seq(0,60,12))) |>
@@ -679,9 +679,8 @@ average_across_items <- means_items |>
     ci_upper=avg_prop_looking+ci
   )
 
-means_items |>
-  filter(n>=12) |>
-ggplot(aes(x = t_norm, y = prop_looking,color=english_stimulus_label)) + 
+
+p <- ggplot(filter(means_items, n>=12), aes(x = t_norm, y = prop_looking,color=english_stimulus_label)) + 
   geom_line(alpha=0.5) + 
   # geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, 
   #                 fill = dataset_name), alpha = .5) +
@@ -704,7 +703,7 @@ ggplot(aes(x = t_norm, y = prop_looking,color=english_stimulus_label)) +
   scale_y_continuous(breaks=c(0,0.25,0.5,0.75,1),limits=c(0,1))
   
   
-ggsave(here("brm", "figures","peekbank_item_vis.png"),width=10,height=6,dpi=600)
+ggsave(here("brm", "figures","peekbank_item_vis.png"),plot=p,width=10,height=6,dpi=600)
 ```
 
 
@@ -753,7 +752,7 @@ We provide two potential use-cases for Peekbank data. In each case, we provide s
 @Swingley2002 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. *oppel* (close mispronunciation) or *opel* (distant mispronunciation) instead of *apple* (correct pronunciation). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. Our goal here is not to provide a precise analytical reproduction of the analyses reported in the original paper, but rather to demonstrate the use of the Peekbank framework to analyze datasets of this type. In particular, because Peekbank uses a uniform data import standard, it is likely that there will be minor numerical discrepancies between analyses on Peekbank data and analyses that use another processing pipeline. 
 
 \singlespacing
-```{r swingley_data, echo = TRUE, eval = FALSE}
+```{r swingley_data, echo = TRUE, eval = TRUE}
 library(peekbankr)
 aoi_timepoints <- get_aoi_timepoints(dataset_name = "swingley_aslin_2002")
 administrations <- get_administrations(dataset_name = "swingley_aslin_2002")
@@ -765,7 +764,7 @@ trials <- get_trials(dataset_name = "swingley_aslin_2002")
 We begin by retrieving the relevant tables from the database, `aoi_timepoints`, `administrations`, `trial_types`, and `trials`. As discussed above, each of these can be downloaded using a simple API call through `peekbankr`, which returns dataframes that include ID fields. These ID fields allow for easy joining of the data into a single dataframe containing all the information necessary for the analysis.  
 
 \singlespacing
-```{r swingley_joins, echo=TRUE, eval = FALSE}
+```{r swingley_joins, echo=TRUE, eval = TRUE}
 swingley_data <- aoi_timepoints |>
   left_join(administrations) |>
   left_join(trials) |>
@@ -776,7 +775,7 @@ swingley_data <- aoi_timepoints |>
 \doublespacing
 
 
-```{r save_swingley, eval = FALSE}
+```{r save_swingley, eval = TRUE}
 saveRDS(swingley_data, here("brm", "data", "swingley_data.rds"))
 ```
 
@@ -835,34 +834,13 @@ ggplot(accuracies, aes(x = t_norm, y = mean_correct, color = condition)) +
 
 Figure \@ref(fig:swingley)  shows the average time course of looking for the two conditions, as produced by the code above. Looks after the correctly pronounced noun appeared both faster (deviating from chance earlier) and more accurate (showing a higher asymptote). Overall, this example demonstrates the ability to produce this visualization in just a few lines of code.
 
-```{r eval = FALSE}
-subject_accuracy <- swingley_data   |>
-  group_by(administration_id, lab_age, condition,trial_id) |> 
-  filter(t_norm >=367 & t_norm>=2000) |>
-  summarise(correct = mean(aoi == "target") / 
-              mean(aoi %in% c("target","distractor"))) |>
-  group_by(administration_id, lab_age, condition) |> 
-  summarize(accuracy = mean(correct,na.rm=TRUE))
-subject_mp_effect <- subject_accuracy |>
-  group_by(administration_id, lab_age) |>
-  summarize(
-    mp_effect=accuracy[condition=="Correct"]-accuracy[condition=="Mispronunciation"]
-  )
-#Figure 1 (would need to separate by Mp-close/distant to truly reproduce figure)
-ggplot(subject_mp_effect,aes(lab_age,mp_effect))+
-  geom_point(size=2)+
-  geom_smooth(method="lm")+
-  xlab("Mispronunciation Effect")+
-  ylab("Age in days")
-```
-
 ## Item analyses
 
 A second use case for Peekbank is to examine item-level variation in word recognition. Individual datasets rarely have enough statistical power to show reliable developmental differences within items. To illustrate the power of aggregating data across multiple datasets, we select the four words with the most data available across studies and ages (apple, book, dog, and frog) and show average recognition trajectories. 
 
 Our first step is to collect and join the data from the relevant tables including timepoint data, trial and stimulus data, and administration data (for participant ages). We join these into a single dataframe for easy manipulation; this dataframe is a common starting point for analyses of item-level data. 
 
-```{r all_data, eval = FALSE, echo = TRUE}
+```{r all_data, eval = TRUE, echo = TRUE}
 all_aoi_timepoints <- get_aoi_timepoints()
 all_stimuli <- get_stimuli()
 all_administrations <- get_administrations()
@@ -878,7 +856,7 @@ aoi_data_joined <- all_aoi_timepoints |>
   select(administration_id, english_stimulus_label, age, t_norm, aoi)
 ```
 
-```{r save_aoi_data_joined, eval = FALSE}
+```{r save_aoi_data_joined, eval = TRUE}
 saveRDS(aoi_data_joined, here("brm","data","aoi_data_joined.rds"))
 ```
 
@@ -887,7 +865,7 @@ dataset_info <- readRDS(here("brm","data","dataset_info.rds"))
 aoi_data_joined <- readRDS(here("brm","data","aoi_data_joined.rds"))
 ```
 
-```{r item-counts, eval = FALSE}
+```{r item-counts, eval = TRUE}
 item_counts <- aoi_data_joined |>
   group_by(administration_id, english_stimulus_label) |>
   count() |>
@@ -895,10 +873,10 @@ item_counts <- aoi_data_joined |>
   count() |>
   mutate(english_stimulus_label = fct_reorder(english_stimulus_label, n))
 
-ggplot(filter(item_counts, n > 80), 
-       aes(x= english_stimulus_label, y = n)) + 
-  geom_bar(stat = "identity")+ 
-  coord_flip()
+# ggplot(filter(item_counts, n > 80), 
+#        aes(x= english_stimulus_label, y = n)) + 
+#   geom_bar(stat = "identity")+ 
+#   coord_flip()
 ```
 
 Next we select a set of four target words (chosen based on having more than XXX children contributing data for each across several one-year age groups). 
@@ -967,8 +945,12 @@ The current database is also limited by the relatively homogeneous background of
 Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
 
 Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development.
-Gaze behavior has been at the core of many of the key advances in our understanding of infant cognition [@bergelson2012; @lewwilliams2007; @yurovksy_2017; @fernald1998; @Weisleder2013].
+Gaze behavior has been at the core of many of the key advances in our understanding of infant cognition [@bergelson2012; @lewwilliams2007; @yurovsky_2017; @fernald1998; @Weisleder2013].
 Aggregating large datasets of infant looking behavior in a single, openly-accessible format promises to bring a fuller picture of infant cognitive development into view.
+
+# CRediT author statement
+
+An overview over authorship contributions following the CRediT taxonomy can be viewed here: https://docs.google.com/spreadsheets/d/e/2PACX-1vRD-LJD_dTAQaAynyBlwXvGpfAVzP-3Pi6JTDoG15m3PYZe0c44Y12U2a_hwdmhIstpjyigG2o3na4y/pubhtml
 
 # Acknowledgements
 
