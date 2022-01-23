@@ -122,7 +122,7 @@ library(viridis)
 r_refs(file = "r-references.bib")
 my_citations <- cite_r(file = "r-references.bib", footnote = TRUE)
 
-knitr::opts_chunk$set(cache = TRUE, cache.extra = knitr::rand_seed,cache.lazy = FALSE,
+knitr::opts_chunk$set(cache = FALSE, cache.extra = knitr::rand_seed,cache.lazy = FALSE,
                       echo = FALSE, warning = FALSE, message = FALSE,
                       fig.env = "figure*")
 
@@ -224,7 +224,7 @@ why a unified format is need first, hence the data import and raw data processin
 ```
 
 One of the main challenges in compiling a large-scale eye-tracking database is the lack of a shared data format: both labs and individual experiments can record their results in a wide range of formats.
-For example, different experiments encode trial-level and subject-level information in many different ways.
+For example, different experiments encode trial-level and participant-level information in many different ways.
 Therefore, we have developed a common tabular format to support analyses of all studies simultaneously.
 
 As illustrated in Figure \@ref(fig:fig-framework-overview), the Peekbank framework consists of four main components: (1) a set of tools to *convert* eye-tracking datasets into a unified format, (2) a relational database populated with data in this unified format, (3) a set of tools to *retrieve* data from this database, and (4) a web app (using the Shiny framework) for visualizing the data.
@@ -254,10 +254,10 @@ Metadata can be separated into four parts: (1) participant-level information (e.
 
 #### Participant Information
 
-Invariant information about individuals who participate in one or more studies (e.g, a subject's first language) is recorded in the `subjects` table, while the `administrations` table contains information about a subject's participation in a single session of a study (see Session Information, below).
-This division allows Peekbank to gracefully handle longitudinal designs: a single subject can be associated with many administrations.
+Invariant information about individuals who participate in one or more studies (e.g, a participant's first language) is recorded in the `subjects` table, while the `administrations` table contains information about each individual session in a given study (see Session Information, below).
+This division allows Peekbank to gracefully handle longitudinal designs: a single participant can complete multiple sessions and thus be associated with multiple administrations.
 
-Subject-level data includes all participants who have experiment data.
+Participant-level data includes all participants who have experiment data.
 In general, we include as many participants as possible in the database and leave it to end-users to apply the appropriate exclusion criteria for their analysis.
 
 #### Experiment Information
@@ -510,14 +510,14 @@ The `peekbankr` API offers a way for users to access data from the database and 
 
 - `connect_to_peekbank()` opens a connection with the Peekbank database to allow tables to be downloaded with the following functions 
 - `get_datasets()` gives each dataset name and its citation information 
-- `get_subjects()` gives information about persistent subject identifiers (e.g., native languages, sex) 
-- `get_administrations()` gives information about specific experimental administrations (e.g., subject age, monitor size, gaze coding method) 
+- `get_subjects()` gives information about persistent participant identifiers (e.g., native languages, sex) 
+- `get_administrations()` gives information about specific experimental administrations (e.g., participant age, monitor size, gaze coding method) 
 - `get_stimuli()` gives information about word–image pairings that appeared in experiments  
 - `get_trial_types()` gives information about pairings of stimuli that appeared in the experiment (e.g., point of disambiguation, target and distractor stimuli, condition, language) 
 - `get_trials()` gives the trial orderings for each administration, linking trial types to the trial IDs used in time course data 
 - `get_aoi_region_sets()` gives coordinate regions for each area of interest (AOI)  linked to trial type IDs 
-- `get_xy_timepoints()` gives time course data for each subject's looking behavior in each trial, as (x, y) coordinates on the experiment monitor 
-- `get_aoi_timepoints()` gives time course data for each subject's looking behavior in each trial, coded into areas of interest 
+- `get_xy_timepoints()` gives time course data for each participant's looking behavior in each trial, as (x, y) coordinates on the experiment monitor 
+- `get_aoi_timepoints()` gives time course data for each participant's looking behavior in each trial, coded into areas of interest 
 
 Once users have downloaded tables, they can be merged using `join` command via their linked IDs. A set of standard merges are shown below in the "Peekbank in Action" section; these allow the common use-case of examining time course data and metadata jointly. 
 
@@ -662,13 +662,15 @@ overall_novelty <- by_participant_means_novelty |>
 saveRDS(overall_novelty, here("brm", "data", "overall_novelty.rds"))
 ```
 
-```{r descriptive-plots, eval = FALSE}
+```{r descriptive-plots, eval = TRUE}
 aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.rds"))
+dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 means_items <- aoi_data_joined |>
+  left_join(dataset_name_mapping) |>
   filter(age > 12, age <= 60) |>
   #mutate(age_binned = cut(age, seq(0,60,12))) |>
   #group_by(t_norm, dataset_name, age_binned, stimulus_novelty) |>
-  group_by(t_norm, dataset_name, english_stimulus_label) |>
+  group_by(t_norm, dataset_name, apa_cite, english_stimulus_label) |>
   summarise(n = sum(aoi %in% c("target","distractor"), na.rm = TRUE), 
             p = sum(aoi == "target", na.rm = TRUE),
             prop_looking = p / n, 
@@ -701,11 +703,11 @@ p <- ggplot(filter(means_items, n>=12), aes(x = t_norm, y = prop_looking,color=e
   theme_classic() +
   scale_color_viridis_d() +
   scale_fill_viridis_d() +
-  facet_wrap(~dataset_name,nrow=4)+
+  facet_wrap(~apa_cite,nrow=4)+
   theme(legend.position="none")+
   theme(axis.text=element_text(size=12),
         axis.title=element_text(size=16))+
-  theme(axis.text.x = element_text(angle = 45, vjust = 0.5),strip.text.x = element_text(size = 12))+
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5),strip.text.x = element_text(size = 9))+
   scale_x_continuous(breaks=seq(-500,3000,500))+
   scale_y_continuous(breaks=c(0,0.25,0.5,0.75,1),limits=c(0,1))
   
