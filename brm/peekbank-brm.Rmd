@@ -6,6 +6,7 @@ author:
     affiliation   : "1"
     corresponding : yes
     email         : "martincz@princeton.edu"
+    address       : "Department of Psychology, Princeton University, 218 Peretsman Scully Hall, Princeton, NJ 08540"
   - name          : "Daniel Yurovsky"
     affiliation   : "2"
   - name          : "Tian Linger Xu"
@@ -73,9 +74,13 @@ affiliation:
     institution   : "Department of Psychology, New York University"
   - id            : "13"
     institution   : "Department of Psychology, University of Chicago"
+
 authornote: |
-  All code is available at https://github.com/langcog/peekbank-paper. Raw and standardized datasets are available on the Peekbank OSF repository (https://osf.io/pr6wu/) and can be accessed using the peekbankr R package (https://github.com/langcog/peekbankr).
-  
+  **Acknowledgements.** We would like to thank the labs and researchers that have made their data publicly available in the database. For further information about contributions, see https://langcog.github.io/peekbank-website/docs/contributors/.
+
+  **Data and Code Availability.** All code for reproducing the paper is available at https://github.com/langcog/peekbank-paper. Raw and standardized datasets are available on the Peekbank OSF repository (https://osf.io/pr6wu/) and can be accessed using the peekbankr R package (https://github.com/langcog/peekbankr).
+
+  **CRediT author statement.** Outside of the position of the first and the last author, authorship position was determined by sorting authors' last names in reverse alphabetical order. An overview over authorship contributions following the CRediT taxonomy can be viewed here: https://docs.google.com/spreadsheets/d/e/2PACX-1vRD-LJD_dTAQaAynyBlwXvGpfAVzP-3Pi6JTDoG15m3PYZe0c44Y12U2a_hwdmhIstpjyigG2o3na4y/pubhtml.
 abstract: |
   The ability to rapidly recognize words and link them to referents is central to children’s early language development. 
   This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants’ fixation on a target object (vs. a distractor) after hearing a target label. 
@@ -87,7 +92,7 @@ abstract: |
   
   <!-- https://tinyurl.com/ybremelq -->
 keywords          : "word recognition; eye-tracking; vocabulary development; looking-while-listening; visual world paradigm; lexical processing"
-wordcount         : "6623"
+wordcount         : "6600"
 bibliography      : ["peekbank.bib","r-references.bib"]
 floatsintext      : yes
 figurelist        : no
@@ -122,7 +127,7 @@ library(viridis)
 r_refs(file = "r-references.bib")
 my_citations <- cite_r(file = "r-references.bib", footnote = TRUE)
 
-knitr::opts_chunk$set(cache = FALSE, cache.extra = knitr::rand_seed,cache.lazy = FALSE,
+knitr::opts_chunk$set(cache = TRUE, cache.extra = knitr::rand_seed,cache.lazy = FALSE,
                       echo = FALSE, warning = FALSE, message = FALSE,
                       fig.env = "figure*")
 
@@ -161,8 +166,8 @@ Similar efforts to collect other measures of language development have borne fru
 For example, WordBank aggregated data from the MacArthur-Bates Communicative Development Inventory, a parent-report measure of child vocabulary, to deliver new insights into cross-linguistic patterns and variability in vocabulary development [@frank2017; @frank2021].
 In this paper, we introduce *Peekbank*, an open database of infant and toddler eye-tracking data aimed at facilitating the study of developmental changes in children's word recognition.
 
-## Measuring Word Recognition: The “Looking-While-Listening” Paradigm
-Word recognition is traditionally studied in the “looking-while-listening” paradigm [@fernald2008; alternatively referred to as the intermodal preferential looking procedure, @hirshpasek1987]. 
+## Measuring Word Recognition: The Looking-While-Listening Paradigm
+Word recognition is traditionally studied in the looking-while-listening paradigm [@fernald2008; alternatively referred to as the intermodal preferential looking procedure, @hirshpasek1987]. 
 In these studies, infants listen to a sentence prompting a specific referent (e.g., *Look at the dog!*) while viewing two images on the screen (e.g., an image of a dog – the target image – and an image of a bird – the distractor image). 
 Infants’ word recognition is evaluated by how quickly and accurately they fixate on the target image after hearing its label. 
 Past research has used this basic method to study a wide range of questions in language development. 
@@ -528,13 +533,14 @@ Because of the size of the XY and AOI data tables, downloading data across multi
 One goal of the Peekbank project is to allow a wide range of users to easily explore and learn from the database.
 We therefore have created an interactive web application -- `peekbank-shiny` -- that allows users to quickly and easily create informative visualizations of individual datasets and aggregated data.
 `peekbank-shiny` is built using Shiny, a software package for creating web apps for data exploration with R, as well as the `peekbankr` package.
+All code for the Shiny app is publicly available ([https://github.com/langcog/peekbank-shiny](https://github.com/langcog/peekbank-shiny)).
 The Shiny app allows users to create commonly used visualizations of looking-while-listening data, based on data from the Peekbank database.
 Specifically, users can visualize:
 
-1. the time course of looking data in a profile plot depicting infant target looking across trial time
-2. overall accuracy (proportion target looking) within a specified analysis window
-3. reaction times (speed of fixating the target image) in response to a target label
-4. an onset-contingent plot, which shows the time course of participant looking as a function of their look location at the onset of the target label
+1. the *time course of looking data* in a profile plot depicting infant target looking across trial time
+2. *overall accuracy*, defined as the proportion target looking within a specified analysis window
+3. *reaction times* in response to a target label, defined as how quickly participants shift fixation to the target image on trials in which they were fixating the distractor image at onset of the target label
+4. an *onset-contingent plot*, which shows the time course of participant looking as a function of their look location at the onset of the target label
 
 Users are given various customization options for each of these visualizations, e.g., choosing which datasets to include in the plots, controlling the age range of participants, splitting the visualizations by age bins, and controlling the analysis window for time course analyses.
 Plots are then updated in real time to reflect users' customization choices, and users are given options to share the visualizations they created.
@@ -662,7 +668,7 @@ overall_novelty <- by_participant_means_novelty |>
 saveRDS(overall_novelty, here("brm", "data", "overall_novelty.rds"))
 ```
 
-```{r descriptive-plots, eval = TRUE}
+```{r descriptive-plots, eval = FALSE}
 aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 means_items <- aoi_data_joined |>
@@ -766,7 +772,7 @@ A second question of interest is about the variability across items (i.e., targe
 
 ## Investigating prior findings: @Swingley2002
 
-@Swingley2002 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. *oppel* (close mispronunciation) or *opel* (distant mispronunciation) instead of *apple* (correct pronunciation). In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. Our goal here is not to provide a precise analytical reproduction of the analyses reported in the original paper, but rather to demonstrate the use of the Peekbank framework to analyze datasets of this type. In particular, because Peekbank uses a uniform data import standard, it is likely that there will be minor numerical discrepancies between analyses on Peekbank data and analyses that use another processing pipeline. 
+@Swingley2002 investigated the specificity of 14-16 month-olds' word representations using the looking-while-listening paradigm, asking whether recognition would be slower and less accurate for mispronunciations, e.g. *opal* (mispronunciation) instead of *apple* (correct pronunciation).^[The original paper investigated both close (e.g., *opple*, /apl/) and distant (e.g., *opal*, /opl/) mispronunciations. For simplicity, here we combine both mispronunciation conditions since the close vs. distant mispronunciation manipulation showed no effect in the original paper.] In this short vignette, we show how easily the data in Peekbank can be used to visualize this result. Our goal here is not to provide a precise analytical reproduction of the analyses reported in the original paper, but rather to demonstrate the use of the Peekbank framework to analyze datasets of this type. In particular, because Peekbank uses a uniform data import standard, it is likely that there will be minor numerical discrepancies between analyses on Peekbank data and analyses that use another processing pipeline. 
 
 \singlespacing
 ```{r swingley_data, echo = TRUE, eval = FALSE}
@@ -800,7 +806,7 @@ saveRDS(swingley_data, here("brm", "data", "swingley_data.rds"))
 swingley_data <- readRDS(here("brm", "data", "swingley_data.rds"))
 ```
 
-As the code above shows, once the data are joined, condition information for each timepoint is present and so we can easily filter out filler trials and set up the conditions for further analysis. For simplicity, here we combine both mispronunciation conditions since the close vs. distant mispronunciation manipulation showed no effect in the original paper. 
+As the code above shows, once the data are joined, condition information for each timepoint is present and so we can easily filter out filler trials and set up the conditions for further analysis.  
 
 \singlespacing
 ```{r swingley_analysis, echo=TRUE}
@@ -966,12 +972,6 @@ Increasing the diversity of participant backgrounds and languages will expand th
 Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development.
 Gaze behavior has been at the core of many of the key advances in our understanding of infant cognition [@bergelson2012; @lewwilliams2007; @yurovsky_2017; @fernald1998; @Weisleder2013].
 Aggregating large datasets of infant looking behavior in a single, openly-accessible format promises to bring a fuller picture of infant cognitive development into view.
-
-# CRediT author statement
-Outside of the position of the first and the last author, authorship position was determined by sorting authors' last names in reverse alphabetical order. An overview over authorship contributions following the CRediT taxonomy can be viewed here: https://docs.google.com/spreadsheets/d/e/2PACX-1vRD-LJD_dTAQaAynyBlwXvGpfAVzP-3Pi6JTDoG15m3PYZe0c44Y12U2a_hwdmhIstpjyigG2o3na4y/pubhtml.
-
-# Acknowledgements 
-We would like to thank the labs and researchers that have made their data publicly available in the database. For further information about contributions, see https://langcog.github.io/peekbank-website/docs/contributors/.
 
 \newpage
 
