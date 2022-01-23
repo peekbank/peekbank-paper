@@ -21,6 +21,8 @@ author:
     affiliation   : "7"
   - name          : "Stephan Meylan"
     affiliation   : "8,9"
+  - name          : "Virginia Marchman"
+    affiliation   : "5"
   - name          : "Jessica Mankewitz"
     affiliation   : "5"
   - name          : "Kyle MacDonald"
@@ -78,7 +80,7 @@ affiliation:
 authornote: |
   **Acknowledgements.** We would like to thank the labs and researchers that have made their data publicly available in the database. For further information about contributions, see https://langcog.github.io/peekbank-website/docs/contributors/.
 
-  **Data and Code Availability.** All code for reproducing the paper is available at https://github.com/langcog/peekbank-paper. Raw and standardized datasets are available on the Peekbank OSF repository (https://osf.io/pr6wu/) and can be accessed using the peekbankr R package (https://github.com/langcog/peekbankr).
+  **Open Practices Statement.** All code for reproducing the paper is available at https://github.com/langcog/peekbank-paper. Raw and standardized datasets are available on the Peekbank OSF repository (https://osf.io/pr6wu/) and can be accessed using the peekbankr R package (https://github.com/langcog/peekbankr).
 
   **CRediT author statement.** Outside of the position of the first and the last author, authorship position was determined by sorting authors' last names in reverse alphabetical order. An overview over authorship contributions following the CRediT taxonomy can be viewed here: https://docs.google.com/spreadsheets/d/e/2PACX-1vRD-LJD_dTAQaAynyBlwXvGpfAVzP-3Pi6JTDoG15m3PYZe0c44Y12U2a_hwdmhIstpjyigG2o3na4y/pubhtml.
 abstract: |
