@@ -6,73 +6,76 @@ author:
     affiliation   : "1"
     corresponding : yes
     email         : "martincz@princeton.edu"
-  - name          : "Claire Bergey"
-    affiliation   : "2"
-  - name          : "Naiti S. Bhatt"
-    affiliation   : "3"
-  - name          : "Veronica Boyce"
-    affiliation   : "4"
-  - name          : "Mika Braginsky"
-    affiliation   : "5"
-  - name          : "Alexandra Carstensen"
-    affiliation   : "4"
-  - name          : "Benny deMayo"
-    affiliation   : "1"
-  - name          : "Kunal Handa"
-    affiliation   : "12"
-  - name          : "George Kachergis"
-    affiliation   : "4"
-  - name          : "Molly Lewis"
-    affiliation   : "6"
-  - name          : "Bria Long"
-    affiliation   : "4"
-  - name          : "Kyle MacDonald"
-    affiliation   : "7"
-  - name          : "Jessica Mankewitz"
-    affiliation   : "4"
-  - name          : "Stephan Meylan"
-    affiliation   : "5,8"
-  - name          : "Annissa N. Saleh"
-    affiliation   : "9"
-  - name          : "Rose M. Schneider"
-    affiliation   : "10"
-  - name          : "Angeline Sin Mei Tsui"
-    affiliation   : "4"
-  - name          : "Sarp Uner"
-    affiliation   : "8"
-  - name          : "Tian Linger Xu"
-    affiliation   : "11"
   - name          : "Daniel Yurovsky"
-    affiliation   : "6"
-  - name          : "Michael C. Frank"
+    affiliation   : "2"
+  - name          : "Tian Linger Xu"
+    affiliation   : "3"
+  - name          : "Sarp Uner"
     affiliation   : "4"
+  - name          : "Angeline Sin Mei Tsui"
+    affiliation   : "5"
+  - name          : "Rose M. Schneider"
+    affiliation   : "6"
+  - name          : "Annissa N. Saleh"
+    affiliation   : "7"
+  - name          : "Stephan Meylan"
+    affiliation   : "8,9"
+  - name          : "Jessica Mankewitz"
+    affiliation   : "5"
+  - name          : "Kyle MacDonald"
+    affiliation   : "10"
+  - name          : "Bria Long"
+    affiliation   : "5"
+  - name          : "Molly Lewis"
+    affiliation   : "2"
+  - name          : "George Kachergis"
+    affiliation   : "5"
+  - name          : "Kunal Handa"
+    affiliation   : "11"
+  - name          : "Benjamin deMayo"
+    affiliation   : "1"
+  - name          : "Alexandra Carstensen"
+    affiliation   : "6"
+  - name          : "Mika Braginsky"
+    affiliation   : "9"
+  - name          : "Veronica Boyce"
+    affiliation   : "5"
+  - name          : "Naiti S. Bhatt"
+    affiliation   : "12"
+  - name          : "Claire Bergey"
+    affiliation   : "13"
+  - name          : "Michael C. Frank"
+    affiliation   : "5"
 affiliation:
   - id            : "1"
-    institution   : "Dept. of Psychology, Princeton University"
+    institution   : "Department of Psychology, Princeton University"
   - id            : "2"
-    institution   : "Dept. of Psychology, University of Chicago"
+    institution   : "Department of Psychology, Carnegie Mellon University"
   - id            : "3"
-    institution   : "Scripps College"
+    institution   : "Department of Psychological and Brain Sciences, Indiana University"
   - id            : "4"
-    institution   : "Dept. of Psychology, Stanford University"
+    institution   : "Data Science Institute, Vanderbilt University"
   - id            : "5"
-    institution   : "Dept. of Brain and Cognitive Sciences, MIT"
+    institution   : "Department of Psychology, Stanford University"
   - id            : "6"
-    institution   : "Dept. of Psychology, Carnegie Mellon University"
+    institution   : "Department of Psychology, University of California, San Diego"
   - id            : "7"
-    institution   : "Core Technology, McD Tech Labs"
+    institution   : "Department of Psychology, The University of Texas at Austin"
   - id            : "8"
-    institution   : "Dept. of Psychology and Neuroscience, Duke University"
+    institution   : "Department of Psychology and Neuroscience, Duke University"
   - id            : "9"
-    institution   : "Dept. of Psychology, UT Austin"
+    institution   : "Department of Brain and Cognitive Sciences, Massachusetts Institute of Technology"
   - id            : "10"
-    institution   : "Dept. of Psychology, UC San Diego"
+    institution   : "Core Technology, McD Tech Labs"
   - id            : "11"
-    institution   : "Dept. of Psychological and Brain Sciences, Indiana University"
-  - id            : "12"
     institution   : "Brown University"
+  - id            : "12"
+    institution   : "Department of Psychology, New York University"
+  - id            : "13"
+    institution   : "Department of Psychology, University of Chicago"
+
 abstract: |
-  The ability to rapidly recognize words and link them to referents in context is central to children’s early language development. 
+  The ability to rapidly recognize words and link them to referents is central to children’s early language development. 
   This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants’ fixation on a target object (vs. a distractor) after hearing a target label. 
   We present a large-scale, open database of infant and toddler eye-tracking data from looking-while-listening tasks. 
   The goal of this effort is to address theoretical and methodological challenges in measuring vocabulary development. 
@@ -136,8 +139,8 @@ Across their first years of life, children learn words at an accelerating pace [
 While many children will only produce their first word at around one year of age, most children show signs of understanding many common nouns (e.g., *mommy*) and phrases (e.g., *Let's go bye-bye!*) much earlier in development [@bergelson2012; @bergelson2013].
 Although early word understanding is a critical element of first language learning, the processes involved are less directly apparent in children's behaviors and are less accessible to observation than developments in speech production [@fernald2008].
 To understand a spoken word, children must process the incoming auditory signal and link that signal to relevant meanings – a process often referred to as word recognition. 
-One of the primary means of measuring word recognition in young infants is eye-tracking:  gauging where children look in response to linguistic stimuli to make inferences about children's word processing abilities [@fernald2008].
-The logic of this method is that if, upon hearing a word, a child preferentially looks at a target stimulus rather than a distractor, the child is able to recognize the word and activate its meaning during real-time language processing.
+One of the primary means of measuring word recognition in young infants is using eye-tracking techniques that gauge where children look in response to linguistic stimuli [@fernald2008].
+The logic of these methods is that if, upon hearing a word, a child preferentially looks at a target stimulus rather than a distractor, the child is able to recognize the word and activate its meaning during real-time language processing.
 Measuring early word recognition offers insight into children's early word representations: children's speed of response (i.e., moving their eyes; turning their heads) to the unfolding speech signal can reveal children's level of comprehension [@bergelson2020; @fernald1998].
 Word recognition skills are also thought to build a foundation for children’s subsequent language development. 
 Past research has found that early word recognition efficiency is predictive of later linguistic and general cognitive outcomes [@bleses2016; @marchman2018]. 
@@ -153,14 +156,13 @@ Similar efforts to collect other measures of language development have borne fru
 For example, WordBank aggregated data from the MacArthur-Bates Communicative Development Inventory, a parent-report measure of child vocabulary, to deliver new insights into cross-linguistic patterns and variability in vocabulary development [@frank2017; @frank2021].
 In this paper, we introduce *Peekbank*, an open database of infant and toddler eye-tracking data aimed at facilitating the study of developmental changes in children's word recognition.
 
-## The “Looking-While-Listening” Paradigm
+## Measuring Word Recognition: The “Looking-While-Listening” Paradigm
 Word recognition is traditionally studied in the “looking-while-listening” paradigm [@fernald2008; alternatively referred to as the intermodal preferential looking procedure, @hirshpasek1987]. 
 In these studies, infants listen to a sentence prompting a specific referent (e.g., *Look at the dog!*) while viewing two images on the screen (e.g., an image of a dog – the target image – and an image of a bird – the distractor image). 
 Infants’ word recognition is evaluated by how quickly and accurately they fixate on the target image after hearing its label. 
-Past research has used this same basic method to study a wide range of questions in language development. 
+Past research has used this basic method to study a wide range of questions in language development. 
 For example, the looking-while-listening paradigm has been used to investigate early noun knowledge, phonological representations of words, prediction during language processing, and individual differences in language development [@bergelson2012; @golinkoff2013; @lewwilliams2007; @marchman2018; @Swingley2002].
- 
-<!-- ## Measuring developmental change in word recognition -->
+
 While this research has been fruitful in advancing understanding of early word knowledge, fundamental questions remain.
 One central question is how to accurately capture developmental change in the speed and accuracy of word recognition. 
 There is ample evidence demonstrating that infants get faster and more accurate in word recognition over the first few years of life [e.g., @fernald1998].
@@ -188,7 +190,7 @@ Large-scale databases of infant behavior can aid researchers in their decision-m
 For example, if a researcher is interested in understanding how the number of test trials could impact the power and reliability of their looking-while-listening design, a large-scale infant eye-tracking database would allow them to simulate possible outcomes across a range of test trials, providing the basis for data-driven design decisions.
 
 In addition to threats to replicability, the field of infant development also faces concerns about analytic \textit{reproducibility} -- the ability for researchers to arrive at the same analytic conclusion reported in the original research article, given the same dataset.
-A recent estimate based on studies published in a prominent cognitive science journal suggests that analyses can remain difficult to reproduce, even when data is made available to other research teams [@hardwicke2018].
+A recent estimate based on studies published in a prominent cognitive science journal suggests that analyses can remain difficult to reproduce, even when data are made available to other research teams [@hardwicke2018].
 Aggregating data in centralized databases can aid in improving reproducibility in several ways.
 First, building a large-scale database requires defining a standardized data specification.
 Recent examples include the \texttt{brain imaging data structure} (BIDS), an effort to specify a unified data format for neuroimaging experiments [@gorgolewski_brain_2016], and the data formats associated with \texttt{ChildProject}, for managing long-form at-home language recordings [@gautheron_2021].
@@ -299,7 +301,7 @@ All data in the database is resampled to 40 Hz (observations every 25 ms), which
 Further, 25 ms is a mathematically convenient interval for ensuring consistent resampling; we found that using 33.333 ms (30 Hz) as our interval simply introduced a large number of technical complexities. 
 The resampling operation is accomplished using the `resample_times()` function.
 During the resampling process, we interpolate using constant interpolation, selecting for each interpolated timepoint the looking location for the earlier-observed time point in the original data for both `aoi_timepoints` and `xy_timepoints` data.
-Compared to linear interpolation [see e.g., @Wass2013], which interpolates between locations of successive timepoints, constant interpolation has the advantage that it is more conservative, in the sense that it does not introduce new (spatial) look locations beyond those measured in the original data.
+Compared to linear interpolation [see e.g., @Wass2013] -- which fills segments of missing or unobserved time points by interpolating between the observed locations of timepoints at the beginning and end of the interpolated segment --, constant interpolation has the advantage that it is more conservative, in the sense that it does not introduce new look locations beyond those measured in the original data.
 One possible application of our new dataset is investigating the consequences of other interpolation functions for data analysis.
 
 ## Processing, Validation, and Ingestion
@@ -861,25 +863,28 @@ saveRDS(aoi_data_joined, here("brm","data","aoi_data_joined.rds"))
 ```
 
 ```{r load_aoi_data_joined}
-dataset_info <- readRDS(here("brm","data","dataset_info.rds"))
 aoi_data_joined <- readRDS(here("brm","data","aoi_data_joined.rds"))
 ```
 
-```{r item-counts, eval = TRUE}
+```{r item-counts, eval = FALSE}
+#code for finding target words
 item_counts <- aoi_data_joined |>
-  group_by(administration_id, english_stimulus_label) |>
+  mutate(age_group = cut(age, breaks = seq(12,48,12))) |>
+  filter(age_group %in% c("(12,24]","(24,36]","(36,48]")) |>
+  group_by(administration_id, age_group, english_stimulus_label) |>
   count() |>
-  group_by(english_stimulus_label) |>
+  group_by(age_group, english_stimulus_label) |>
   count() |>
-  mutate(english_stimulus_label = fct_reorder(english_stimulus_label, n))
+  mutate(english_stimulus_label = fct_reorder(english_stimulus_label, n)) 
 
-# ggplot(filter(item_counts, n > 80), 
-#        aes(x= english_stimulus_label, y = n)) + 
-#   geom_bar(stat = "identity")+ 
-#   coord_flip()
+ggplot(filter(item_counts, n > 100),
+       aes(x= english_stimulus_label, y = n)) +
+  geom_bar(stat = "identity")+
+  coord_flip()+
+  facet_wrap(~age_group)
 ```
 
-Next we select a set of four target words (chosen based on having more than XXX children contributing data for each across several one-year age groups). 
+Next we select a set of four target words (chosen based on having more than 100 children contributing data for each word across several one-year age groups). 
 We create age groups, aggregate, and compute timepoint-by-timepoint confidence intervals using the $z$ approximation. 
 
 ```{r target_word_data, echo = TRUE}
@@ -898,6 +903,19 @@ target_word_data <- aoi_data_joined |>
             n = n()) 
 ```
 
+Finally, we plot the data as time courses split by age. Our plotting code is shown below (with styling commands again removed for clarity). Figure \@ref(fig:target-word-plot) shows the resulting plot, with time courses for each of three (rather coarse) age bins. 
+Although some baseline effects are visible across items, we still see clear and consistent increases in looking to the target, with the increase appearing earlier and in many cases asymptoting at a higher level for older children. 
+On the other hand, this simple averaging approach ignores study-to-study variation (perhaps responsible for the baseline effects we see in the *apple* and *frog* items especially). 
+In future work, we hope to introduce model-based analytic methods that use mixed effects regression to factor out study-level and individual-level variance in order to recover developmental effects more appropriately [see e.g., @zettersten2021 for a prototype of such an analysis]. 
+
+```{r target_word_plot_demo, fig.env = "figure", echo = TRUE, eval = FALSE}
+ggplot(target_word_data, 
+       aes(x = t_norm, y = correct, col = age_group)) + 
+  geom_line() + 
+  geom_linerange(aes(ymin = correct - ci, ymax = correct + ci), 
+                 alpha = .2) + 
+  facet_wrap(~english_stimulus_label)
+```
 
 ```{r target-word-plot, fig.env = "figure", fig.cap="Time course plot for four well-represented target items in the Peekbank dataset, split by three age groups. Each line represents children's average looking to the target image after the onset of the target label (dashed vertical line). Error bars represent 95\\% CIs."}
 ggplot(target_word_data, 
@@ -915,20 +933,6 @@ ggplot(target_word_data,
   xlab("Time from target word onset (msec)") + 
   ylab("Proportion correct") + 
   theme(legend.position = "bottom")
-```
-
-Finally, we plot the data as time courses split by age. Our plotting code is shown below (with styling commands again removed for clarity). Figure \@ref(fig:target-word-plot) shows the resulting plot, with time courses for each of three (rather coarse) age bins. 
-Although some baseline effects are visible across items, we still see clear and consistent increases in looking to the target, with the increase appearing earlier and in many cases asymptoting at a higher level for older children. 
-On the other hand, this simple averaging approach ignores study-to-study variation (perhaps responsible for the baseline effects we see in the *apple* and *frog* items especially). 
-In future work, we hope to introduce model-based analytic methods that use mixed effects regression to factor out study-level and individual-level variance in order to recover developmental effects more appropriately [see e.g., @zettersten2021 for a prototype of such an analysis]. 
-
-```{r target_word_plot_demo, fig.env = "figure", echo = TRUE, eval = FALSE}
-ggplot(target_word_data, 
-       aes(x = t_norm, y = correct, col = age_group)) + 
-  geom_line() + 
-  geom_linerange(aes(ymin = correct - ci, ymax = correct + ci), 
-                 alpha = .2) + 
-  facet_wrap(~english_stimulus_label)
 ```
 
 # Discussion
@@ -950,7 +954,7 @@ Aggregating large datasets of infant looking behavior in a single, openly-access
 
 # CRediT author statement
 
-An overview over authorship contributions following the CRediT taxonomy can be viewed here: https://docs.google.com/spreadsheets/d/e/2PACX-1vRD-LJD_dTAQaAynyBlwXvGpfAVzP-3Pi6JTDoG15m3PYZe0c44Y12U2a_hwdmhIstpjyigG2o3na4y/pubhtml
+Outside of the position of the first and the last author, authorship position was determined by sorting authors' last names in reverse alphabetical order. An overview over authorship contributions following the CRediT taxonomy can be viewed here: https://docs.google.com/spreadsheets/d/e/2PACX-1vRD-LJD_dTAQaAynyBlwXvGpfAVzP-3Pi6JTDoG15m3PYZe0c44Y12U2a_hwdmhIstpjyigG2o3na4y/pubhtml
 
 # Acknowledgements
 
