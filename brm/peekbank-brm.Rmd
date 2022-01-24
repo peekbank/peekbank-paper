@@ -94,7 +94,7 @@ abstract: |
   
   <!-- https://tinyurl.com/ybremelq -->
 keywords          : "word recognition; eye-tracking; vocabulary development; looking-while-listening; visual world paradigm; lexical processing"
-wordcount         : "6621"
+wordcount         : "6605"
 bibliography      : ["peekbank.bib","r-references.bib"]
 floatsintext      : yes
 figurelist        : no
@@ -163,7 +163,7 @@ The limitations of single datasets makes it difficult to understand developmenta
 
 One way to overcome this challenge is to compile existing datasets into a large-scale database in order to expand the scope of research questions that can be asked about the development of word recognition abilities. 
 This strategy capitalizes on the fact that the looking-while-listening paradigm is widely used, and vast amounts of data have been collected across labs on infants' word recognition over the past 35 years [@golinkoff2013].
-Such datasets have largely remained isolated from one another, but once combined, they have the potential to offer insights into lexical development at a broad scale.
+Such datasets have largely remained isolated from one another, but once combined, they have the potential to offer general insights into lexical development.
 Similar efforts to collect other measures of language development have borne fruit in recent years. 
 For example, WordBank aggregated data from the MacArthur-Bates Communicative Development Inventory, a parent-report measure of child vocabulary, to deliver new insights into cross-linguistic patterns and variability in vocabulary development [@frank2017; @frank2021].
 In this paper, we introduce *Peekbank*, an open database of infant and toddler eye-tracking data aimed at facilitating the study of developmental changes in children's word recognition.
@@ -189,8 +189,8 @@ A sufficiently large dataset would allow researchers to estimate developmental c
 
 A related open theoretical question is understanding changes in children's word recognition at the level of individual items.
 Looking-while-listening studies have been limited in their ability to assess the development of specific words.
-One limitation is that studies typically test only a small number of trials for each item, limiting the power the accurately measure the development of word-specific accuracy [@DeBolt2020].
-A second limitation is that target stimuli are often yoked with a limited set of distractor stimuli (i.e., a child sees a target with only one or two distractor stimuli over the course of an experiment), leaving ambiguous whether accurate looking to a particular target word can be attributed to children's recognition of the target word or their knowledge about the distractor.
+One limitation is that studies typically test only a small number of trials for each item, reducing power to precisely measure the development of word-specific accuracy [@DeBolt2020].
+A second limitation is that target stimuli are often yoked with a narrow set of distractor stimuli (i.e., a child sees a target with only one or two distractor stimuli over the course of an experiment), leaving ambiguous whether accurate looking to a particular target word can be attributed to children's recognition of the target word or their knowledge about the distractor.
 Aggregating across many looking-while-listening studies has the potential to meet these challenges by increasing the number of observations for specific items at different ages and by increasing the size of the inventory of distractor stimuli that co-occur with each target.
 
 ## Replicability and Reproducibility
@@ -282,8 +282,8 @@ Each trial_type record links to two records in the `stimuli` table, identified b
 Each record in the `stimuli` table is a (word, image) pair.
 In most experiments, there is a one-to-one mapping between images and labels (e.g., each time an image of a dog appears it is referred to as *dog*).
 For studies in which there are multiple potential labels per image (e.g., *dog* and *chien* are both used to refer to an image of a dog), images can have multiple rows in the `stimuli` table with unique labels. 
-It is also possible for an image to be associated with a row with no label, if the image appears solely as a distractor (and thus its label is ambiguous).
 This structure is useful for studies on synonymy or using multiple languages.
+It is also possible for an image to be associated with a row with no label, if the image appears solely as a distractor (and thus its label is ambiguous).
 For studies in which the same label refers to multiple images (e.g., the word *dog* refers to an image of a dalmatian and a poodle), the same label can have multiple rows in the `stimuli` table with unique images.
 
 #### Session Information
@@ -321,7 +321,7 @@ One possible application of our new dataset is investigating the consequences of
 
 The `peekds` package offers functions to extract the above data. 
 Once the data have been extracted in a tabular form, the package also offers a validation function that checks whether all tables have the required fields and data types expected by the database.
-In an effort to double check the data quality and to make sure that no errors are made in the importing script, as part of the import procedure we create a time course plot based on our processed tables to replicate the results in the paper that first presented each dataset.
+In an effort to double check the data quality and to make sure that no errors are made in the importing script, we create a time course plot based on our processed tables to replicate the results in the paper that first presented each dataset as part of the import procedure.
 Once this plot has been created and checked for consistency and all tables pass our validation functions, the processed dataset is ready for reprocessing into the database using the `peekbank` library. 
 This library applies additional data checks, and adds the data to the MySQL database using the Django web framework.
 
@@ -529,7 +529,7 @@ The `peekbankr` API offers a way for users to access data from the database and 
 
 Once users have downloaded tables, they can be merged using `join` commands via their linked IDs. A set of standard merges are shown below in the "Peekbank in Action" section; these allow the common use-case of examining time course data and metadata jointly. 
 
-Because of the size of the XY and AOI data tables, downloading data across multiple studies can be time-consuming. Many of the most common analyses of the Peekbank data require download of the `aoi_timepoints` table, thus we have put substantial work into optimizing transfer times. In particular, `connect_to_peekbank` offers a data compression option, and `get_aoi_timepoints` by default  downloads time courses via a compressed (run-length encoded) representation, which is then uncompressed on the client side. More information about these options (including how to modify them) can be found in the package documentation. 
+Because of the size of the XY and AOI data tables, downloading data across multiple studies can be time-consuming. Many of the most common analyses of the Peekbank data require downloading the `aoi_timepoints` table, thus we have put substantial work into optimizing transfer times. In particular, `connect_to_peekbank` offers a data compression option, and `get_aoi_timepoints` by default  downloads time courses via a compressed (run-length encoded) representation, which is then uncompressed on the client side. More information about these options (including how to modify them) can be found in the package documentation. 
 
 ## Shiny App
 
@@ -546,7 +546,7 @@ Specifically, users can visualize:
 4. an *onset-contingent plot*, which shows the time course of participant looking as a function of their look location at the onset of the target label
 
 Users are given various customization options for each of these visualizations, e.g., choosing which datasets to include in the plots, controlling the age range of participants, splitting the visualizations by age bins, and controlling the analysis window for time course analyses.
-Plots are then updated in real time to reflect users' customization choices, and users are given options to share the visualizations they created.
+Plots are then updated in real time to reflect users' customization choices.
 A screenshot of the app is shown in Figure \@ref(fig:shiny).
 The Shiny app thus allows users to quickly inspect basic properties of Peekbanks datasets and create reproducible visualizations without incurring any of the technical overhead required to access the database through R.
 
