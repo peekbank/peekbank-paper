@@ -13,7 +13,7 @@ library(lme4)
 
 # Seed for random number generation
 set.seed(42)
-knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed, cache = TRUE)
 ```
 
 
@@ -86,7 +86,7 @@ Seems like we want something that captures 1) the accuracy and 2) the rise comin
 
 ```{r}
 d_summary <- d_trial |>
-  group_by(dataset_name, dataset_id, subject_id,administration_id, stimulus_id) |>
+  group_by(dataset_name, dataset_id, subject_id, administration_id, stimulus_id) |>
   summarise(accuracy = mean(correct[t_norm > 0], na.rm=TRUE),
             prop_data = mean(!is.na(correct[t_norm > 0])))
 
@@ -242,3 +242,245 @@ ggplot(window_params, aes(x = t_start, y = icc, col = as.factor(t_end))) +
   geom_smooth(aes(group = as.factor(t_end)), se = FALSE)
 ```
 
+
+
+# Summarising the data
+
+Let's move forward with ALL THE DATA (tm). Window will be something like 500 - 4000  based on the above analysis (which is at best incomplete and at worst...).
+
+```{r}
+df <- d_trial |>
+    filter(t_norm > 500, t_norm < 4000) |>
+    group_by(dataset_name, dataset_id, administration_id, 
+             age, stimulus_id, english_stimulus_label) |>
+    summarise(accuracy = mean(correct[t_norm > 0], na.rm=TRUE),
+              prop_data = mean(!is.na(correct[t_norm > 0]))) 
+df <- df[complete.cases(df),]
+   
+```
+
+Plot all trials by all participants.
+
+```{r}
+ggplot(df, aes(x = age/12, y = accuracy)) + 
+  geom_point(alpha = .01) + 
+  geom_smooth() + 
+  geom_hline(lty = 2, yintercept = .5)
+```
+
+Try breaking this down by word.
+
+```{r}
+hf_words = df |>
+  group_by(english_stimulus_label) |> 
+  count() |>
+  filter(n > 500)
+
+ggplot(filter(df, english_stimulus_label %in% hf_words$english_stimulus_label, 
+              age <= 36),
+       aes(x = age/12, y = accuracy, col = english_stimulus_label)) + 
+  geom_point(alpha = .05) + 
+  geom_smooth(se=FALSE) + 
+  geom_hline(lty = 2, yintercept = .5)
+```
+
+We see lots of wiggliness here. Let's try to use a model to get this out. 
+
+Trying to get in some random effect structure without blowing everything up.
+
+```{r}
+df$age_scaled <- scale(df$age)
+mod <- lmer(accuracy ~ age_scaled + (1 | administration_id) + 
+       (age_scaled | english_stimulus_label) + 
+       (1 | dataset_name), 
+     data = df)
+
+summary(mod)
+```
+Let's extract and plot the random effects. 
+
+```{r}
+ranefs <- ranef(mod)$english_stimulus_label |>
+  tibble() |>
+  mutate(english_stimulus_label = rownames(ranef(mod)$english_stimulus_label)) |>
+  mutate(english_stimulus_label = fct_reorder(english_stimulus_label, 
+                                              `(Intercept)`)) |>
+  pivot_longer(cols = -english_stimulus_label, 
+               names_to = "coefficient", 
+               values_to = "value")
+  
+
+ggplot(filter(ranefs, english_stimulus_label %in% hf_words$english_stimulus_label),
+       aes(x = english_stimulus_label, y = value)) +
+  facet_wrap(~coefficient) + 
+  geom_point() + 
+  coord_flip()
+```
+One question we might want to ask is, what's the best measure of word difficulty. I'm not sure! I would have guessed that baby and car would be easy, but not frog or cookie necessarily! I also wouldn't have said that apple would be hard.
+
+If we do the predictions, though, we do see there are some very big study effects for the reflook studies, which have many kids and much older kids. This is tough variance to deal with. 
+
+```{r}
+newdata <- expand_grid(age_scaled = seq(min(df$age_scaled), max(df$age_scaled), .1), 
+                       english_stimulus_label = hf_words$english_stimulus_label)
+newdata$pred <- predict(mod, 
+                        newdata = newdata, 
+                        re.form = ~  (age_scaled | english_stimulus_label), 
+                        type = "response")
+newdata$age <- (newdata$age_scaled * sd(df$age)) + mean(df$age)
+
+ggplot(filter(df, english_stimulus_label %in% hf_words$english_stimulus_label),
+       aes(x = age/12, y = accuracy, col = english_stimulus_label)) + 
+  geom_point(alpha = .1) + 
+  geom_line(data = newdata, 
+            aes(x = age/12, y = pred, col = english_stimulus_label)) + 
+  ggrepel::geom_text_repel(data = filter(newdata, 
+                                         age == max(age)), 
+                           aes(label = english_stimulus_label, 
+                               y = pred)) + 
+  geom_hline(lty = 2, yintercept = .5) + 
+  xlab("Age (years)") + 
+  xlim(1, 6)
+```
+
+More generally, we can ask, what are our big goals for this analysis.
+
+1. Look at the "average" word recognition trajectory, item independent and  the functional form of the developmental change. 
+2. Predict item-wise variation, e.g. in slope or intercept.
+
+Let's try to sketch each of these. 
+
+# Goal 1: average recognition trajectory
+
+Let's start by noting that there appears to be some functional form to these curves. Descriptively, let's take a look at it word by word. 
+
+## Exponentials
+
+These asymptotic forms might be captured well by an exponential (following Kail 1990): 
+$$
+y \sim \alpha + \beta e^{-\gamma x}
+$$
+
+Where $x$ is age.
+
+```{r}
+filter(df, english_stimulus_label %in% hf_words$english_stimulus_label) |>
+ggplot(aes(x = age/12, y = accuracy)) + 
+  geom_point(alpha = .1) + 
+  geom_smooth() + 
+  geom_smooth(col = "red", method = "lm", formula = y ~ I((exp(1)**(-x)))) + 
+  geom_hline(lty = 2, yintercept = .5) + 
+  facet_wrap(~english_stimulus_label)
+```
+
+So the exponential model doesn't fit better, at least by AIC.
+
+```{r}
+# df$age_scaled <- scale(df$age)
+exp_mod <- lmer(accuracy ~ I((exp(1)**(-age_scaled))) + (1 | administration_id) + 
+       (I((exp(1)**(-age_scaled))) | english_stimulus_label) + 
+       (1 | dataset_name), 
+     data = df)
+
+anova(mod,exp_mod)
+```
+
+We can still visualize. But it's clear that e.g. "car" is just increasing much more. 
+
+```{r}
+newdata$pred <- predict(exp_mod, 
+                        newdata = newdata, 
+                        re.form = ~ (I((exp(1)**(-age_scaled))) | english_stimulus_label), 
+                        type = "response")
+
+ggplot(filter(df, english_stimulus_label %in% hf_words$english_stimulus_label),
+       aes(x = age/12, y = accuracy, col = english_stimulus_label)) + 
+  geom_point(alpha = .1) + 
+  geom_line(data = newdata, 
+            aes(x = age/12, y = pred, col = english_stimulus_label)) + 
+  ggrepel::geom_text_repel(data = filter(newdata, 
+                                         age == max(age)), 
+                           aes(label = english_stimulus_label, 
+                               y = pred)) + 
+  geom_hline(lty = 2, yintercept = .5) + 
+  xlab("Age (years)") + 
+  xlim(1, 6)
+```
+
+## Logits
+
+One more try, let's use a half-logit. That would be:
+
+$$
+y \sim .5 + .5\frac{1}{1+e^{\alpha + \beta x}}
+$$
+
+
+```{r}
+# df$age_scaled <- scale(df$age)
+hl_mod <- lmer(accuracy ~ I(.5 + .5 * (1 / (1 + exp(1)^(age_scaled)))) + (1 | administration_id) + 
+       (I(.5 + .5 * (1 / (1 + exp(1)^(age_scaled))))| english_stimulus_label) + 
+       (1 | dataset_name), 
+     data = df)
+
+summary(hl_mod)
+```
+
+```{r}
+anova(mod,hl_mod)
+```
+
+Somewhat surprisingly, this works and fits better by quite a bit! 
+
+```{r}
+newdata$pred <- predict(hl_mod, 
+                        newdata = newdata, 
+                        re.form = ~ (I(.5 + .5 * (1 / (1 + exp(1)^(age_scaled)))) | english_stimulus_label), 
+                        type = "response")
+
+ggplot(filter(df, english_stimulus_label %in% hf_words$english_stimulus_label),
+       aes(x = age/12, y = accuracy, col = english_stimulus_label)) + 
+  geom_point(alpha = .1) + 
+  geom_line(data = newdata, 
+            aes(x = age/12, y = pred, col = english_stimulus_label)) + 
+  ggrepel::geom_text_repel(data = filter(newdata, 
+                                         age == max(age)), 
+                           aes(label = english_stimulus_label, 
+                               y = pred)) + 
+  geom_hline(lty = 2, yintercept = .5) + 
+  xlab("Age (years)") + 
+  xlim(1, 6)
+```
+Ok, so this is kind of entertaining, but it's not working perfectly in that the curves are all being shifted by an intercept, rather than the parameters of the logit being shifted... really we want to push the intercept inside the half-logit so that its slope gets moved around. Not sure how to do that right now. 
+
+Onward. 
+
+## Average developmental trajectory
+
+```{r}
+
+newdata$pred <- predict(hl_mod, 
+                        newdata = newdata, 
+                        re.form = NA, 
+                        type = "response")
+
+ggplot(filter(df, english_stimulus_label %in% hf_words$english_stimulus_label),
+       aes(x = age/12, y = accuracy, col = english_stimulus_label)) + 
+  geom_point(alpha = .1) + 
+  geom_line(data = newdata, 
+            aes(x = age/12, y = pred), col = "black", size = 1) + 
+  ggrepel::geom_text_repel(data = filter(newdata, 
+                                         age == max(age)), 
+                           aes(label = english_stimulus_label, 
+                               y = pred)) + 
+  geom_hline(lty = 2, yintercept = .5) + 
+  scale_color_discrete(guide = "none") + 
+  xlab("Age (years)") + 
+  xlim(1, 6)
+```
+
+Doesn't look half bad.
+
+# Goal 2: Compare to Wordbank AoAs
+
+Unfinished.
