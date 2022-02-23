@@ -1,0 +1,218 @@
+---
+title: "Trial analysis 2: reliability and data"
+author: "Mike"
+date: "2/19/2021"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    code_folding: hide
+---
+
+```{r setup, echo = FALSE}
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(peekbankr))
+suppressPackageStartupMessages(library(lme4))
+suppressPackageStartupMessages(library(ggpmisc))
+suppressPackageStartupMessages(library(ggrepel))
+suppressPackageStartupMessages(library(ggthemes))
+
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed, cache = TRUE, 
+                      message=FALSE, warning=FALSE, error=FALSE)
+
+load(file = here("explorations","data","d_trial.Rds"))
+```
+
+
+## Curve summaries
+
+Now think about what the basic curve is and how to get out various measures. 
+
+```{r}
+ggplot(d_trial, aes(x = t_norm, y = correct)) + 
+  xlim(-2000,3500)+
+  geom_smooth()
+```
+
+Seems like we want something that captures 1) the accuracy and 2) the rise coming soon after zero (RT).
+
+<!-- (Comment MZ: this summary is a little bit atypical in that the common convention is to summarize average accuracy for each trial first, and then average across items/ within subjects). This is meant e.g. to deal with missing data, e.g. the fact that different trials will have different amounts of (non-missing) looking data. Also note that we are summarizing by administrations, not subjects.) -->
+
+```{r}
+d_summary <- d_trial |>
+  group_by(dataset_name, dataset_id, subject_id, administration_id, stimulus_id) |>
+  summarise(accuracy = mean(correct[t_norm > 0], na.rm=TRUE),
+            prop_data = mean(!is.na(correct[t_norm > 0])))
+
+ggplot(d_summary, aes(x = prop_data, y = accuracy)) +
+  geom_point(alpha = .05)
+```
+There's a lot of missing data and a lot of "zoners" (kids who look only at one side). Zoners are not just missing data kids.
+
+```{r}
+ggplot(filter(d_summary, prop_data > .75),
+       aes(x = accuracy)) + 
+  geom_histogram()
+```
+
+## Exclusions
+
+Should we exclude data to get a more reliable measure? Here are two different decisions we could optimize:
+
+1. exclude zoners?
+2. exclude based on prop data
+
+Let's try to figure those out. 
+
+We're going to use ICCs, with McGraw & Wong (1996). It seems like we want two-way random effects, no interaction (subjects and items are meaningful). This is type "2A." We want average agreement across units.
+
+One big decision is whether to look across stimulus items, rather than across kids. Across stimulus items returns *much* higher values. This is in part because we typically have more kids than items, and kids are sort of like "raters." 
+
+```{r}
+#devtools::install_github("jmgirard/agreement")
+library(agreement)
+
+get_icc <- function (x, column = "accuracy", object = "stimulus") {
+  if (object == "stimulus") {
+    iccs <- dim_icc(x, 
+                    model = "2A", 
+                    type = "agreement", 
+                    unit = "average",
+                    object = stimulus_id, 
+                    rater = administration_id,
+                    score = {{column}}, 
+                    bootstrap = 0)
+  } else {
+    iccs <- dim_icc(x, 
+                    model = "2A", 
+                    type = "agreement", 
+                    unit = "average",
+                    object = administration_id, 
+                    rater = stimulus_id,
+                    score = {{column}}, 
+                    bootstrap = 0)
+  }
+  
+  return(iccs$Inter_ICC)
+}
+
+iccs <- d_summary |>
+  group_by(dataset_name) |> 
+  nest() |>
+  mutate(icc_acc = unlist(map(data, get_icc))) |>
+  select(-data) |>
+  unnest(cols = c())
+
+knitr::kable(iccs, digits = 2)
+```
+
+Let's look at one dataset. Here are the stimulus and administration ICCs for Swingley & Aslin (2002).
+
+```{r}
+sa <- d_summary |> 
+  filter(dataset_name == "swingley_aslin_2002")
+
+get_icc(sa, object = "stimulus")
+get_icc(sa, object = "administration")
+
+# ggplot(sa, aes(x = administration_id, y = accuracy, col = factor(stimulus_id))) +
+  # geom_jitter(alpha = .2, width = .5) + 
+  # geom_smooth(method = "lm", formula = y ~ 1, se = FALSE)
+  
+```
+
+I don't understand the zero. 
+
+Now try to do this programmatically across all datasets.  
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+
+icc_sim <- function (zoners_included, exclude_less_than, object) 
+{
+  df <- d_summary |>
+    filter(prop_data > exclude_less_than)
+  
+  # drop zoners
+  if (zoners_included == FALSE) { 
+    df <- filter(df, accuracy > 0, accuracy < 1) 
+  }
+  
+  # compute ICCs
+  df |> 
+    group_by(dataset_name) |> 
+    nest() |>
+    mutate(icc = unlist(map(data, ~get_icc(., "accuracy", object)))) |>
+    select(-data) |>
+    unnest(cols = c()) 
+}
+
+excl_params <- expand_grid(zoners_included = c(FALSE, TRUE),
+                           exclude_less_than = seq(.1, .9, .1), 
+                           object = c("stimulus", "administration")) |>
+  mutate(icc = pmap(list(zoners_included, exclude_less_than, object), icc_sim)) |>
+  unnest(col = icc)
+```
+
+```{r}
+ggplot(excl_params,
+       aes(x = exclude_less_than, y = icc, col = zoners_included)) + 
+  geom_jitter(width = .01, alpha = .5) + 
+  geom_smooth(method = "lm") + 
+  facet_wrap(~object)
+```
+
+Looks to me like excluding zoners isn't a clear win (and a loss for stimulus ICC). Further, excluding on amount of data doesn't seem to gain us reliability. 
+
+I find this surprising and want to double check from other perspectives. 
+
+## Window size
+
+These simulations use ICCs as a way to understand how we summarize accuracy data. In particular, we're going to look at how ICCs change as a function of window size. 
+
+```{r warning=FALSE, message=FALSE, error=FALSE}
+icc_window_sim <- function (t_start = 0, t_end = 4000, object) 
+{
+  df <- d_trial |>
+    filter(t_norm > t_start, t_norm < t_end) |>
+    group_by(dataset_name, dataset_id, administration_id, stimulus_id) |>
+    summarise(accuracy = mean(correct[t_norm > 0], na.rm=TRUE),
+              prop_data = mean(!is.na(correct[t_norm > 0])))
+  
+  # compute ICCs
+  df |> 
+    group_by(dataset_name) |> 
+    nest() |>
+    mutate(icc = unlist(map(data, ~get_icc(., "accuracy", object)))) |>
+    select(-data) |>
+    unnest(cols = c()) 
+}
+
+window_params <- expand_grid(t_start = seq(0,1750,250),
+                             t_end = seq(2000,4000,250),
+                             object = c("stimulus", "administration")) |>
+  mutate(icc = pmap(list(t_start, t_end, object), icc_window_sim)) |>
+  unnest(col = icc)
+
+```
+
+```{r}
+ggplot(window_params, aes(x = t_start, y = icc, col = as.factor(t_end))) + 
+  geom_jitter() + 
+  facet_wrap(~object) + 
+  geom_smooth(aes(group = as.factor(t_end)), se = FALSE)
+```
+
+Looks like for stimulus and administration you get consistent but modest gains if you take the longest window. BUT for stimuli, the early part of the trial adds reliability (probably because of bias due to stimulus-level preferences?). In contrast, for administrations, the early part of the trial is less informative. 500ms seems like a pretty good compromise. 
+
+## Directions
+
+Some notes from call on 2/17:
+
+1. try to understand the # trial and # subject effects on ICCs. why the zeros? 
+2. consider what happens when you look at times before 0, e.g. to identify zoners
+3. windows that include this time period might have high stimulus reliability because they get bias. 
+4. can you look at windows across age effects - older kids might need shorter windows
