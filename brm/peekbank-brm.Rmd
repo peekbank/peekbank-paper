@@ -108,6 +108,7 @@ documentclass     : "apa6"
 classoption       : "man"
 output:
   papaja::apa6_pdf:
+    keep_tex: true
     highlight: tango
 header-includes:
     - \usepackage{setspace}
@@ -929,7 +930,12 @@ target_word_data <- aoi_data_joined |>
 
 Finally, we plot the data as time courses split by age. Our plotting code is shown below (with styling commands removed for clarity). Figure \@ref(fig:target-word-plot) shows the resulting plot, with time courses for each of three (rather coarse) age bins. 
 Although some baseline effects are visible across items, we still see clear and consistent increases in looking to the target, with the increase appearing earlier and in many cases asymptoting at a higher level for older children. 
-On the other hand, this simple averaging approach ignores study-to-study variation (perhaps responsible for the baseline effects we see in the *apple* and *frog* items especially). 
+
+This simple averaging approach is a proof-of-concept to demonstrate some of the potential of the Peekbank dataset. 
+An eye-movement trajectory on an individual trial reflects myriad factors, including the age and ability of the child, the target and distractor stimuli on that trial, the position of the trial within the experiment, and the general parameters of the experiment (for example, stimulus timing, eye-tracker type and calibration, etc.). 
+Although we often neglect these statistically in the analysis of individual experiments -- for example, averaging across items and trial orders -- they may lead to imprecision when we average across multiple studies in Peekbank. 
+For example, studies with older children may use more difficult items or faster trial timing, leading to the impression that children's abilities overall increase more slowly than they do in fact. 
+Even in our example in Figure \@ref(fig:target-word-plot), we see hints of this confounding -- for example, the low baseline looks to *apple* may be an artifact of an attractive distractor being paired with this item in one or two studies.
 In future work, we hope to introduce model-based analytic methods that use mixed effects regression to factor out study-level and individual-level variance in order to recover developmental effects more appropriately [see e.g., @zettersten2021 for a prototype of such an analysis]. 
 
 ```{r target_word_plot_demo, fig.env = "figure", echo = TRUE, eval = FALSE}
@@ -966,9 +972,10 @@ Recent years have seen a growing effort to build open source tools and pool rese
 The Peekbank project expands on these efforts by building an infrastructure for aggregating eye-tracking data across studies, with a specific focus on the looking-while-listening paradigm.
 This paper presents an overview of the structure of the database, shows how users can access the database, and demonstrates how it can be used both to investigate prior experiments and to synthesize data across studies.
 
-The current database has a number of limitations, particularly in its number and diversity of datasets.
-With 20 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have substantial influence on modeling results.
-Expanding the set of distinct datasets will allow us to increase the number of observations per item across datasets, leading to more robust generalizations across item-level variability.
+The current database has a number of limitations, particularly in the number and diversity of datasets it contains.
+With 20 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have a substantial influence on the results of particular analyses, as discussed above in our item analysis example.
+Expanding the set of distinct datasets will allow us to increase the number of datasets that contain specific items, leading to more robust generalizations across the many sources of variation that are confounded within studies (e.g., item set, participant age range, and specific experimental parameters).
+A critical next step will be the development of analytic models that take this structure into account in making generalizations across datasets.  
 The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background [@muthukrishna2020;@Henrich2010].
 Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
 
