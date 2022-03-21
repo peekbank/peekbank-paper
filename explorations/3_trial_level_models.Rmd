@@ -211,8 +211,6 @@ cowplot::plot_grid(t_item_plot, td_item_plot)
 
 Feels like this made a bit of a difference but perhaps not enough?
 
-
-
 # Other curve types
 
 Let's start by noting that there appears to be some functional form to these curves. Maybe capturing this form will help us summarize.  Descriptively, let's take a look at it word by word. 
