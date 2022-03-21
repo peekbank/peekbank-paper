@@ -976,8 +976,10 @@ The current database has a number of limitations, particularly in the number and
 With 20 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have a substantial influence on the results of particular analyses, as discussed above in our item analysis example.
 Expanding the set of distinct datasets will allow us to increase the number of datasets that contain specific items, leading to more robust generalizations across the many sources of variation that are confounded within studies (e.g., item set, participant age range, and specific experimental parameters).
 A critical next step will be the development of analytic models that take this structure into account in making generalizations across datasets.  
+A second limitation stems from the fact that the database represents a convenience sample of data readily available to the Peekbank team, which leads the database to be relatively homogeneous in a number of key respects.
+First, the datasets primarily come from labs that share similar theoretical perspectives and implement the looking-while-listening method in similar ways.
 The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background [@muthukrishna2020;@Henrich2010].
-Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
+Increasing the diversity of lab sources, participant backgrounds, and languages will expand the scope of the generalizations we can form about child word recognition, while also providing new opportunities for describing cross-lab, cross-cultural, and cross-linguistic variation.
 
 Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development.
 Gaze behavior has been at the core of many key advances in our understanding of infant cognition [@bergelson2012; @Aslin2007; @Baillargeon1985; @Quinn1993; @Fantz1963; @Liu2017].
