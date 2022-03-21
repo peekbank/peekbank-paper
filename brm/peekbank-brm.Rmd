@@ -382,20 +382,21 @@ saveRDS(overall_aoi_data_joined, here("brm","data","overall_aoi_data_joined.rds"
 saveRDS(dataset_info,here("brm","data","dataset_info.rds"))
 ```
 
-```{r eval = FALSE}
+```{r eval = TRUE, cache=TRUE}
 aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.rds"))
+dataset_info <- readRDS(here("brm","data","dataset_info.rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
 iso_codes <- read_csv(here("brm","data","iso_language_codes.csv"))
 
 dataset_unique_subj <- dataset_info |>
   distinct(subject_id,sex)
 
-summarize_novel_familiar <- overall_aoi_data_joined |>
+summarize_novel_familiar <- aoi_data_joined |>
   group_by(dataset_name,stimulus_novelty) |>
   summarize(n=n()) |>
   left_join(dataset_name_mapping) |>
-  pivot_wider(id_cols=dataset_rename,names_from = stimulus_novelty,values_from=n) |>
-  group_by(dataset_rename) |>
+  pivot_wider(id_cols=dataset_name,names_from = stimulus_novelty,values_from=n) |>
+  group_by(dataset_name) |>
   summarize(
     has_familiar = ifelse(is.na(familiar)|familiar==0,0,1),
     has_novel=ifelse(is.na(novel)|novel==0,0,1)
@@ -405,7 +406,7 @@ saveRDS(summarize_novel_familiar, here("brm", "data", "summarize_novel_familiar.
 
 summarize_datasets <- dataset_info |>
   left_join(dataset_name_mapping) |>
-  group_by(dataset_rename, apa_cite) |>
+  group_by(dataset_name, apa_cite) |>
   summarize(
     #num_admin=length(unique(administration_id)),
     num_subj=length(unique(subject_id)),
@@ -450,7 +451,7 @@ summarize_datasets <- dataset_info |>
   # native language special cases
   mutate(
     language = case_when(
-      dataset_rename == "tseltal" ~ "Tseltal",
+      dataset_name == "casillas_tseltal_2015" ~ "Tseltal",
       TRUE ~ language)) |>
   #convert age range into one column
   mutate(age_range_months= paste(min_age_months,max_age_months,sep=" - ")) |>
@@ -459,7 +460,7 @@ summarize_datasets <- dataset_info |>
       is.na(apa_cite) ~ "unpublished",
       TRUE ~ apa_cite
   )) |>
-  select(apa_cite,dataset_rename, num_subj,avg_age,age_range_months,method,language) |>
+  select(apa_cite,dataset_name, num_subj,avg_age,age_range_months,method,language) |>
   arrange(apa_cite)
 
 saveRDS(summarize_datasets, here("brm", "data", "summarize_datasets.rds"))
@@ -474,12 +475,12 @@ saveRDS(summarize_datasets, here("brm", "data", "summarize_datasets.rds"))
 #       age<=60 ~ "(48,60]"
 #     )
 #   ) |>
-#   group_by(dataset_rename,age_bin) |>
+#   group_by(dataset_name,age_bin) |>
 #   summarize(
 #     num_subj=length(unique(subject_id)))
 ```
 
-```{r dataset-table}
+```{r dataset-table, cache=FALSE}
 dataset_info <- readRDS(here("brm","data","dataset_info.rds"))
 summarize_novel_familiar <- readRDS(here("brm", "data", "summarize_novel_familiar.rds"))
 dataset_unique_subj <- dataset_info |>
@@ -501,7 +502,7 @@ nocite: |
   @Pomper2016; @Yurovsky2013; @Byers-Heinlein2017; @Frank2016; @Casillas2017; @Adams2018; @Potter2019; @Mahr2015; @Pomper2019; @Garrison2020; @Perry2017; @Swingley2002; @Yurovsky2017; @Ronfard2021; @Hurtado2007; @Weisleder2013; @Hurtado2008; @Fernald2013; @YurovskyWadeKrausUnpub; @PotterLewWilliamsUnpub
 ...
 
-The database currently includes `r length(summarize_datasets$dataset_rename)` looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table 1).
+The database currently includes `r length(summarize_datasets$dataset_name)` looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table 1).
 The current data represents a convenience sample of datasets that were (a) datasets collected by or available to Peekbank team members, (b) made available to Peekbank after informal inquiry or (c) datasets that were openly available.
 Most datasets (`r sum(summarize_datasets$language=="English")` out of `r length(summarize_datasets$language)` total) consist of data from monolingual native English speakers. 
 They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),3)*100`% female; `r round(mean(dataset_unique_subj$sex=="male"),3)*100`% male; `r round(mean(dataset_unique_subj$sex=="unspecified"),3)*100`% unreported). 
