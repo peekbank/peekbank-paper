@@ -82,7 +82,7 @@ authornote: |
 
   **Open Practices Statement.** All code for reproducing the paper is available at https://github.com/langcog/peekbank-paper. Raw and standardized datasets are available on the Peekbank OSF repository (https://osf.io/pr6wu/) and can be accessed using the peekbankr R package (https://github.com/langcog/peekbankr).
 
-  **CRediT author statement.** Outside of the position of the first and the last author, authorship position was determined by sorting authors' last names in reverse alphabetical order. An overview over authorship contributions following the CRediT taxonomy can be viewed here: https://docs.google.com/spreadsheets/d/e/2PACX-1vRD-LJD_dTAQaAynyBlwXvGpfAVzP-3Pi6JTDoG15m3PYZe0c44Y12U2a_hwdmhIstpjyigG2o3na4y/pubhtml.
+  **CRediT author statement.** Outside of the position of the first and the last author, authorship position was determined by sorting authors' last names in reverse alphabetical order. An overview of authorship contributions following the CRediT taxonomy can be viewed here: https://docs.google.com/spreadsheets/d/e/2PACX-1vRD-LJD_dTAQaAynyBlwXvGpfAVzP-3Pi6JTDoG15m3PYZe0c44Y12U2a_hwdmhIstpjyigG2o3na4y/pubhtml.
 abstract: |
   The ability to rapidly recognize words and link them to referents is central to children’s early language development. 
   This ability, often called word recognition in the developmental literature, is typically studied in the looking-while-listening paradigm, which measures infants’ fixation on a target object (vs. a distractor) after hearing a target label. 
@@ -262,6 +262,9 @@ Metadata can be separated into four parts: (1) participant-level information (e.
 
 #### Participant Information
 
+All information about individual participants in Peekbank is completely de-identified under United States law, containing none of the key identifiers listed under the "Safe Harbor" standard for data de-identification. 
+All participant-level linkages are made using anonymous participant identifiers. 
+
 Invariant information about individuals who participate in one or more studies (e.g, a participant's first language) is recorded in the `subjects` table, while the `administrations` table contains information about each individual session in a given study (see Session Information, below).
 This division allows Peekbank to gracefully handle longitudinal designs: a single participant can complete multiple sessions and thus be associated with multiple administrations.
 
@@ -320,15 +323,19 @@ One possible application of our new dataset is investigating the consequences of
 
 ## Processing, Validation, and Ingestion
 
-The `peekds` package offers functions to extract the above data. 
+Although Peekbank provides a common data format, the crux issue of populating the database is the conversion of existing datasets to this format. 
+Each dataset is imported via a custom import script, which documents the process of conversion.
+Often various decisions must be made in this import process (for example, how to characterize a particular trial type within the options available in the Peekbank schema); these scripts provide a reproducible record of this decision-making process. Our data import repository (available on GitHub at [https://github.com/langcog/peekbank-data-import](https://github.com/langcog/peekbank-data-import)) contains all of these scripts, links to internal documentation on data import, and a set of generic import templates for different formats.
+
+Many of the specific operations involved in importing a dataset can be abstracted across datasets. 
+The `peekds` package offers a library of these functions.
 Once the data have been extracted in a tabular form, the package also offers a validation function that checks whether all tables have the required fields and data types expected by the database.
-In an effort to double check the data quality and to make sure that no errors are made in the importing script, we create a time course plot based on our processed tables to replicate the results in the paper that first presented each dataset as part of the import procedure.
+In an effort to double check the data quality and to make sure that no errors are made in the importing script, we also typically perform a visual check of the import process, creating a time course plot to replicate the results in the paper that first presented each dataset
 Once this plot has been created and checked for consistency and all tables pass our validation functions, the processed dataset is ready for reprocessing into the database using the `peekbank` library. 
 This library applies additional data checks, and adds the data to the MySQL database using the Django web framework.
 
-Currently, the import process is carried out by the Peekbank team using data offered by other research teams. 
-In the future, we hope to allow research teams to carry out their own import processes with checks from the Peekbank team before reprocessing. 
-To this end, import script templates are available for both hand-coded datasets and automatic eye-tracking datasets for research teams to adapt to their data.
+To date, the import process has been carried out by the Peekbank team using data offered by other research teams.
+There is no technical obstacle to data contributors also providing an import script to facilitate contribution, though in practice creating these scripts requires familiarity with both R scripting and the specific Peekbank schema; writing a first import script can be somewhat time-consuming. 
 
 ## Current Data Sources
 
@@ -559,7 +566,7 @@ knitr::include_graphics(here("brm/figures","shiny-full-window.png")) #
 
 In addition to the Peekbank database proper, all data is openly available on the Peekbank OSF webpage ([https://osf.io/pr6wu/](https://osf.io/pr6wu/)).
 The OSF site also includes the original raw data (both time series data and metadata, such as trial lists and participant logs) that was obtained for each study and subsequently processed into the standardized Peekbank format.
-Users who are interested in inspecting or reproducing the processing pipeline for a given dataset can use the respective import script (openly available on GitHub, [https://github.com/langcog/peekbank-data-import](https://github.com/langcog/peekbank-data-import)) to download and process the raw data from OSF into its final standardized format.
+<!-- Users who are interested in inspecting or reproducing the processing pipeline for a given dataset can use the respective import script to download and process the raw data from OSF into its final standardized format. -->
 Where available, the OSF page also includes additional information about the stimuli used in each dataset, including in some instances the original stimulus sets (e.g., image and audio files).
 
 # Peekbank in Action
@@ -979,7 +986,16 @@ A critical next step will be the development of analytic models that take this s
 The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background [@muthukrishna2020;@Henrich2010].
 Increasing the diversity of participant backgrounds and languages will expand the scope of the generalizations we can form about child word recognition.
 
-Finally, while the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development.
+Towards the goal of expanding our database, we invite researchers to contribute their data. 
+On the Peekbank website we provide technical documentation for potential contributors. 
+Although we anticipate being involved in most new data imports, as discussed above, our import process is transparently documented and the repository contains examples for most commonly-used eye-trackers. 
+
+Contributing data to an open repository also can raise questions about participant privacy.
+Potential contributors should consult with their local institutional review boards for guidance on any challenges, but we do not foresee obstacles because of the de-identified nature of the data.
+Under United States regulation, all data contributed to Peekbank are considered de-identified and hence not considered "human subjects data"; hence, institional review boards should not regulate this contribution process. 
+Under the European Union's Generalized Data Protection Regulation (GDPR), labs may need to take special care to provide a separate set of participant identifiers that can never be re-linked to their own internal records.
+
+While the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development.
 Gaze behavior has been at the core of many key advances in our understanding of infant cognition [@bergelson2012; @Aslin2007; @Baillargeon1985; @Quinn1993; @Fantz1963; @Liu2017].
 Aggregating large datasets of infant looking behavior in a single, openly-accessible format promises to bring a fuller picture of infant cognitive development into view.
 
