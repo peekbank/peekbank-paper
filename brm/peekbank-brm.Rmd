@@ -165,8 +165,9 @@ The limitations of single datasets makes it difficult to understand developmenta
 One way to overcome this challenge is to compile existing datasets into a large-scale database in order to expand the scope of research questions that can be asked about the development of word recognition abilities. 
 This strategy capitalizes on the fact that the looking-while-listening paradigm is widely used, and vast amounts of data have been collected across labs on infants' word recognition over the past 35 years [@golinkoff2013].
 Such datasets have largely remained isolated from one another, but once combined, they have the potential to offer general insights into lexical development.
-Similar efforts to collect other measures of language development have borne fruit in recent years. 
-For example, WordBank aggregated data from the MacArthur-Bates Communicative Development Inventory, a parent-report measure of child vocabulary, to deliver new insights into cross-linguistic patterns and variability in vocabulary development [@frank2017; @frank2021].
+There has been a long history of efforts to aggregate data in a unified format in developmental and cognitive psychology, generating projects that have often had a tremendous impact on the field.
+Prominent examples in language research include the English Lexicon Project, which provides an open repository of psycholinguistic data for over 80,000 English words and non-words in order to support large-scale investigations of lexical processing [@Balota2007]; the Child Language Data Exchange System (CHILDES), which has played an instrumental role in the study of early language environments by systematizing and aggregating data from naturalistic child-caregiver language interactions [@macwhinney2000]; and WordBank, which aggregated data from the MacArthur-Bates Communicative Development Inventory, a parent-report measure of child vocabulary, to deliver new insights into cross-linguistic patterns and variability in vocabulary development [@frank2017; @frank2021].
+
 In this paper, we introduce *Peekbank*, an open database of infant and toddler eye-tracking data aimed at facilitating the study of developmental changes in children's word recognition.
 
 ## Measuring Word Recognition: The Looking-While-Listening Paradigm
