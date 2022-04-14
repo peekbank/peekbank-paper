@@ -337,6 +337,8 @@ This library applies additional data checks, and adds the data to the MySQL data
 
 To date, the import process has been carried out by the Peekbank team using data offered by other research teams.
 There is no technical obstacle to data contributors also providing an import script to facilitate contribution, though in practice creating these scripts requires familiarity with both R scripting and the specific Peekbank schema; writing a first import script can be somewhat time-consuming. 
+To support future data contributions, import script templates and examples are available for both hand-coded datasets and automatic eye-tracking datasets for research teams to adapt to their data.
+These import templates walk researchers through each step of data processing using example datasets from Peekbank and include explanations of key decision points during data processing, explanations of how to use various helper functions available in `peekds`, and further details about the database schema.
 
 ## Current Data Sources
 
