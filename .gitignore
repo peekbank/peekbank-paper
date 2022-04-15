@@ -40,7 +40,7 @@ vignettes/*.pdf
 .Renviron
 
 # LaTeX build files
-*.tex
+# *.tex
 *.log
 *.fff
 *.ttt
