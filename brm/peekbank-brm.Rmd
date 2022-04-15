@@ -94,7 +94,7 @@ abstract: |
   
   <!-- https://tinyurl.com/ybremelq -->
 keywords          : "word recognition; eye-tracking; vocabulary development; looking-while-listening; visual world paradigm; lexical processing"
-wordcount         : "6605"
+wordcount         : "7351"
 bibliography      : ["peekbank.bib","r-references.bib"]
 floatsintext      : yes
 figurelist        : no
@@ -295,6 +295,7 @@ For studies in which the same label refers to multiple images (e.g., the word *d
 
 The `administrations` table includes information about the participant or experiment that may change between sessions of the same study, even for the same participant.
 This includes the age of the participant, the coding method (eye-tracking vs. hand-coding), and the properties of the monitor that was used.
+For participant age, we include the fields `lab_age` and `lab_age_units` to record how the original lab encoded age, as well as an additional field, `age`, to encode age in a standardized format across datasets, using months as the common unit of measurement.
 
 #### Trial Information
 
@@ -338,7 +339,7 @@ This library applies additional data checks, and adds the data to the MySQL data
 To date, the import process has been carried out by the Peekbank team using data offered by other research teams.
 There is no technical obstacle to data contributors also providing an import script to facilitate contribution, though in practice creating these scripts requires familiarity with both R scripting and the specific Peekbank schema; writing a first import script can be somewhat time-consuming. 
 To support future data contributions, import script templates and examples are available for both hand-coded datasets and automatic eye-tracking datasets for research teams to adapt to their data.
-These import templates walk researchers through each step of data processing using example datasets from Peekbank and include explanations of key decision points during data processing, explanations of how to use various helper functions available in `peekds`, and further details about the database schema.
+These import templates walk researchers through each step of data processing using example datasets from Peekbank and include explanations of key decision points, examples of how to use various helper functions available in `peekds`, and further details about the database schema.
 
 ## Current Data Sources
 
@@ -385,7 +386,7 @@ saveRDS(overall_aoi_data_joined, here("brm","data","overall_aoi_data_joined.rds"
 saveRDS(dataset_info,here("brm","data","dataset_info.rds"))
 ```
 
-```{r eval = TRUE, cache=TRUE}
+```{r eval = FALSE, cache=TRUE}
 aoi_data_joined <- readRDS(here("brm","data","overall_aoi_data_joined.rds"))
 dataset_info <- readRDS(here("brm","data","dataset_info.rds"))
 dataset_name_mapping <- read_csv(here("brm","data","dataset_name_mapping.csv"))
@@ -942,13 +943,6 @@ target_word_data <- aoi_data_joined |>
 Finally, we plot the data as time courses split by age. Our plotting code is shown below (with styling commands removed for clarity). Figure \@ref(fig:target-word-plot) shows the resulting plot, with time courses for each of three (rather coarse) age bins. 
 Although some baseline effects are visible across items, we still see clear and consistent increases in looking to the target, with the increase appearing earlier and in many cases asymptoting at a higher level for older children. 
 
-This simple averaging approach is a proof-of-concept to demonstrate some of the potential of the Peekbank dataset. 
-An eye-movement trajectory on an individual trial reflects myriad factors, including the age and ability of the child, the target and distractor stimuli on that trial, the position of the trial within the experiment, and the general parameters of the experiment (for example, stimulus timing, eye-tracker type and calibration, etc.). 
-Although we often neglect these statistically in the analysis of individual experiments -- for example, averaging across items and trial orders -- they may lead to imprecision when we average across multiple studies in Peekbank. 
-For example, studies with older children may use more difficult items or faster trial timing, leading to the impression that children's abilities overall increase more slowly than they do in fact. 
-Even in our example in Figure \@ref(fig:target-word-plot), we see hints of this confounding -- for example, the low baseline looks to *apple* may be an artifact of an attractive distractor being paired with this item in one or two studies.
-In future work, we hope to introduce model-based analytic methods that use mixed effects regression to factor out study-level and individual-level variance in order to recover developmental effects more appropriately [see e.g., @zettersten2021 for a prototype of such an analysis]. 
-
 ```{r target_word_plot_demo, fig.env = "figure", echo = TRUE, eval = FALSE}
 ggplot(target_word_data, 
        aes(x = t_norm, y = correct, col = age_group)) + 
@@ -976,6 +970,13 @@ ggplot(target_word_data,
   theme(legend.position = "bottom")
 ```
 
+This simple averaging approach is a proof-of-concept to demonstrate some of the potential of the Peekbank dataset. 
+An eye-movement trajectory on an individual trial reflects myriad factors, including the age and ability of the child, the target and distractor stimuli on that trial, the position of the trial within the experiment, and the general parameters of the experiment (for example, stimulus timing, eye-tracker type and calibration, etc.). 
+Although we often neglect these statistically in the analysis of individual experiments -- for example, averaging across items and trial orders -- they may lead to imprecision when we average across multiple studies in Peekbank. 
+For example, studies with older children may use more difficult items or faster trial timing, leading to the impression that children's abilities overall increase more slowly than they do in fact. 
+Even in our example in Figure \@ref(fig:target-word-plot), we see hints of this confounding -- for example, the low baseline looks to *apple* may be an artifact of an attractive distractor being paired with this item in one or two studies.
+In future work, we hope to introduce model-based analytic methods that use mixed effects regression to factor out study-level and individual-level variance in order to recover developmental effects more appropriately [see e.g., @zettersten2021 for a prototype of such an analysis]. 
+
 # Discussion
 
 Theoretical progress in understanding child development requires rich datasets, but collecting child data is expensive, difficult, and time-intensive.
@@ -986,19 +987,19 @@ This paper presents an overview of the structure of the database, shows how user
 The current database has a number of limitations, particularly in the number and diversity of datasets it contains.
 With 20 datasets currently available in the database, idiosyncrasies of particular designs and condition manipulations still have a substantial influence on the results of particular analyses, as discussed above in our item analysis example.
 Expanding the set of distinct datasets will allow us to increase the number of datasets that contain specific items, leading to more robust generalizations across the many sources of variation that are confounded within studies (e.g., item set, participant age range, and specific experimental parameters).
-A critical next step will be the development of analytic models that take this structure into account in making generalizations across datasets.  
+A critical next step will be the development of analytic models that take this structure into account in making generalizations across datasets.
+
 A second limitation stems from the fact that the database represents a convenience sample of data readily available to the Peekbank team, which leads the database to be relatively homogeneous in a number of key respects.
 First, the datasets primarily come from labs that share similar theoretical perspectives and implement the looking-while-listening method in similar ways.
 The current database is also limited by the relatively homogeneous background of its participants, both with respect to language (almost entirely monolingual native English speakers) and cultural background [@muthukrishna2020;@Henrich2010].
 Increasing the diversity of lab sources, participant backgrounds, and languages will expand the scope of the generalizations we can form about child word recognition, while also providing new opportunities for describing cross-lab, cross-cultural, and cross-linguistic variation.
 
 Towards the goal of expanding our database, we invite researchers to contribute their data. 
-On the Peekbank website we provide technical documentation for potential contributors. 
+On the Peekbank website, we provide technical documentation for potential contributors. 
 Although we anticipate being involved in most new data imports, as discussed above, our import process is transparently documented and the repository contains examples for most commonly-used eye-trackers. 
-
 Contributing data to an open repository also can raise questions about participant privacy.
 Potential contributors should consult with their local institutional review boards for guidance on any challenges, but we do not foresee obstacles because of the de-identified nature of the data.
-Under United States regulation, all data contributed to Peekbank are considered de-identified and hence not considered "human subjects data"; hence, institional review boards should not regulate this contribution process. 
+Under United States regulation, all data contributed to Peekbank are considered de-identified and hence not considered "human subjects data"; hence, institutional review boards should not regulate this contribution process. 
 Under the European Union's Generalized Data Protection Regulation (GDPR), labs may need to take special care to provide a separate set of participant identifiers that can never be re-linked to their own internal records.
 
 While the current database is focused on studies of word recognition, the tools and infrastructure developed in the project can in principle be used to accommodate any eye-tracking paradigm, opening up new avenues for insights into cognitive development.
