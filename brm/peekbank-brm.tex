@@ -244,7 +244,6 @@ This strategy capitalizes on the fact that the looking-while-listening paradigm 
 Such datasets have largely remained isolated from one another, but once combined, they have the potential to offer general insights into lexical development.
 There has been a long history of efforts to aggregate data in a unified format in developmental and cognitive psychology, generating projects that have often had a tremendous impact on the field.
 Prominent examples in language research include the English Lexicon Project, which provides an open repository of psycholinguistic data for over 80,000 English words and non-words in order to support large-scale investigations of lexical processing (Balota et al., 2007); the Child Language Data Exchange System (CHILDES), which has played an instrumental role in the study of early language environments by systematizing and aggregating data from naturalistic child-caregiver language interactions (MacWhinney, 2000); and WordBank, which aggregated data from the MacArthur-Bates Communicative Development Inventory, a parent-report measure of child vocabulary, to deliver new insights into cross-linguistic patterns and variability in vocabulary development (Frank, Braginsky, Yurovsky, \& Marchman, 2017, 2021).
-
 In this paper, we introduce \emph{Peekbank}, an open database of infant and toddler eye-tracking data aimed at facilitating the study of developmental changes in children's word recognition.
 
 \hypertarget{measuring-word-recognition-the-looking-while-listening-paradigm}{%
@@ -280,7 +279,7 @@ Aggregating across many looking-while-listening studies has the potential to mee
 A core challenge facing psychology in general, and the study of infant development in particular, are threats to the replicability and reproducibility of core empirical results (Frank et al., 2017; Nosek et al., 2022).
 In infant research, many studies are not adequately powered to detect the main effects of interest (Bergmann et al., 2018).
 This issue is compounded by low reliability in infant measures, often due to limits on the number of trials that can be collected from an individual infant in an experimental session (Byers-Heinlein, Bergmann, \& Savalei, 2021).
-One hurdle to improving power in infant research is that it can be difficult to develop a priori estimates of effect sizes and how specific design decisions (e.g., the number of test trials) will impact power and reliability.
+One hurdle to improving power in infant research is that it can be difficult to develop \emph{a priori} estimates of effect sizes and how specific design decisions (e.g., the number of test trials) will impact power and reliability.
 Large-scale databases of infant behavior can aid researchers in their decision-making by allowing them to directly test how different design decisions affect power and reliability.
 For example, if a researcher is interested in understanding how the number of test trials could impact the power and reliability of their looking-while-listening design, a large-scale infant eye-tracking database would allow them to simulate possible outcomes across a range of test trials, providing the basis for data-driven design decisions.
 
@@ -293,8 +292,8 @@ Defining a data standard -- in this case, for infant eye-tracking experiments --
 Second, open databases make it easy for researchers to generate open and reproducible analytic pipelines, both for individual studies and for analyses aggregating across datasets.
 Creating open analytic pipelines across many datasets also serves a pedagogical purpose, providing teaching examples illustrating how to implement analytic techniques used in influential studies and how to conduct reproducible analyses with infant eye-tracking data.
 
-\hypertarget{peekbank-an-open-database-of-developmental-eye-tracking-studies.}{%
-\subsection{Peekbank: An open database of developmental eye-tracking studies.}\label{peekbank-an-open-database-of-developmental-eye-tracking-studies.}}
+\hypertarget{peekbank-an-open-database-of-developmental-eye-tracking-studies}{%
+\subsection{Peekbank: An open database of developmental eye-tracking studies}\label{peekbank-an-open-database-of-developmental-eye-tracking-studies}}
 
 What all of these open challenges share is that they are difficult to address at the scale of a single research lab or in a single study.
 To address this challenge, we developed \emph{Peekbank}, a flexible and reproducible interface to an open database of developmental eye-tracking studies.
@@ -765,7 +764,7 @@ Although some baseline effects are visible across items, we still see clear and 
 This simple averaging approach is a proof-of-concept to demonstrate some of the potential of the Peekbank dataset.
 An eye-movement trajectory on an individual trial reflects myriad factors, including the age and ability of the child, the target and distractor stimuli on that trial, the position of the trial within the experiment, and the general parameters of the experiment (for example, stimulus timing, eye-tracker type and calibration, etc.).
 Although we often neglect these statistically in the analysis of individual experiments -- for example, averaging across items and trial orders -- they may lead to imprecision when we average across multiple studies in Peekbank.
-For example, studies with older children may use more difficult items or faster trial timing, leading to the impression that children's abilities overall increase more slowly than they do in fact.
+For example, studies with older children may use more difficult items or faster trial timing, leading to the impression that children's abilities overall increase more slowly than they in fact do.
 Even in our example in Figure \ref{fig:target-word-plot}, we see hints of this confounding -- for example, the low baseline looks to \emph{apple} may be an artifact of an attractive distractor being paired with this item in one or two studies.
 In future work, we hope to introduce model-based analytic methods that use mixed effects regression to factor out study-level and individual-level variance in order to recover developmental effects more appropriately (see e.g., Zettersten et al., 2021 for a prototype of such an analysis).
 
