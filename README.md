@@ -8,7 +8,7 @@ Papers for the Peekbank project (https://peekbank.stanford.edu/).
 
 Manuscript files and analysis scripts for paper submitted to Behavior Research Methods
 
-Zettersten, M., Bergey, C. A., Bhatt, N., Boyce, V., Braginsky, M., Carstensen, A., deMayo, B., Handa, K. Kachergis, G., Lewis, M., Long, B., MacDonald, K., Mankewitz, J., Marchman, V., Meylan, S. C., Saleh, A. N., Schneider, R. M., Tsui, A.S.T., Uner, S., Xu, T. L., Yurovsky, D., & Frank, M.C. (2022). Peekbank: An open, large-scale repository for developmental eye-tracking data of children’s word recognition. *PsyArXiv*. 
+Zettersten, M., Yurovsky, D., Xu, T. L., Uner, S., Tsui, A.S.T., Schneider, R. M., Saleh, A. N., Meylan, S. C., Marchman, V., Mankewitz, J., MacDonald, K., Long, B., Lewis, M., Kachergis, G., Handa, K., deMayo, B., Carstensen, A., Braginsky, M., Boyce, V., Bhatt, N., Bergey, C. A., & Frank, M.C. (2022). Peekbank: An open, large-scale repository for developmental eye-tracking data of children’s word recognition. *PsyArXiv*. https://psyarxiv.com/tgnzv
 
 ### bu2021
 
