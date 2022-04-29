@@ -45,7 +45,7 @@ author:
     affiliation   : "5"
   - name          : "Naiti S. Bhatt"
     affiliation   : "12"
-  - name          : "Claire Bergey"
+  - name          : "Claire Augusta Bergey"
     affiliation   : "13"
   - name          : "Michael C. Frank"
     affiliation   : "5"
@@ -78,7 +78,7 @@ affiliation:
     institution   : "Department of Psychology, University of Chicago"
 
 authornote: |
-  **Acknowledgements.** We would like to thank the labs and researchers that have made their data publicly available in the database. For further information about contributions, see https://langcog.github.io/peekbank-website/docs/contributors/.
+  **Acknowledgements.** We would like to thank the labs and researchers that have made their data publicly available in the database. For further information about contributions, see https://langcog.github.io/peekbank-website/docs/contributors/. This work was supported in part by grants from the National Institutes of Health awarded to VM (R01 HD092343, 2R01 HD069150). 
 
   **Open Practices Statement.** All code for reproducing the paper is available at https://github.com/langcog/peekbank-paper. Raw and standardized datasets are available on the Peekbank OSF repository (https://osf.io/pr6wu/) and can be accessed using the peekbankr R package (https://github.com/langcog/peekbankr).
 
@@ -94,7 +94,7 @@ abstract: |
   
   <!-- https://tinyurl.com/ybremelq -->
 keywords          : "word recognition; eye-tracking; vocabulary development; looking-while-listening; visual world paradigm; lexical processing"
-wordcount         : "7351"
+wordcount         : "7369"
 bibliography      : ["peekbank.bib","r-references.bib"]
 floatsintext      : yes
 figurelist        : no
@@ -253,7 +253,7 @@ knitr::include_graphics(here("brm/figures","peekbankflowchartv6.png"))
 
 The Peekbank database contains two major types of data: (1) metadata regarding experiments, participants, and trials, and (2) time course looking data, detailing where a child is looking on the screen at a given point in time (Fig. \@ref(fig:fig-schema)). 
 
-```{r fig-schema, fig.env = "figure", fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "The Peekbank schema. Each darker rectangle represents a table in the relational database."}
+```{r fig-schema, fig.env = "figure", fig.align = "center", out.height="4.5in", set.cap.width=T, num.cols.cap=1, fig.cap = "The Peekbank schema. Each darker rectangle represents a table in the relational database. AOIs are areas of interest in an eye-tracking experiment, in this case information about the position of target and distractor stimuli on the screen."}
 knitr::include_graphics(here("brm/figures","schema_3.png"))
 ```
 
@@ -281,7 +281,7 @@ Information about the experimental design is split across the `trial_types` and 
 The `trial_types` table encodes information about each trial \textit{in the design of the experiment} ^[We note that the term \textit{trial} is ambiguous and could be used to refer to both a particular combination of stimuli seen by many participants and a participant seeing that particular combination at a particular point in the experiment. We track the former in the `trial_types` table and the latter in the `trials` table.], including the target stimulus and location (left vs. right), the distractor stimulus and location, and the point of disambiguation for that trial.
 If a dataset used automatic eye-tracking rather than manual coding, each trial type is additionally linked to a set of area of interest (x, y) coordinates, encoded in the `aoi_region_sets` table.
 The `trial_types` table links trial types to the `aoi_region_sets` table and the `trials` table.
-Each trial_type record links to two records in the `stimuli` table, identified by the `distractor_id` and the `target_id` fields.
+Each trial type record links to two records in the `stimuli` table, identified by the `distractor_id` and the `target_id` fields.
 
 
 Each record in the `stimuli` table is a (word, image) pair.
@@ -295,7 +295,7 @@ For studies in which the same label refers to multiple images (e.g., the word *d
 
 The `administrations` table includes information about the participant or experiment that may change between sessions of the same study, even for the same participant.
 This includes the age of the participant, the coding method (eye-tracking vs. hand-coding), and the properties of the monitor that was used.
-For participant age, we include the fields `lab_age` and `lab_age_units` to record how the original lab encoded age, as well as an additional field, `age`, to encode age in a standardized format across datasets, using months as the common unit of measurement.
+For participant age, we include the fields `lab_age` and `lab_age_units` to record how the original lab encoded age, as well as an additional field, `age`, to encode age in a standardized format across datasets, using standardized months as the common unit of measurement (see the Peekbank codebook for details on how ages are converted into months).
 
 #### Trial Information
 
@@ -320,24 +320,25 @@ All data in the database is resampled to 40 Hz (observations every 25 ms), which
 Further, 25 ms is a mathematically convenient interval for ensuring consistent resampling; we found that using 33.333 ms (30 Hz) as our interval simply introduced a large number of technical complexities. 
 The resampling operation is accomplished using the `resample_times()` function.
 During the resampling process, we interpolate using constant interpolation, selecting for each interpolated timepoint the looking location for the earlier-observed time point in the original data for both `aoi_timepoints` and `xy_timepoints` data.
-Compared to linear interpolation [see e.g., @Wass2013] -- which fills segments of missing or unobserved time points by interpolating between the observed locations of timepoints at the beginning and end of the interpolated segment --, constant interpolation has the advantage that it is more conservative, in the sense that it does not introduce new look locations beyond those measured in the original data.
+Compared to linear interpolation [see e.g., @Wass2013], which fills segments of missing or unobserved time points by interpolating between the observed locations of timepoints at the beginning and end of the interpolated segment, constant interpolation has the advantage that it is more conservative, in the sense that it does not introduce new look locations beyond those measured in the original data.
 One possible application of our new dataset is investigating the consequences of other interpolation functions for data analysis.
 
 ## Processing, Validation, and Ingestion
 
-Although Peekbank provides a common data format, the crux issue of populating the database is the conversion of existing datasets to this format. 
+Although Peekbank provides a common data format, the key hurdle to populating the database is converting existing datasets to this format. 
 Each dataset is imported via a custom import script, which documents the process of conversion.
 Often various decisions must be made in this import process (for example, how to characterize a particular trial type within the options available in the Peekbank schema); these scripts provide a reproducible record of this decision-making process. Our data import repository (available on GitHub at [https://github.com/langcog/peekbank-data-import](https://github.com/langcog/peekbank-data-import)) contains all of these scripts, links to internal documentation on data import, and a set of generic import templates for different formats.
 
 Many of the specific operations involved in importing a dataset can be abstracted across datasets. 
 The `peekds` package offers a library of these functions.
 Once the data have been extracted in a tabular form, the package also offers a validation function that checks whether all tables have the required fields and data types expected by the database.
-In an effort to double check the data quality and to make sure that no errors are made in the importing script, we also typically perform a visual check of the import process, creating a time course plot to replicate the results in the paper that first presented each dataset
+In an effort to double check the data quality and to make sure that no errors are made in the importing script, we also typically perform a visual check of the import process, creating a time course plot to replicate the results in the paper that first presented each dataset.
 Once this plot has been created and checked for consistency and all tables pass our validation functions, the processed dataset is ready for reprocessing into the database using the `peekbank` library. 
 This library applies additional data checks, and adds the data to the MySQL database using the Django web framework.
 
 To date, the import process has been carried out by the Peekbank team using data offered by other research teams.
-There is no technical obstacle to data contributors also providing an import script to facilitate contribution, though in practice creating these scripts requires familiarity with both R scripting and the specific Peekbank schema; writing a first import script can be somewhat time-consuming. 
+Data contributors are also welcome to provide import scripts to facilitate contribution.
+However, creating these scripts requires familiarity with both R scripting and the specific Peekbank schema, and writing an import script can be somewhat time-consuming in practice. 
 To support future data contributions, import script templates and examples are available for both hand-coded datasets and automatic eye-tracking datasets for research teams to adapt to their data.
 These import templates walk researchers through each step of data processing using example datasets from Peekbank and include explanations of key decision points, examples of how to use various helper functions available in `peekds`, and further details about the database schema.
 
@@ -509,7 +510,7 @@ nocite: |
 The database currently includes `r length(summarize_datasets$dataset_name)` looking-while-listening datasets comprising *N*=`r sum(summarize_datasets$num_subj)` total participants (Table 1).
 The current data represents a convenience sample of datasets that were (a) datasets collected by or available to Peekbank team members, (b) made available to Peekbank after informal inquiry or (c) datasets that were openly available.
 Most datasets (`r sum(summarize_datasets$language=="English")` out of `r length(summarize_datasets$language)` total) consist of data from monolingual native English speakers. 
-They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of gender (`r round(mean(dataset_unique_subj$sex=="female"),3)*100`% female; `r round(mean(dataset_unique_subj$sex=="male"),3)*100`% male; `r round(mean(dataset_unique_subj$sex=="unspecified"),3)*100`% unreported). 
+They span a wide age spectrum with participants ranging from `r min(dataset_info$age,na.rm=TRUE)` to `r max(dataset_info$age,na.rm=TRUE)` months of age, and are balanced in terms of children's assigned sex (`r round(mean(dataset_unique_subj$sex=="female"),3)*100`% female; `r round(mean(dataset_unique_subj$sex=="male"),3)*100`% male; `r round(mean(dataset_unique_subj$sex=="unspecified"),3)*100`% unreported). 
 The datasets vary across a number of design-related dimensions, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior. 
 All studies tested familiar items, but the database also includes `r sum(summarize_novel_familiar$has_novel)` datasets that tested novel pseudo-words in addition to familiar words. 
 Users interested in a subset of the data (e.g., only trials testing familiar words) can filter out unwanted trials using columns available in the schema (e.g., using the column `stimulus_novelty` in the `stimuli` table).
@@ -775,7 +776,7 @@ print(tab2, type="latex", comment = F, table.placement = "H",include.rownames=FA
 
 One of the values of the uniform data format we use in Peekbank is the ease of providing cross-dataset descriptions that can give an overview of some of the general patterns found in our data.
 A first broad question is about the degree of accuracy in word recognition found across studies. 
-In general, participants demonstrated robust, above-chance word recognition in each dataset (chance=0.5).
+In general, participants demonstrated robust, above-chance word recognition in each dataset (chance=0.5 due to the two-alternative forced-choice design of looking-while-listening trials).
 Table 2 shows the average proportion of target looking within a standard critical window of 367-2000ms after the onset of the label for each dataset [@Swingley2002].
 Proportion target looking was generally higher for familiar words (*M* = `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="familiar")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="familiar")$N`) than for novel words learned during the experiment (*M* = `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking,2)`, 95% CI = [`r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_lower_ci,2)`, `r round(filter(overall_novelty,stimulus_novelty=="novel")$prop_looking_upper_ci,2)`], *n* = `r filter(overall_novelty,stimulus_novelty=="novel")$N`). 
 

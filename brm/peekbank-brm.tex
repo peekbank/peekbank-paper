@@ -38,7 +38,7 @@
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
   pdftitle={Peekbank: An open, large-scale repository for developmental eye-tracking data of children's word recognition},
-  pdfauthor={Martin Zettersten1, Daniel Yurovsky2, Tian Linger Xu3, Sarp Uner4, Angeline Sin Mei Tsui5, Rose M. Schneider6, Annissa N. Saleh7, Stephan Meylan8,9, Virginia Marchman5, Jessica Mankewitz5, Kyle MacDonald10, Bria Long5, Molly Lewis2, George Kachergis5, Kunal Handa11, Benjamin deMayo1, Alexandra Carstensen6, Mika Braginsky9, Veronica Boyce5, Naiti S. Bhatt12, Claire Bergey13, \& Michael C. Frank5},
+  pdfauthor={Martin Zettersten1, Daniel Yurovsky2, Tian Linger Xu3, Sarp Uner4, Angeline Sin Mei Tsui5, Rose M. Schneider6, Annissa N. Saleh7, Stephan Meylan8,9, Virginia Marchman5, Jessica Mankewitz5, Kyle MacDonald10, Bria Long5, Molly Lewis2, George Kachergis5, Kunal Handa11, Benjamin deMayo1, Alexandra Carstensen6, Mika Braginsky9, Veronica Boyce5, Naiti S. Bhatt12, Claire Augusta Bergey13, \& Michael C. Frank5},
   pdflang={en-EN},
   pdfkeywords={word recognition; eye-tracking; vocabulary development; looking-while-listening; visual world paradigm; lexical processing},
   hidelinks,
@@ -152,7 +152,7 @@
   {}{\typeout{Failed to patch title.}}
 \makeatother
 \shorttitle{Peekbank repository for eye-tracking data}
-\keywords{word recognition; eye-tracking; vocabulary development; looking-while-listening; visual world paradigm; lexical processing\newline\indent Word count: 7351}
+\keywords{word recognition; eye-tracking; vocabulary development; looking-while-listening; visual world paradigm; lexical processing\newline\indent Word count: 7369}
 \usepackage{lineno}
 
 \linenumbers
@@ -193,13 +193,13 @@
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 \title{Peekbank: An open, large-scale repository for developmental eye-tracking data of children's word recognition}
-\author{Martin Zettersten\textsuperscript{1}, Daniel Yurovsky\textsuperscript{2}, Tian Linger Xu\textsuperscript{3}, Sarp Uner\textsuperscript{4}, Angeline Sin Mei Tsui\textsuperscript{5}, Rose M. Schneider\textsuperscript{6}, Annissa N. Saleh\textsuperscript{7}, Stephan Meylan\textsuperscript{8,9}, Virginia Marchman\textsuperscript{5}, Jessica Mankewitz\textsuperscript{5}, Kyle MacDonald\textsuperscript{10}, Bria Long\textsuperscript{5}, Molly Lewis\textsuperscript{2}, George Kachergis\textsuperscript{5}, Kunal Handa\textsuperscript{11}, Benjamin deMayo\textsuperscript{1}, Alexandra Carstensen\textsuperscript{6}, Mika Braginsky\textsuperscript{9}, Veronica Boyce\textsuperscript{5}, Naiti S. Bhatt\textsuperscript{12}, Claire Bergey\textsuperscript{13}, \& Michael C. Frank\textsuperscript{5}}
+\author{Martin Zettersten\textsuperscript{1}, Daniel Yurovsky\textsuperscript{2}, Tian Linger Xu\textsuperscript{3}, Sarp Uner\textsuperscript{4}, Angeline Sin Mei Tsui\textsuperscript{5}, Rose M. Schneider\textsuperscript{6}, Annissa N. Saleh\textsuperscript{7}, Stephan Meylan\textsuperscript{8,9}, Virginia Marchman\textsuperscript{5}, Jessica Mankewitz\textsuperscript{5}, Kyle MacDonald\textsuperscript{10}, Bria Long\textsuperscript{5}, Molly Lewis\textsuperscript{2}, George Kachergis\textsuperscript{5}, Kunal Handa\textsuperscript{11}, Benjamin deMayo\textsuperscript{1}, Alexandra Carstensen\textsuperscript{6}, Mika Braginsky\textsuperscript{9}, Veronica Boyce\textsuperscript{5}, Naiti S. Bhatt\textsuperscript{12}, Claire Augusta Bergey\textsuperscript{13}, \& Michael C. Frank\textsuperscript{5}}
 \date{}
 
 
 \authornote{
 
-\textbf{Acknowledgements.} We would like to thank the labs and researchers that have made their data publicly available in the database. For further information about contributions, see \url{https://langcog.github.io/peekbank-website/docs/contributors/}.
+\textbf{Acknowledgements.} We would like to thank the labs and researchers that have made their data publicly available in the database. For further information about contributions, see \url{https://langcog.github.io/peekbank-website/docs/contributors/}. This work was supported in part by grants from the National Institutes of Health awarded to VM (R01 HD092343, 2R01 HD069150).
 
 \textbf{Open Practices Statement.} All code for reproducing the paper is available at \url{https://github.com/langcog/peekbank-paper}. Raw and standardized datasets are available on the Peekbank OSF repository (\url{https://osf.io/pr6wu/}) and can be accessed using the peekbankr R package (\url{https://github.com/langcog/peekbankr}).
 
@@ -341,7 +341,7 @@ The Peekbank database contains two major types of data: (1) metadata regarding e
 
 }
 
-\caption{The Peekbank schema. Each darker rectangle represents a table in the relational database.}\label{fig:fig-schema}
+\caption{The Peekbank schema. Each darker rectangle represents a table in the relational database. AOIs are areas of interest in an eye-tracking experiment, in this case information about the position of target and distractor stimuli on the screen.}\label{fig:fig-schema}
 \end{figure}
 
 \hypertarget{metadata}{%
@@ -371,7 +371,7 @@ Information about the experimental design is split across the \texttt{trial\_typ
 The \texttt{trial\_types} table encodes information about each trial \textit{in the design of the experiment},\footnote{We note that the term \textit{trial} is ambiguous and could be used to refer to both a particular combination of stimuli seen by many participants and a participant seeing that particular combination at a particular point in the experiment. We track the former in the \texttt{trial\_types} table and the latter in the \texttt{trials} table.} including the target stimulus and location (left vs.~right), the distractor stimulus and location, and the point of disambiguation for that trial.
 If a dataset used automatic eye-tracking rather than manual coding, each trial type is additionally linked to a set of area of interest (x, y) coordinates, encoded in the \texttt{aoi\_region\_sets} table.
 The \texttt{trial\_types} table links trial types to the \texttt{aoi\_region\_sets} table and the \texttt{trials} table.
-Each trial\_type record links to two records in the \texttt{stimuli} table, identified by the \texttt{distractor\_id} and the \texttt{target\_id} fields.
+Each trial type record links to two records in the \texttt{stimuli} table, identified by the \texttt{distractor\_id} and the \texttt{target\_id} fields.
 
 Each record in the \texttt{stimuli} table is a (word, image) pair.
 In most experiments, there is a one-to-one mapping between images and labels (e.g., each time an image of a dog appears it is referred to as \emph{dog}).
@@ -385,7 +385,7 @@ For studies in which the same label refers to multiple images (e.g., the word \e
 
 The \texttt{administrations} table includes information about the participant or experiment that may change between sessions of the same study, even for the same participant.
 This includes the age of the participant, the coding method (eye-tracking vs.~hand-coding), and the properties of the monitor that was used.
-For participant age, we include the fields \texttt{lab\_age} and \texttt{lab\_age\_units} to record how the original lab encoded age, as well as an additional field, \texttt{age}, to encode age in a standardized format across datasets, using months as the common unit of measurement.
+For participant age, we include the fields \texttt{lab\_age} and \texttt{lab\_age\_units} to record how the original lab encoded age, as well as an additional field, \texttt{age}, to encode age in a standardized format across datasets, using standardized months as the common unit of measurement (see the Peekbank codebook for details on how ages are converted into months).
 
 \hypertarget{trial-information}{%
 \paragraph{Trial Information}\label{trial-information}}
@@ -412,25 +412,26 @@ All data in the database is resampled to 40 Hz (observations every 25 ms), which
 Further, 25 ms is a mathematically convenient interval for ensuring consistent resampling; we found that using 33.333 ms (30 Hz) as our interval simply introduced a large number of technical complexities.
 The resampling operation is accomplished using the \texttt{resample\_times()} function.
 During the resampling process, we interpolate using constant interpolation, selecting for each interpolated timepoint the looking location for the earlier-observed time point in the original data for both \texttt{aoi\_timepoints} and \texttt{xy\_timepoints} data.
-Compared to linear interpolation (see e.g., Wass, Smith, \& Johnson, 2013) -- which fills segments of missing or unobserved time points by interpolating between the observed locations of timepoints at the beginning and end of the interpolated segment --, constant interpolation has the advantage that it is more conservative, in the sense that it does not introduce new look locations beyond those measured in the original data.
+Compared to linear interpolation (see e.g., Wass, Smith, \& Johnson, 2013), which fills segments of missing or unobserved time points by interpolating between the observed locations of timepoints at the beginning and end of the interpolated segment, constant interpolation has the advantage that it is more conservative, in the sense that it does not introduce new look locations beyond those measured in the original data.
 One possible application of our new dataset is investigating the consequences of other interpolation functions for data analysis.
 
 \hypertarget{processing-validation-and-ingestion}{%
 \subsection{Processing, Validation, and Ingestion}\label{processing-validation-and-ingestion}}
 
-Although Peekbank provides a common data format, the crux issue of populating the database is the conversion of existing datasets to this format.
+Although Peekbank provides a common data format, the key hurdle to populating the database is converting existing datasets to this format.
 Each dataset is imported via a custom import script, which documents the process of conversion.
 Often various decisions must be made in this import process (for example, how to characterize a particular trial type within the options available in the Peekbank schema); these scripts provide a reproducible record of this decision-making process. Our data import repository (available on GitHub at \url{https://github.com/langcog/peekbank-data-import}) contains all of these scripts, links to internal documentation on data import, and a set of generic import templates for different formats.
 
 Many of the specific operations involved in importing a dataset can be abstracted across datasets.
 The \texttt{peekds} package offers a library of these functions.
 Once the data have been extracted in a tabular form, the package also offers a validation function that checks whether all tables have the required fields and data types expected by the database.
-In an effort to double check the data quality and to make sure that no errors are made in the importing script, we also typically perform a visual check of the import process, creating a time course plot to replicate the results in the paper that first presented each dataset
+In an effort to double check the data quality and to make sure that no errors are made in the importing script, we also typically perform a visual check of the import process, creating a time course plot to replicate the results in the paper that first presented each dataset.
 Once this plot has been created and checked for consistency and all tables pass our validation functions, the processed dataset is ready for reprocessing into the database using the \texttt{peekbank} library.
 This library applies additional data checks, and adds the data to the MySQL database using the Django web framework.
 
 To date, the import process has been carried out by the Peekbank team using data offered by other research teams.
-There is no technical obstacle to data contributors also providing an import script to facilitate contribution, though in practice creating these scripts requires familiarity with both R scripting and the specific Peekbank schema; writing a first import script can be somewhat time-consuming.
+Data contributors are also welcome to provide import scripts to facilitate contribution.
+However, creating these scripts requires familiarity with both R scripting and the specific Peekbank schema, and writing an import script can be somewhat time-consuming in practice.
 To support future data contributions, import script templates and examples are available for both hand-coded datasets and automatic eye-tracking datasets for research teams to adapt to their data.
 These import templates walk researchers through each step of data processing using example datasets from Peekbank and include explanations of key decision points, examples of how to use various helper functions available in \texttt{peekds}, and further details about the database schema.
 
@@ -473,7 +474,7 @@ Yurovsky et al., unpub. & reflook\_v4 & 45 & 34.2 & 11–60 & eye-tracking & Eng
 The database currently includes 20 looking-while-listening datasets comprising \emph{N}=1594 total participants (Table 1).
 The current data represents a convenience sample of datasets that were (a) datasets collected by or available to Peekbank team members, (b) made available to Peekbank after informal inquiry or (c) datasets that were openly available.
 Most datasets (14 out of 20 total) consist of data from monolingual native English speakers.
-They span a wide age spectrum with participants ranging from 9 to 70 months of age, and are balanced in terms of gender (47.30\% female; 50.40\% male; 2.30\% unreported).
+They span a wide age spectrum with participants ranging from 9 to 70 months of age, and are balanced in terms of children's assigned sex (47.30\% female; 50.40\% male; 2.30\% unreported).
 The datasets vary across a number of design-related dimensions, and include studies using manually coded video recordings and automated eye-tracking methods (e.g., Tobii, EyeLink) to measure gaze behavior.
 All studies tested familiar items, but the database also includes 5 datasets that tested novel pseudo-words in addition to familiar words.
 Users interested in a subset of the data (e.g., only trials testing familiar words) can filter out unwanted trials using columns available in the schema (e.g., using the column \texttt{stimulus\_novelty} in the \texttt{stimuli} table).
@@ -619,7 +620,7 @@ Adams et al., 2018 & 8 & 0.65 & [0.63, 0.67] \\
 
 One of the values of the uniform data format we use in Peekbank is the ease of providing cross-dataset descriptions that can give an overview of some of the general patterns found in our data.
 A first broad question is about the degree of accuracy in word recognition found across studies.
-In general, participants demonstrated robust, above-chance word recognition in each dataset (chance=0.5).
+In general, participants demonstrated robust, above-chance word recognition in each dataset (chance=0.5 due to the two-alternative forced-choice design of looking-while-listening trials).
 Table 2 shows the average proportion of target looking within a standard critical window of 367-2000ms after the onset of the label for each dataset (Swingley \& Aslin, 2002).
 Proportion target looking was generally higher for familiar words (\emph{M} = 0.66, 95\% CI = {[}0.65, 0.67{]}, \emph{n} = 1543) than for novel words learned during the experiment (\emph{M} = 0.59, 95\% CI = {[}0.58, 0.61{]}, \emph{n} = 822).
 
